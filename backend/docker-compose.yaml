@@ -1,0 +1,23 @@
+services:
+    php:
+        container_name: ${PROJECT_NAME}-php
+        working_dir: /app
+        volumes:
+            - .:/app
+            - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+        environment:
+            - SYMFONY_ENV=dev
+            - SERVER_NAME=:8000
+        networks:
+            - default
+        ports:
+            - "8000:8000"
+        build:
+            context: ./docker/php
+            dockerfile: Dockerfile
+        healthcheck:
+            test: [ "CMD", "php", "-v" ]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
