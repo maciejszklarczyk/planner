@@ -17,6 +17,18 @@ secret_detection:
 include:
     -   template: Security/Secret-Detection.gitlab-ci.yml
 
+php-cs-fixer:
+    stage: test
+    image: composer:2.9.4
+    script:
+        - composer install --no-interaction --prefer-dist
+        - vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
+    cache:
+        paths:
+            - vendor/
+    except:
+        - main
+
 composer:
     stage: build
     image: composer:2.9.4
@@ -28,6 +40,8 @@ composer:
     cache:
         paths:
             - vendor/
+    except:
+        - main
 
 lint:
     stage: lint
@@ -38,6 +52,8 @@ lint:
         - composer validate --strict
         - php bin/console lint:yaml config/
         - php bin/console lint:container
+    except:
+        - main
 
 docker-build:
     stage: docker-build
