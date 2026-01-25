@@ -1,0 +1,56 @@
+services:
+  php:
+    image: registry.gitlab.com/planner6551704/backend:latest
+    container_name: ${PROJECT_NAME:-plan}-php
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      - APP_ENV=prod
+      - APP_DEBUG=0
+    networks:
+      - zbyszek-network
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.planner-backend.rule=Host(`api-planner.msolve.it`)"
+      - "traefik.http.routers.planner-backend.entrypoints=web"
+      - "traefik.http.services.planner-backend.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "php", "-v"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    container_name: ${PROJECT_NAME:-plan}-database
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:5433:5432"  # Host:5433 -> Container:5432 (unika konfliktu)
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+    networks:
+      - internal
+    restart: unless-stopped
+
+networks:
+  zbyszek-network:
+    external: true
+  internal:
+    driver: bridge
+
+volumes:
+  database_data:
+    driver: local

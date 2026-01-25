@@ -1,23 +1,51 @@
 services:
-    php:
-        container_name: ${PROJECT_NAME}-php
-        working_dir: /app
-        volumes:
-            - .:/app
-            - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
-        environment:
-            - SYMFONY_ENV=dev
-            - SERVER_NAME=:8000
-        networks:
-            - default
-        ports:
-            - "8000:8000"
-        build:
-            context: ./docker/php
-            dockerfile: Dockerfile
-        healthcheck:
-            test: [ "CMD", "php", "-v" ]
-            interval: 10s
-            timeout: 5s
-            retries: 3
-            start_period: 10s
+  php:
+    container_name: ${PROJECT_NAME}-php
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    env_file:
+      - .env
+      - .env.dev
+      - .env.local
+    environment:
+      - SYMFONY_ENV=dev
+      - SERVER_NAME=:8000
+    networks:
+      - default
+    ports:
+      - "8000:8000"
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD", "php", "-v" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  ###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    container_name: ${PROJECT_NAME}-database
+    env_file:
+      - .env
+      - .env.dev
+      - .env.local
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}" ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+  ###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###

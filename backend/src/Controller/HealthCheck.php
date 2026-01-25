@@ -8,11 +8,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HealthCheck extends AbstractController
 {
-    #[Route('/api', methods: ['GET'])]
+    #[Route('/health', name: 'health_check', methods: ['GET'])]
     public function healthCheck(): Response
     {
         return $this->json([
-            'status' => 'ok'
+            'status' => 'ok',
+            'timestamp' => time()
         ]);
     }
 }
