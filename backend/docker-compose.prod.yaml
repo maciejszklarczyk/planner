@@ -13,6 +13,7 @@ services:
       - internal
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=zbyszek-network"
       - "traefik.http.routers.planner-backend.rule=Host(`api-planner.msolve.it`)"
       - "traefik.http.routers.planner-backend.entrypoints=web"
       - "traefik.http.services.planner-backend.loadbalancer.server.port=8000"
