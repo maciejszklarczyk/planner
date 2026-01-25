@@ -13,7 +13,7 @@ class HealthCheck extends AbstractController
     {
         return $this->json([
             'status' => 'ok',
-            'timestamp' => time()
+            'timestamp' => time(),
         ]);
     }
 }

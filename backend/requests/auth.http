@@ -1,0 +1,14 @@
+### Login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "password"
+}
+
+### Get current user (cookie PHPSESSID przechodzi automatycznie)
+GET {{host}}/auth/me
+
+### Logout
+POST {{host}}/auth/logout
