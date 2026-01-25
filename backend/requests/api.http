@@ -1,2 +1,2 @@
 ### HealthCheck
-GET {{host}}/api
+GET {{host}}/health?{{debug}}

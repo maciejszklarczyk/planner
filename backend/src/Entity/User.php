@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,6 +33,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, UserHasGroup>
+     */
+    #[ORM\OneToMany(targetEntity: UserHasGroup::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $userHasGroups;
+
+    public function __construct()
+    {
+        $this->userHasGroups = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -111,5 +124,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    /**
+     * @return Collection<int, UserHasGroup>
+     */
+    public function getUserHasGroups(): Collection
+    {
+        return $this->userHasGroups;
+    }
+
+    public function addUserHasGroup(UserHasGroup $userHasGroup): static
+    {
+        if (!$this->userHasGroups->contains($userHasGroup)) {
+            $this->userHasGroups->add($userHasGroup);
+            $userHasGroup->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserHasGroup(UserHasGroup $userHasGroup): static
+    {
+        if ($this->userHasGroups->removeElement($userHasGroup)) {
+            // set the owning side to null (unless already changed)
+            if ($userHasGroup->getUsers() === $this) {
+                $userHasGroup->setUsers(null);
+            }
+        }
+
+        return $this;
     }
 }
