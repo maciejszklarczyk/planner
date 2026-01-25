@@ -59,6 +59,15 @@
             ".php-cs-fixer.dist.php"
         ]
     },
+    "nelmio/api-doc-bundle": {
+        "version": "5.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
+        }
+    },
     "symfony/console": {
         "version": "7.4",
         "recipe": {
@@ -150,5 +159,21 @@
             "config/packages/security.yaml",
             "config/routes/security.yaml"
         ]
+    },
+    "symfony/twig-bundle": {
+        "version": "7.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.4",
+            "ref": "cab5fd2a13a45c266d45a7d9337e28dee6272877"
+        },
+        "files": [
+            "config/packages/twig.yaml",
+            "templates/base.html.twig"
+        ]
+    },
+    "twig/extra-bundle": {
+        "version": "v3.23.0"
     }
 }

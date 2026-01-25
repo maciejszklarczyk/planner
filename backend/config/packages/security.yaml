@@ -32,6 +32,7 @@ security:
         - { path: ^/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/auth/register, roles: PUBLIC_ACCESS }
         - { path: ^/health, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
 
 when@test:
