@@ -16,7 +16,9 @@ services:
       - "traefik.docker.network=zbyszek-network"
       - "traefik.http.routers.planner-backend.rule=Host(`api-planner.msolve.it`)"
       - "traefik.http.routers.planner-backend.entrypoints=web"
+      - "traefik.http.routers.planner-backend.middlewares=planner-auth"
       - "traefik.http.services.planner-backend.loadbalancer.server.port=8000"
+      - "traefik.http.middlewares.planner-auth.basicauth.users=maciej:$2y$05$wXYftlLQKpYu3nEwRgQ52OLheLYOIZjuX.admnR..Nc7os03wDiyu"
     healthcheck:
       test: ["CMD", "php", "-v"]
       interval: 30s
