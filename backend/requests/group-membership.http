@@ -1,0 +1,110 @@
+###############################################################################
+# GROUP MEMBERSHIP MANAGEMENT (GroupMembershipController)
+# Endpoints: /admin/groups/{groupId}/users
+# Required role: ROLE_ADMIN
+###############################################################################
+
+### Pobieranie członków grupy
+GET {{host}}/admin/groups/1/users?page=1&limit=20
+Content-Type: application/json
+
+###
+
+### Pobieranie członków grupy z filtrem po roli
+GET {{host}}/admin/groups/1/users?role=OWNER
+Content-Type: application/json
+
+###
+
+### Dodanie użytkownika do grupy jako MEMBER
+# Wymagania:
+# - Musisz być zalogowany jako admin (użyj auth.http)
+# - userId musi istnieć (fixtures: 1=admin, 2=user1)
+# - groupId musi istnieć (fixtures: 1=group1, 2=group2, 3=group3)
+# - role: "MEMBER" lub "member", "OWNER" lub "owner" (case-insensitive)
+# Odpowiedzi:
+# - 201 CREATED - sukces
+# - 400 USER_ALREADY_IN_GROUP - user już w grupie
+# - 404 NOT_FOUND - user lub group nie istnieje
+POST {{host}}/admin/groups/1/users
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "role": "MEMBER"
+}
+
+###
+
+### Dodanie użytkownika do grupy jako OWNER (uppercase)
+# Ten request doda user1 (id=2) do group1 z rolą OWNER
+POST {{host}}/admin/groups/1/users
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "role": "OWNER"
+}
+
+###
+
+### Dodanie użytkownika do grupy jako OWNER (lowercase)
+# Role można podać jako lowercase - system automatycznie konwertuje
+POST {{host}}/admin/groups/1/users
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "role": "owner"
+}
+
+###
+
+### Test: Próba dodania użytkownika który już jest w grupie
+# Ten request powinien zwrócić błąd 400 USER_ALREADY_IN_GROUP
+# Ponieważ user1 (id=2) już jest w group2
+POST {{host}}/admin/groups/2/users
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "role": "MEMBER"
+}
+
+###
+
+### Test: Próba dodania nieistniejącego użytkownika
+# Ten request powinien zwrócić błąd 404 NOT_FOUND
+POST {{host}}/admin/groups/1/users
+Content-Type: application/json
+
+{
+  "userId": 999,
+  "role": "MEMBER"
+}
+
+###
+
+### Zmiana roli użytkownika w grupie na OWNER
+PATCH {{host}}/admin/groups/1/users/2/role
+Content-Type: application/json
+
+{
+  "role": "OWNER"
+}
+
+###
+
+### Zmiana roli użytkownika w grupie na MEMBER
+PATCH {{host}}/admin/groups/1/users/2/role
+Content-Type: application/json
+
+{
+  "role": "MEMBER"
+}
+
+###
+
+### Usunięcie użytkownika z grupy
+DELETE {{host}}/admin/groups/1/users/2
+Content-Type: application/json

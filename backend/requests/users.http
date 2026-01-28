@@ -1,0 +1,45 @@
+###############################################################################
+# USER MANAGEMENT (UserController)
+# Endpoint: /admin/users
+# Required role: ROLE_ADMIN
+###############################################################################
+
+### Test endpoint bez autoryzacji
+# Oczekiwany rezultat: 401 UNAUTHORIZED z JSON
+# {"error": "AUTHENTICATION_REQUIRED", "message": "..."}
+GET {{host}}/admin/users?limit=50
+Content-Type: application/json
+
+###
+
+### Pobieranie listy użytkowników (dla dropdown) - wymagane ROLE_ADMIN
+# Musisz najpierw się zalogować używając auth.http (POST /auth/login)
+# Jeśli użytkownik nie ma ROLE_ADMIN: 403 FORBIDDEN z JSON
+# Jeśli użytkownik ma ROLE_ADMIN: 200 OK z listą użytkowników
+GET {{host}}/admin/users?limit=5
+Content-Type: application/json
+
+###
+
+### Pobieranie listy użytkowników z wyszukiwaniem
+GET {{host}}/admin/users?search=example&limit=50
+Content-Type: application/json
+
+###
+
+### Pobieranie listy użytkowników z wykluczeniem grupy
+# Parametr excludeGroupId filtruje użytkowników już będących w grupie
+GET {{host}}/admin/users?excludeGroupId=1&limit=50
+Content-Type: application/json
+
+###
+
+### Pobieranie listy użytkowników - strona 2 z limitem 10
+GET {{host}}/admin/users?page=2&limit=10
+Content-Type: application/json
+
+###
+
+### Pobieranie listy użytkowników - wszystkie filtry razem
+GET {{host}}/admin/users?search=admin&excludeGroupId=1&page=1&limit=20
+Content-Type: application/json
