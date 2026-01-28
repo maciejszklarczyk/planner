@@ -27,6 +27,9 @@ class UserHasGroup
     #[ORM\Column(enumType: UserGroupRoleEnum::class)]
     private UserGroupRoleEnum $role = UserGroupRoleEnum::MEMBER;
 
+    #[ManyToOne(targetEntity: User::class)]
+    private ?User $addedBy = null;
+
     public function __construct()
     {
     }
@@ -68,6 +71,18 @@ class UserHasGroup
     public function setRole(UserGroupRoleEnum $role): static
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getAddedBy(): ?User
+    {
+        return $this->addedBy;
+    }
+
+    public function setAddedBy(?User $addedBy): static
+    {
+        $this->addedBy = $addedBy;
 
         return $this;
     }

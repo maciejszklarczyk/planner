@@ -33,6 +33,13 @@ class AppFixtures extends Fixture
     // TODO temp solution until i find out why purge doesnt work
     private function resetAutoIncrements(): void
     {
+        $platform = $this->connection->getDatabasePlatform();
+
+        // Only reset for PostgreSQL (not needed for SQLite in tests)
+        if (!$platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
+            return;
+        }
+
         $tables = $this->connection->createSchemaManager()->listTableNames();
 
         foreach ($tables as $table) {

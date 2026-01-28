@@ -33,6 +33,81 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * Find users with pagination and filters.
+     *
+     * @param int         $page           Page number (1-indexed)
+     * @param int         $limit          Items per page
+     * @param string|null $search         Search in email
+     * @param int|null    $excludeGroupId Exclude users already in this group
+     *
+     * @return User[]
+     */
+    public function findWithPagination(
+        int $page = 1,
+        int $limit = 50,
+        ?string $search = null,
+        ?int $excludeGroupId = null,
+    ): array {
+        $qb = $this->createQueryBuilder('u')
+            ->orderBy('u.email', 'ASC');
+
+        // Apply search filter
+        if (null !== $search && '' !== $search) {
+            $qb->andWhere('u.email LIKE :search')
+                ->setParameter('search', '%'.$search.'%');
+        }
+
+        // Exclude users already in group
+        if (null !== $excludeGroupId) {
+            $qb->andWhere('u.id NOT IN (
+                SELECT IDENTITY(uhg.user)
+                FROM App\Entity\UserHasGroup uhg
+                WHERE uhg.group = :groupId
+            )')
+            ->setParameter('groupId', $excludeGroupId);
+        }
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $qb->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Count users with filters.
+     *
+     * @param string|null $search         Search in email
+     * @param int|null    $excludeGroupId Exclude users already in this group
+     */
+    public function countWithFilters(
+        ?string $search = null,
+        ?int $excludeGroupId = null,
+    ): int {
+        $qb = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)');
+
+        // Apply search filter
+        if (null !== $search && '' !== $search) {
+            $qb->andWhere('u.email LIKE :search')
+                ->setParameter('search', '%'.$search.'%');
+        }
+
+        // Exclude users already in group
+        if (null !== $excludeGroupId) {
+            $qb->andWhere('u.id NOT IN (
+                SELECT IDENTITY(uhg.user)
+                FROM App\Entity\UserHasGroup uhg
+                WHERE uhg.group = :groupId
+            )')
+            ->setParameter('groupId', $excludeGroupId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

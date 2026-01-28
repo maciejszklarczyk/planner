@@ -29,6 +29,18 @@ php-cs-fixer:
     except:
         - main
 
+phpunit:
+    stage: test
+    image: composer:2.9.4
+    script:
+        - composer install --no-interaction --prefer-dist
+        - vendor/bin/phpunit
+    cache:
+        paths:
+            - vendor/
+    except:
+        - main
+
 composer:
     stage: build
     image: composer:2.9.4

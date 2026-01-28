@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Dto\Response;
+
+use App\Entity\User;
+
+class UserListItemDto
+{
+    public function __construct(
+        public readonly int $id,
+        public readonly string $email,
+    ) {
+    }
+
+    public static function fromEntity(User $user): self
+    {
+        return new self(
+            id: $user->getId(),
+            email: $user->getEmail(),
+        );
+    }
+
+    /**
+     * @param User[] $users
+     *
+     * @return self[]
+     */
+    public static function fromEntities(array $users): array
+    {
+        return array_map(
+            fn (User $user) => self::fromEntity($user),
+            $users
+        );
+    }
+}

@@ -3,7 +3,10 @@
     "allow": [
       "Bash(find:*)",
       "Bash(curl:*)",
-      "Bash(php bin/console cache:clear:*)"
+      "Bash(php bin/console cache:clear:*)",
+      "Bash(php bin/console debug:router:*)",
+      "Bash(composer show:*)",
+      "Bash(ls:*)"
     ]
   }
 }

@@ -20,12 +20,14 @@ security:
             lazy: true
             provider: app_user_provider
             stateless: false
+            entry_point: App\Security\JsonAuthenticationEntryPoint
             json_login:
                 check_path: /auth/login
                 username_path: email
                 password_path: password
             logout:
                 path: /auth/logout
+            access_denied_handler: App\Security\JsonAccessDeniedHandler
 
     # Note: Only the *first* matching rule is applied
     access_control:

@@ -10,7 +10,6 @@ services:
       - .env.dev
       - .env.local
     environment:
-      - SYMFONY_ENV=dev
       - SERVER_NAME=:8000
       - PHP_IDE_CONFIG=serverName=planner-php
     networks:

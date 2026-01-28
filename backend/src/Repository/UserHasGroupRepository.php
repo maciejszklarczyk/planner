@@ -16,6 +16,28 @@ class UserHasGroupRepository extends ServiceEntityRepository
         parent::__construct($registry, UserHasGroup::class);
     }
 
+    /**
+     * Find membership by user ID and group ID.
+     */
+    public function findByUserAndGroup(int $userId, int $groupId): ?UserHasGroup
+    {
+        return $this->createQueryBuilder('uhg')
+            ->andWhere('uhg.user = :userId')
+            ->andWhere('uhg.group = :groupId')
+            ->setParameter('userId', $userId)
+            ->setParameter('groupId', $groupId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Check if user is already a member of the group.
+     */
+    public function isUserInGroup(int $userId, int $groupId): bool
+    {
+        return null !== $this->findByUserAndGroup($userId, $groupId);
+    }
+
     //    /**
     //     * @return UserHasGroup[] Returns an array of UserHasGroup objects
     //     */
