@@ -16,7 +16,7 @@ services:
       - "traefik.docker.network=zbyszek-network"
       - "traefik.http.routers.planner-backend.rule=Host(`api-planner.msolve.it`)"
       - "traefik.http.routers.planner-backend.entrypoints=web"
-      - "traefik.http.routers.planner-backend.middlewares=planner-auth"
+#      - "traefik.http.routers.planner-backend.middlewares=planner-auth"
       - "traefik.http.services.planner-backend.loadbalancer.server.port=8000"
 #      - "traefik.http.middlewares.planner-auth.basicauth.users=maciej:$$apr1$$ASZXfgHw$$7r7cmgS0RMh6v7IG6vmIn0"
     healthcheck:
