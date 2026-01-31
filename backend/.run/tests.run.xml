@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="tests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+    <CommandLine>
+      <envFiles>
+        <find>$PROJECT_DIR$/.env.test</find>
+      </envFiles>
+      <PhpTestInterpreterSettings>
+        <option name="interpreterName" value="php" />
+      </PhpTestInterpreterSettings>
+    </CommandLine>
+    <option name="envFilePaths">
+      <list>
+        <option value="$PROJECT_DIR$/.env.test" />
+      </list>
+    </option>
+    <TestRunner configuration_file="/app/phpunit.xml.dist" directory="$PROJECT_DIR$/tests" />
+    <method v="2" />
+  </configuration>
+</component>
