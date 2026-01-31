@@ -1,0 +1,39 @@
+# Dependencies
+/vendor/
+node_modules/
+
+# Cache and temporary files
+/var/cache/
+/var/log/
+/var/sessions/
+/.phpunit.cache/
+/.php-cs-fixer.cache
+
+# IDE files
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+/.git/
+
+# Environment files (zawierają wrażliwe dane)
+.env.local
+.env.*.local
+
+# Build artifacts
+/public/bundles/
+
+# Lock files (często bardzo duże i nieistotne)
+composer.lock
+symfony.lock
+package-lock.json
+yarn.lock
+
+# Documentation (jeśli nie chcesz, żebym je sprawdzał)
+# /docs/
+
+# Tests (odkomentuj jeśli nie chcesz, żebym sprawdzał testy)
+# /tests/
