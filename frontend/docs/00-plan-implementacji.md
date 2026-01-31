@@ -5,11 +5,11 @@ Implementacja systemu autentykacji Next.js 16 (App Router) + Symfony backend API
 
 ## Kontekst
 
-**Frontend:** Czysta instalacja Next.js 16.1.6 w `/Users/maciejszklarczyk/htdocs/plan/frontend`
+**Frontend:** Czysta instalacja Next.js 16.1.6 w `{{FRONTEND_ROOT}}`
 - Tailwind CSS 4, TypeScript 5
 - Brak komponentów UI, brak struktury auth
 
-**Backend:** Symfony API w `/Users/maciejszklarczyk/htdocs/plan/backend`
+**Backend:** Symfony API w `{{BACKEND_ROOT}}`
 - Endpointy: POST /auth/login, GET /auth/me, POST /auth/logout
 - Session-based auth (PLANNER_SESSION cookie)
 - **BRAK CORS** - wymaga konfiguracji
@@ -108,11 +108,11 @@ types/
 
 **Działania:**
 ```bash
-cd /Users/maciejszklarczyk/htdocs/plan/backend
+cd {{BACKEND_ROOT}}
 composer require nelmio/cors-bundle
 ```
 
-**Plik:** `/Users/maciejszklarczyk/htdocs/plan/backend/config/packages/nelmio_cors.yaml`
+**Plik:** `{{BACKEND_ROOT}}/config/packages/nelmio_cors.yaml`
 ```yaml
 nelmio_cors:
     defaults:
@@ -145,8 +145,8 @@ curl -H "Origin: http://localhost:3000" \
 
 **Instalacja pakietów:**
 ```bash
-cd /Users/maciejszklarczyk/htdocs/plan/frontend
-npm install @tanstack/react-query zustand
+cd {{FRONTEND_ROOT}}
+npm install @tanstack/react-query
 npm install react-hook-form @hookform/resolvers zod
 ```
 
@@ -710,7 +710,7 @@ export default function DashboardLoading() {
 ## Kluczowe Pliki do Implementacji
 
 ### Backend (CORS)
-- `/Users/maciejszklarczyk/htdocs/plan/backend/config/packages/nelmio_cors.yaml`
+- `{{BACKEND_ROOT}}/config/packages/nelmio_cors.yaml`
 
 ### Frontend Core
 - `lib/api.ts` - Fetch wrapper z credentials
@@ -746,11 +746,11 @@ export default function DashboardLoading() {
 ### Test 1: Login Flow
 ```bash
 # 1. Start backend
-cd /Users/maciejszklarczyk/htdocs/plan/backend
+cd {{BACKEND_ROOT}}
 symfony server:start
 
 # 2. Start frontend
-cd /Users/maciejszklarczyk/htdocs/plan/frontend
+cd {{FRONTEND_ROOT}}
 npm run dev
 
 # 3. Test
