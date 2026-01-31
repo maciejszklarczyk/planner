@@ -1,0 +1,15 @@
+# Login throttling is configured in security.yaml under firewall.login_throttling
+# It automatically uses the 'cache.rate_limiter' pool (configured in cache.yaml)
+# which stores data in Redis.
+#
+# This file can be used to define custom rate limiters for other endpoints.
+# Example:
+#
+# framework:
+#     rate_limiter:
+#         api_limiter:
+#             policy: 'sliding_window'
+#             limit: 100
+#             interval: '1 hour'
+#             lock_factory: 'lock.factory'
+#             cache_pool: 'cache.rate_limiter'
