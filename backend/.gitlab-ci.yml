@@ -103,4 +103,3 @@ deploy-production:
         url: https://api-planner.msolve.it
     only:
         - main
-    when: manual
