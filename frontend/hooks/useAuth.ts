@@ -1,11 +1,15 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import type { User } from '@/types/auth';
 import { ApiError } from '@/lib/api';
 
 export function useAuth() {
+    const hasShownSessionExpiredToast = useRef(false);
+
     const { data: user, isLoading, error } = useQuery<User | null>({
         queryKey: ['auth', 'me'],
         queryFn: async () => {
@@ -19,7 +23,29 @@ export function useAuth() {
             }
         },
         retry: false,
+        // Auto-refresh session every 10 minutes to prevent timeout while user is active
+        // Default Symfony session timeout is 24 minutes
+        refetchInterval: 10 * 60 * 1000, // 10 minutes
+        refetchIntervalInBackground: false, // Only when tab is active
     });
+
+    // Show session expired toast when user becomes unauthenticated
+    useEffect(() => {
+        if (!isLoading && user === null && !hasShownSessionExpiredToast.current) {
+            // Only show if we're not on login page (to avoid toast on initial load)
+            if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+                toast.error('Sesja wygasła', {
+                    description: 'Zaloguj się ponownie, aby kontynuować',
+                });
+                hasShownSessionExpiredToast.current = true;
+            }
+        }
+
+        // Reset flag when user logs in
+        if (user !== null) {
+            hasShownSessionExpiredToast.current = false;
+        }
+    }, [user, isLoading]);
 
     return {
         user,
