@@ -29,6 +29,12 @@ security:
                 path: /auth/logout
             access_denied_handler: App\Security\JsonAccessDeniedHandler
 
+            # Throttle failed login attempts to prevent brute force attacks
+            login_throttling:
+                max_attempts: 3          # Max 3 failed attempts
+                interval: '15 minutes'   # Within 15 minutes
+                # Throttles by IP + username combination by default
+
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/auth/login, roles: PUBLIC_ACCESS }

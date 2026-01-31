@@ -29,6 +29,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
@@ -48,6 +50,27 @@ services:
       - internal
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: ${PROJECT_NAME:-plan}-redis
+    networks:
+      - internal
+    volumes:
+      - redis_data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
 networks:
   zbyszek-network:
     external: true
@@ -56,4 +79,6 @@ networks:
 
 volumes:
   database_data:
+    driver: local
+  redis_data:
     driver: local

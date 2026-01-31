@@ -1,0 +1,4 @@
+# Test environment uses flock instead of Redis
+# This allows tests to run without Redis dependency in CI/CD
+framework:
+    lock: flock

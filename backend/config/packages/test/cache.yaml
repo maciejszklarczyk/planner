@@ -1,0 +1,8 @@
+# Test environment uses filesystem instead of Redis
+# This allows tests to run without Redis dependency in CI/CD
+framework:
+    cache:
+        app: cache.adapter.filesystem
+        pools:
+            cache.rate_limiter:
+                adapter: cache.adapter.array

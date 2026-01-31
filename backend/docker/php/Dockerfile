@@ -3,12 +3,14 @@ FROM composer:2 AS composer
 
 FROM dunglas/frankenphp:1-php8.4
 
-# Install PostgreSQL extensions
+# Install PostgreSQL and Redis extensions
 RUN apt-get update && \
     apt-get install -y libpq-dev curl git unzip iputils-ping && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    docker-php-ext-install pdo pdo_pgsql
+    docker-php-ext-install pdo pdo_pgsql && \
+    pecl install redis-6.1.0 && \
+    docker-php-ext-enable redis
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 

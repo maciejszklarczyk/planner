@@ -10,6 +10,9 @@ framework:
         cookie_samesite: strict
         name: PLANNER_SESSION
 
+    # Distributed locks for rate limiter
+    lock: '%env(REDIS_URL)%'
+
     #esi: true
     #fragments: true
 
