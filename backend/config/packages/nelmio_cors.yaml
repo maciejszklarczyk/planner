@@ -1,11 +1,16 @@
 nelmio_cors:
     defaults:
         origin_regex: true
-        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
-        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_origin:
+            - 'http://localhost:3000'
+            - 'https://planner.msolve.it'
+        allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
         allow_headers: ['Content-Type', 'Authorization']
         allow_credentials: true
-        expose_headers: ['Link']
         max_age: 3600
     paths:
-        '^/': null
+        '^/':
+            allow_origin:
+                - 'http://localhost:3000'
+                - 'https://planner.msolve.it'
+            allow_credentials: true
