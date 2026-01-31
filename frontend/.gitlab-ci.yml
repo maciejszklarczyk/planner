@@ -2,6 +2,7 @@ variables:
   DEPLOY_DIR: '/home/maciej/docker/apps/planner/frontend'
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  NEXT_PUBLIC_API_URL: 'https://api-planner.msolve.it'
 
 stages:
   - docker-build
@@ -15,7 +16,7 @@ docker-build:
     - docker
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
     - docker push $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   only:
