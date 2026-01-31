@@ -25,9 +25,9 @@ Implementacja systemu autentykacji Next.js 16 (App Router) + Symfony backend API
 
 ### Flow Autentykacji
 ```
-User → /trips → Middleware (sprawdza cookie) → Redirect /login (jeśli brak)
+User → /events → Middleware (sprawdza cookie) → Redirect /login (jeśli brak)
      → LoginForm → POST /auth/login → Backend ustawia cookie
-     → Redirect /trips → Layout fetchuje GET /auth/me → Dashboard
+     → Redirect /events → Layout fetchuje GET /auth/me → Dashboard
 ```
 
 ### Tech Stack dla Auth
@@ -45,7 +45,7 @@ app/
 │   ├── login/page.tsx
 │   └── layout.tsx
 ├── (dashboard)/         # Protected routes
-│   ├── trips/page.tsx
+│   ├── events/page.tsx
 │   └── layout.tsx       # Fetchuje user data
 ├── layout.tsx           # Root providers
 └── middleware.ts        # Route protection
@@ -95,8 +95,8 @@ types/
    - `cache: 'no-store'` dla Server Components
 
 5. **Redirects:**
-   - Middleware zapisuje intended URL w `?redirect=/trips/123`
-   - Po logowaniu redirect na saved URL lub default `/trips`
+   - Middleware zapisuje intended URL w `?redirect=/events/123`
+   - Po logowaniu redirect na saved URL lub default `/events`
 
 ---
 
@@ -456,7 +456,7 @@ export function LoginForm() {
           title: 'Zalogowano',
           description: 'Witaj z powrotem!',
         });
-        const redirect = searchParams.get('redirect') || '/trips';
+        const redirect = searchParams.get('redirect') || '/events';
         router.push(redirect);
       },
       onError: () => {
@@ -635,14 +635,14 @@ export function LogoutButton() {
 
 ---
 
-### KROK 9: Landing & Trips Page ⏱️ 10 min
+### KROK 9: Landing & Events Page ⏱️ 10 min
 
 **Plik 1:** `app/page.tsx`
 ```typescript
 import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  redirect('/trips');
+  redirect('/events');
 }
 ```
 

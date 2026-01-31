@@ -1,5 +1,6 @@
 import "./globals.css";
 import {Providers} from "@/components/providers/Providers";
+import {ThemeProvider} from "@/components/layout/ThemeProvider";
 
 export default function RootLayout({
     children,
@@ -7,9 +8,16 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="pl">
+        <html lang="pl" suppressHydrationWarning>
             <body className="antialiased">
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
                 <Providers>{children}</Providers>
+            </ThemeProvider>
             </body>
         </html>
     );

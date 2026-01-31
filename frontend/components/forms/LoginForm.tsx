@@ -34,7 +34,7 @@ export function LoginForm() {
                 toast.success('Zalogowano', {
                     description: 'Witaj z powrotem!',
                 });
-                const redirect = searchParams.get('redirect') || '/trips';
+                const redirect = searchParams.get('redirect') || '/events';
                 router.push(redirect);
             },
             onError: () => {
@@ -49,7 +49,7 @@ export function LoginForm() {
         <Card className="w-full max-w-md">
             <CardHeader>
                 <CardTitle>Logowanie</CardTitle>
-                <CardDescription>Zaloguj się do TripPlanner</CardDescription>
+                <CardDescription>Zaloguj się do EventPlanner</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
