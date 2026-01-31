@@ -1,0 +1,28 @@
+services:
+  frontend:
+    image: registry.gitlab.com/planner6551704/frontend:latest
+    container_name: ${PROJECT_NAME:-plan}-frontend
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - zbyszek-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=zbyszek-network"
+      - "traefik.http.routers.planner-frontend.rule=Host(`planner.msolve.it`)"
+      - "traefik.http.routers.planner-frontend.entrypoints=web"
+      - "traefik.http.services.planner-frontend.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "node", "-v"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  zbyszek-network:
+    external: true

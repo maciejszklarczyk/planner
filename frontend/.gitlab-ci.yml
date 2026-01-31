@@ -1,0 +1,46 @@
+variables:
+  DEPLOY_DIR: '/home/maciej/docker/apps/planner/frontend'
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - docker-build
+  - deploy
+
+# Build and push Docker image to GitLab Container Registry
+docker-build:
+  stage: docker-build
+  image: docker:latest
+  tags:
+    - docker
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  only:
+    - main
+
+# Deploy to production (manual trigger like backend)
+deploy-production:
+  stage: deploy
+  image: docker:latest
+  tags:
+    - docker
+  before_script:
+    - apk add --no-cache docker-compose
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd $DEPLOY_DIR
+    - cp $CI_PROJECT_DIR/docker-compose.prod.yaml $DEPLOY_DIR/
+    - docker compose -f docker-compose.prod.yaml pull
+    - docker compose -f docker-compose.prod.yaml down
+    - docker compose -f docker-compose.prod.yaml up -d
+    - sleep 5
+    - docker compose -f docker-compose.prod.yaml ps
+  environment:
+    name: production
+    url: https://planner.msolve.it
+  only:
+    - main
+  when: manual
