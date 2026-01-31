@@ -2,24 +2,13 @@
 
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
-import {DashboardHeader} from '@/components/layout/DashboardHeader';
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/layout/AppSidebar";
 import {Separator} from "@/components/ui/separator";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList, BreadcrumbPage,
-    BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
 import {BreadcrumbHelper} from "@/components/layout/Breadcrumb";
 import {DarkModeToggle} from "@/components/layout/DarkModeToggle";
 
-export default function DashboardLayout({
-                                            children,
-                                        }: {
-    children: React.ReactNode;
+export default function DashboardLayout({children}: {children: React.ReactNode;
 }) {
     const router = useRouter();
     const {user, isLoading} = useAuth();

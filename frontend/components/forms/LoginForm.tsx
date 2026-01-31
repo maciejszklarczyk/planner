@@ -49,7 +49,7 @@ export function LoginForm() {
         <Card className="w-full max-w-md">
             <CardHeader>
                 <CardTitle>Logowanie</CardTitle>
-                <CardDescription>Zaloguj się do EventPlanner</CardDescription>
+                <CardDescription>Zaloguj się do EventPlanner4000</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
