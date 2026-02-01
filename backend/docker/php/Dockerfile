@@ -20,6 +20,7 @@ RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
 
 RUN echo "\
 xdebug.mode=debug,develop \n\
+xdebug.start_with_request=yes \n\
 xdebug.client_host=host.docker.internal \n\
 xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 

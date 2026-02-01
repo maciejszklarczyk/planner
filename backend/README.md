@@ -69,6 +69,11 @@ php bin/console doctrine:migrations:status
 # Schema
 php bin/console doctrine:schema:validate
 php bin/console doctrine:schema:update --dump-sql
+
+# Fixtures (dane testowe)
+php bin/console doctrine:fixtures:load --no-interaction
+# Z Docker:
+docker exec planner-php php bin/console doctrine:fixtures:load --no-interaction
 ```
 
 ### Maker Bundle
@@ -128,15 +133,60 @@ git pull origin branch-name
 ├── config/           # Konfiguracja aplikacji
 ├── docker/           # Pliki Docker
 ├── docs/             # Dokumentacja
+├── fixtures/         # Dane testowe (YAML)
 ├── migrations/       # Migracje bazy danych
 ├── public/           # Publiczny katalog (index.php)
 ├── src/              # Kod źródłowy aplikacji
+│   ├── DataFixtures/ # Loadery fixtur
 │   ├── Entity/       # Encje Doctrine
 │   ├── Repository/   # Repozytoria
 │   └── ...
 ├── var/              # Pliki tymczasowe (cache, logs)
 └── vendor/           # Zależności Composer
 ```
+
+## Fixtures (Dane testowe)
+
+Projekt używa **nelmio/alice** i **hautelook/alice-bundle** do zarządzania danymi testowymi.
+
+### Struktura
+
+```
+fixtures/
+├── users.yaml              # Definicje użytkowników
+├── groups.yaml             # Definicje grup
+└── user_has_groups.yaml    # Relacje użytkownik-grupa
+```
+
+### Edycja fixtur
+
+Fixtures są definiowane w plikach YAML z użyciem Faker do losowych danych:
+
+```yaml
+# fixtures/users.yaml
+App\Entity\User:
+    user_admin:
+        email: 'admin@example.com'
+        password: 'password'
+        roles: ['ROLE_ADMIN']
+        name: 'Admin User'
+
+    user_1:
+        email: 'user1@example.com'
+        password: 'password'
+        roles: []
+        name: '<firstName()> <lastName()>'  # Faker
+```
+
+### Użyteczne Faker formattery
+
+- `<firstName()>`, `<lastName()>` - losowe imiona/nazwiska
+- `<safeEmail()>` - losowy email
+- `<sentence()>` - losowe zdanie
+- `<randomElement(['option1', 'option2'])>` - losowy wybór
+- `<numberBetween(1, 10)>` - losowa liczba
+
+Hasła są automatycznie hashowane przez `UserPasswordProcessor`.
 
 ## Konfiguracja środowiska
 

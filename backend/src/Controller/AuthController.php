@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\Response\UserListItemDto;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +24,7 @@ class AuthController extends AbstractController
         return $this->json([
             'user' => [
                 'id' => $user->getId(),
+                'name' => $user->getName(),
                 'email' => $user->getEmail(),
                 'roles' => $user->getRoles(),
             ],
@@ -44,10 +46,6 @@ class AuthController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->json([
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles(),
-        ]);
+        return $this->json(UserListItemDto::fromEntity($user));
     }
 }
