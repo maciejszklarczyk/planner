@@ -17,15 +17,17 @@ import {
 } from "@/components/ui/table"
 import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/api";
+import {UsersResponse} from "@/types/api";
+import {User} from "@/types/auth";
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
+interface DataTableProps {
+    columns: ColumnDef<User, any>[]
 }
 
-export function UsersTable<TData, TValue>({columns}: DataTableProps<TData, TValue>) {
-    const { data, isLoading } = useQuery({
+export function UsersTable({columns}: DataTableProps) {
+    const { data, isLoading } = useQuery<UsersResponse>({
         queryKey: ['admin', 'users'],
-        queryFn: () => api.get('/admin/users'),
+        queryFn: () => api.get<UsersResponse>('/admin/users'),
     });
 
     const table = useReactTable({
