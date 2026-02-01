@@ -1,6 +1,14 @@
 import "./globals.css";
 import {Providers} from "@/components/providers/Providers";
 import {ThemeProvider} from "@/components/layout/ThemeProvider";
+import type {Metadata} from "next";
+
+export const metadata: Metadata = {
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default function RootLayout({
     children,

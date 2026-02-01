@@ -35,4 +35,29 @@ export const api = {
         }
         return res.json();
     },
+
+    async put<T>(endpoint: string, data?: unknown): Promise<T> {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: data ? JSON.stringify(data) : undefined,
+        });
+        if (!res.ok) {
+            throw new ApiError(res.status, res.statusText, await res.json());
+        }
+        return res.json();
+    },
+
+    async delete<T>(endpoint: string): Promise<T> {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) {
+            throw new ApiError(res.status, res.statusText, await res.json());
+        }
+        return res.json();
+    },
 };
