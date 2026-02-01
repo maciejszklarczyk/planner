@@ -19,7 +19,7 @@ class UserListItemDto
         return new self(
             id: $user->getId(),
             email: $user->getEmail(),
-            name: $user->getName(),
+            name: $user->getName() ?? '',
             roles: $user->getRoles()
         );
     }
