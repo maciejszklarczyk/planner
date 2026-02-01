@@ -1192,9 +1192,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             lifetime?: int|Param, // Default: 31536000
  *             path?: scalar|null|Param, // Default: "/"
  *             domain?: scalar|null|Param, // Default: null
- *             secure?: true|false|"auto"|Param, // Default: true
+ *             secure?: true|false|"auto"|Param, // Default: null
  *             httponly?: bool|Param, // Default: true
- *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: "none"
+ *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: "lax"
  *             always_remember_me?: bool|Param, // Default: false
  *             remember_me_parameter?: scalar|null|Param, // Default: "_remember_me"
  *         },
@@ -1371,6 +1371,88 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         skip_same_as_origin?: bool|Param,
  *     }>,
  * }
+ * @psalm-type NelmioAliceConfig = array{
+ *     locale?: scalar|null|Param, // Default locale for the Faker Generator // Default: "en_US"
+ *     seed?: scalar|null|Param, // Value used make sure Faker generates data consistently across runs, set to null to disable. // Default: 1
+ *     functions_blacklist?: list<scalar|null|Param>,
+ *     loading_limit?: int|Param, // Alice may do some recursion to resolve certain values. This parameter defines a limit which will stop the resolution once reached. // Default: 5
+ *     max_unique_values_retry?: int|Param, // Maximum number of time Alice can try to generate a unique value before stopping and failing. // Default: 150
+ * }
+ * @psalm-type FidryAliceDataFixturesConfig = array{
+ *     default_purge_mode?: scalar|null|Param, // Default: "delete"
+ *     db_drivers?: array{ // The list of enabled drivers.
+ *         doctrine_orm?: bool|null|Param, // Default: null
+ *         doctrine_mongodb_odm?: bool|null|Param, // Default: null
+ *         doctrine_phpcr_odm?: bool|null|Param, // Default: null
+ *         eloquent_orm?: bool|null|Param, // Default: null
+ *     },
+ * }
+ * @psalm-type HautelookAliceConfig = array{
+ *     fixtures_path?: list<scalar|null|Param>,
+ *     root_dirs?: list<scalar|null|Param>,
+ * }
+ * @psalm-type WebProfilerConfig = array{
+ *     toolbar?: bool|array{ // Profiler toolbar configuration
+ *         enabled?: bool|Param, // Default: false
+ *         ajax_replace?: bool|Param, // Replace toolbar on AJAX requests // Default: false
+ *     },
+ *     intercept_redirects?: bool|Param, // Default: false
+ *     excluded_ajax_paths?: scalar|null|Param, // Default: "^/((index|app(_[\\w]+)?)\\.php/)?_wdt"
+ * }
+ * @psalm-type StofDoctrineExtensionsConfig = array{
+ *     orm?: array<string, array{ // Default: []
+ *         translatable?: scalar|null|Param, // Default: false
+ *         timestampable?: scalar|null|Param, // Default: false
+ *         blameable?: scalar|null|Param, // Default: false
+ *         sluggable?: scalar|null|Param, // Default: false
+ *         tree?: scalar|null|Param, // Default: false
+ *         loggable?: scalar|null|Param, // Default: false
+ *         ip_traceable?: scalar|null|Param, // Default: false
+ *         sortable?: scalar|null|Param, // Default: false
+ *         softdeleteable?: scalar|null|Param, // Default: false
+ *         uploadable?: scalar|null|Param, // Default: false
+ *         reference_integrity?: scalar|null|Param, // Default: false
+ *     }>,
+ *     mongodb?: array<string, array{ // Default: []
+ *         translatable?: scalar|null|Param, // Default: false
+ *         timestampable?: scalar|null|Param, // Default: false
+ *         blameable?: scalar|null|Param, // Default: false
+ *         sluggable?: scalar|null|Param, // Default: false
+ *         tree?: scalar|null|Param, // Default: false
+ *         loggable?: scalar|null|Param, // Default: false
+ *         ip_traceable?: scalar|null|Param, // Default: false
+ *         sortable?: scalar|null|Param, // Default: false
+ *         softdeleteable?: scalar|null|Param, // Default: false
+ *         uploadable?: scalar|null|Param, // Default: false
+ *         reference_integrity?: scalar|null|Param, // Default: false
+ *     }>,
+ *     class?: array{
+ *         translatable?: scalar|null|Param, // Default: "Gedmo\\Translatable\\TranslatableListener"
+ *         timestampable?: scalar|null|Param, // Default: "Gedmo\\Timestampable\\TimestampableListener"
+ *         blameable?: scalar|null|Param, // Default: "Gedmo\\Blameable\\BlameableListener"
+ *         sluggable?: scalar|null|Param, // Default: "Gedmo\\Sluggable\\SluggableListener"
+ *         tree?: scalar|null|Param, // Default: "Gedmo\\Tree\\TreeListener"
+ *         loggable?: scalar|null|Param, // Default: "Gedmo\\Loggable\\LoggableListener"
+ *         sortable?: scalar|null|Param, // Default: "Gedmo\\Sortable\\SortableListener"
+ *         softdeleteable?: scalar|null|Param, // Default: "Gedmo\\SoftDeleteable\\SoftDeleteableListener"
+ *         uploadable?: scalar|null|Param, // Default: "Gedmo\\Uploadable\\UploadableListener"
+ *         reference_integrity?: scalar|null|Param, // Default: "Gedmo\\ReferenceIntegrity\\ReferenceIntegrityListener"
+ *     },
+ *     softdeleteable?: array{
+ *         handle_post_flush_event?: bool|Param, // Default: false
+ *     },
+ *     uploadable?: array{
+ *         default_file_path?: scalar|null|Param, // Default: null
+ *         mime_type_guesser_class?: scalar|null|Param, // Default: "Stof\\DoctrineExtensionsBundle\\Uploadable\\MimeTypeGuesserAdapter"
+ *         default_file_info_class?: scalar|null|Param, // Default: "Stof\\DoctrineExtensionsBundle\\Uploadable\\UploadedFileInfo"
+ *         validate_writable_directory?: bool|Param, // Default: true
+ *     },
+ *     default_locale?: scalar|null|Param, // Default: "en"
+ *     translation_fallback?: bool|Param, // Default: false
+ *     persist_default_translation?: bool|Param, // Default: false
+ *     skip_translation_on_load?: bool|Param, // Default: false
+ *     metadata_cache_pool?: scalar|null|Param, // Default: null
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1383,6 +1465,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig_extra?: TwigExtraConfig,
  *     nelmio_api_doc?: NelmioApiDocConfig,
  *     nelmio_cors?: NelmioCorsConfig,
+ *     stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1396,6 +1479,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         nelmio_api_doc?: NelmioApiDocConfig,
  *         nelmio_cors?: NelmioCorsConfig,
+ *         nelmio_alice?: NelmioAliceConfig,
+ *         fidry_alice_data_fixtures?: FidryAliceDataFixturesConfig,
+ *         hautelook_alice?: HautelookAliceConfig,
+ *         web_profiler?: WebProfilerConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1409,6 +1497,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         nelmio_api_doc?: NelmioApiDocConfig,
  *         nelmio_cors?: NelmioCorsConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1422,6 +1511,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         nelmio_api_doc?: NelmioApiDocConfig,
  *         nelmio_cors?: NelmioCorsConfig,
+ *         nelmio_alice?: NelmioAliceConfig,
+ *         fidry_alice_data_fixtures?: FidryAliceDataFixturesConfig,
+ *         hautelook_alice?: HautelookAliceConfig,
+ *         web_profiler?: WebProfilerConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -1,0 +1,21 @@
+App\Entity\UserHasGroup:
+    # Admin is owner of group 1
+    user_has_group_1:
+        user: '@user_admin'
+        group: '@group_1'
+        role: 'owner'
+        addedBy: null
+
+    # Admin is member of group 2
+    user_has_group_2:
+        user: '@user_admin'
+        group: '@group_2'
+        role: 'member'
+        addedBy: null
+
+    # Random user-group relations
+    user_has_group_{3..10}:
+        user: '@user_<numberBetween(1, 5)>'
+        group: '@group_<numberBetween(1, 5)>'
+        role: '<randomElement(["owner", "member"])>'
+        addedBy: null

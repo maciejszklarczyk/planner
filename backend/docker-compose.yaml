@@ -12,6 +12,8 @@ services:
     environment:
       - SERVER_NAME=:8000
       - PHP_IDE_CONFIG=serverName=planner-php
+      - XDEBUG_MODE=debug
+      - XDEBUG_CONFIG=start_with_request=yes
     networks:
       - default
     ports:

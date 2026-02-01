@@ -9,6 +9,8 @@ class UserListItemDto
     public function __construct(
         public readonly int $id,
         public readonly string $email,
+        public readonly string $name,
+        public readonly array $roles,
     ) {
     }
 
@@ -17,6 +19,8 @@ class UserListItemDto
         return new self(
             id: $user->getId(),
             email: $user->getEmail(),
+            name: $user->getName(),
+            roles: $user->getRoles()
         );
     }
 

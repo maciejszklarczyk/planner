@@ -1,0 +1,36 @@
+App\Entity\User:
+    user_admin:
+        email: 'admin@example.com'
+        password: 'password'
+        roles: ['ROLE_ADMIN']
+        name: 'Admin User'
+
+    user_1:
+        email: 'user1@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        name: '<firstName()> <lastName()>'
+
+    user_2:
+        email: 'user2@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        name: '<firstName()> <lastName()>'
+
+    user_3:
+        email: 'user3@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        name: '<firstName()> <lastName()>'
+
+    user_4:
+        email: 'user4@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        name: '<firstName()> <lastName()>'
+
+    user_5:
+        email: 'user5@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        name: '<firstName()> <lastName()>'
