@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Dto\Response\UserListItemDto;
 use App\Entity\User;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
+#[OA\Tag(name: 'Authentication')]
 class AuthController extends AbstractController
 {
     #[Route('/auth/login', name: 'auth_login', methods: ['POST'])]

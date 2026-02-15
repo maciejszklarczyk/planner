@@ -38,6 +38,57 @@ docker-compose exec php composer install
 docker-compose exec php bin/console doctrine:migrations:migrate
 ```
 
+## Dokumentacja API
+
+Projekt wykorzystuje **Nelmio API Doc Bundle** do automatycznego generowania dokumentacji API w formacie OpenAPI/Swagger.
+
+### Dostęp do dokumentacji
+
+Po uruchomieniu aplikacji, dokumentacja API jest dostępna pod następującymi adresami:
+
+- **Swagger UI (interfejs graficzny)**: [http://localhost:8000/api/doc](http://localhost:8000/api/doc)
+- **Specyfikacja OpenAPI (JSON)**: [http://localhost:8000/api/doc.json](http://localhost:8000/api/doc.json)
+
+Endpointy są zorganizowane w sekcje:
+- **Authentication** - operacje związane z autoryzacją
+- **Admin** - endpointy administracyjne (/admin)
+- **User** - endpointy użytkownika (/user)
+
+Jeśli używasz Docker, upewnij się, że aplikacja działa na odpowiednim porcie (sprawdź `docker-compose.yaml`).
+
+### Uruchomienie serwera
+
+```bash
+# Lokalnie
+symfony serve
+# lub
+php -S localhost:8000 -t public
+
+# Z Docker
+docker-compose up -d
+```
+
+Następnie otwórz przeglądarkę i przejdź do: http://localhost:8000/api/doc
+
+### Organizacja endpointów w dokumentacji
+
+Aby przypisać endpointy do odpowiedniej sekcji, dodaj atrybut `#[OA\Tag]` do kontrolera:
+
+```php
+use OpenApi\Attributes as OA;
+
+#[OA\Tag(name: 'Admin')]
+class UserController extends AbstractController
+{
+    // endpointy będą w sekcji "Admin"
+}
+```
+
+Dostępne tagi:
+- `Authentication` - operacje związane z autoryzacją
+- `Admin` - endpointy administracyjne
+- `User` - endpointy użytkownika
+
 ## Podstawowe komendy
 
 ### Symfony Console
