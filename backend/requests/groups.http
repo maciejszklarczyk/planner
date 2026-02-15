@@ -1,0 +1,5 @@
+### Test endpoint bez autoryzacji
+# Oczekiwany rezultat: 401 UNAUTHORIZED z JSON
+# {"error": "AUTHENTICATION_REQUIRED", "message": "..."}
+GET {{host}}/admin/groups
+Content-Type: application/json

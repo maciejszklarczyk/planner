@@ -7,6 +7,7 @@ use App\Dto\Response\GroupMembershipDto;
 use App\Entity\User;
 use App\Exception\UserAlreadyInGroupException;
 use App\Service\GroupMembershipService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/groups')]
 #[IsGranted('ROLE_ADMIN')]
+#[OA\Tag(name: 'Admin')]
 class GroupMembershipController extends AbstractController
 {
     public function __construct(
