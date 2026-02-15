@@ -3,6 +3,8 @@
 import {UsersTable} from "@/components/users/UsersTable";
 import {columns} from "@/components/users/UsersTableColumn";
 import {useAuth} from "@/hooks/useAuth";
+import {GroupsTable} from "@/components/users/GroupsTable";
+import {groupColumns} from "@/components/users/GroupsTableColumn";
 
 export function AdminUserSettingsWrapper() {
     const {user, isLoading} = useAuth();
@@ -34,6 +36,13 @@ export function AdminUserSettingsWrapper() {
                     <p className="text-gray-500">Lista wszystkich użytkowników w systemie</p>
                 </div>
                 <UsersTable columns={columns}/>
+            </div>
+            <div className="container mx-auto py-10">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold">Zarządzanie Grupami</h2>
+                    <p className="text-gray-500">Lista wszystkich grup w systemie</p>
+                </div>
+                <GroupsTable columns={groupColumns}/>
             </div>
         </div>
     );
