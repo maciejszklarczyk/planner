@@ -32,8 +32,10 @@ export function useAuth() {
     // Show session expired toast when user becomes unauthenticated
     useEffect(() => {
         if (!isLoading && user === null && !hasShownSessionExpiredToast.current) {
-            // Only show if we're not on login page (to avoid toast on initial load)
-            if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+            // Only show if we're not on login or set-password page (to avoid toast on initial load)
+            if (typeof window !== 'undefined' && 
+                !window.location.pathname.startsWith('/login') &&
+                !window.location.pathname.startsWith('/set-password')) {
                 toast.error('Sesja wygasła', {
                     description: 'Zaloguj się ponownie, aby kontynuować',
                 });
