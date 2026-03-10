@@ -38,13 +38,7 @@ export default function CurrentUserEditForm() {
     })
 
     useEffect(() => {
-        console.log('useEffect triggered, user:', user);
         if (user) {
-            console.log('Resetting form with:', {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            });
             form.reset({
                 id: user.id || 0,
                 name: user.name || '',

@@ -85,6 +85,10 @@ export const columns: ColumnDef<User>[] = [
         header: "Name",
     },
     {
+        accessorKey: "status",
+        header: "Status",
+    },
+    {
         id: "edit",
         header: "Edycja",
         size: 40,
