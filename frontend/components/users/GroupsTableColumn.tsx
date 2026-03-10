@@ -11,9 +11,80 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {useState} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/api";
 import {toast} from "sonner";
+import {useGroupMembers} from "@/hooks/useGroupMembers";
+
+function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boolean; onOpenChange: (open: boolean) => void }) {
+    const { data, isLoading } = useGroupMembers(group.id, open);
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>{group.name}</DialogTitle>
+                </DialogHeader>
+                <div className="mt-2">
+                    <p className="text-sm font-medium mb-3">
+                        Członkowie ({group.membersCount})
+                    </p>
+                    {isLoading ? (
+                        <div className="flex justify-center py-6">
+                            <div className="h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-orange-600"/>
+                        </div>
+                    ) : data?.data.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                            Brak członków w tej grupie.
+                        </p>
+                    ) : (
+                        <ul className="divide-y divide-border rounded-md border">
+                            {data?.data.map((membership) => (
+                                <li key={membership.id} className="flex items-center justify-between px-3 py-2 text-sm">
+                                    <div>
+                                        <span className="font-medium">
+                                            {membership.user.name || membership.user.email}
+                                        </span>
+                                        <span className="ml-2 text-muted-foreground">
+                                            {membership.user.email}
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground capitalize">
+                                        {membership.role}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function EditGroupButton({ group }: { group: Group }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpen(true)}
+            >
+                <Pencil className="h-4 w-4"/>
+            </Button>
+            <EditGroupModal group={group} open={open} onOpenChange={setOpen}/>
+        </>
+    );
+}
 
 function DeleteGroupButton({ group }: { group: Group }) {
     const queryClient = useQueryClient();
@@ -90,18 +161,7 @@ export const groupColumns: ColumnDef<Group>[] = [
         size: 40,
         cell: ({row}) => {
             const group = row.original
-
-            return (
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                        console.log("Edytuj grupę:", group.id)
-                    }}
-                >
-                    <Pencil className="h-4 w-4"/>
-                </Button>
-            )
+            return <EditGroupButton group={group}/>
         },
     },
     {
