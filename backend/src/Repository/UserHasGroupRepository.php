@@ -38,6 +38,22 @@ class UserHasGroupRepository extends ServiceEntityRepository
         return null !== $this->findByUserAndGroup($userId, $groupId);
     }
 
+    /**
+     * @return UserHasGroup[]
+     */
+    public function findByGroup(int $groupId): array
+    {
+        return $this->createQueryBuilder('uhg')
+            ->join('uhg.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('uhg.addedBy', 'ab')
+            ->addSelect('ab')
+            ->andWhere('uhg.group = :groupId')
+            ->setParameter('groupId', $groupId)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return UserHasGroup[] Returns an array of UserHasGroup objects
     //     */

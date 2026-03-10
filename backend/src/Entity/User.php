@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Dto\User\EditUserDto;
+use App\Entity\Enum\UserStatusEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -37,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
     /**
@@ -48,6 +49,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    private ?self $addedBy = null;
+
+    #[ORM\Column(enumType: UserStatusEnum::class, options: ['default' => UserStatusEnum::NEW])]
+    private ?UserStatusEnum $status = UserStatusEnum::NEW;
 
     public function __construct()
     {
@@ -186,6 +193,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->email = $dto->email;
         $this->name = $dto->name;
+
+        return $this;
+    }
+
+    public function getAddedBy(): ?self
+    {
+        return $this->addedBy;
+    }
+
+    public function setAddedBy(?self $addedBy): static
+    {
+        $this->addedBy = $addedBy;
+
+        return $this;
+    }
+
+    public function getStatus(): ?UserStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(UserStatusEnum $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
