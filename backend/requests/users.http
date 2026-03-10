@@ -43,3 +43,28 @@ Content-Type: application/json
 ### Pobieranie listy użytkowników - wszystkie filtry razem
 GET {{host}}/admin/users?search=admin&excludeGroupId=1&page=1&limit=20
 Content-Type: application/json
+
+###############################################################################
+# INVITATION (UserController + InvitationController)
+###############################################################################
+
+### Wysłanie zaproszenia - wymagane ROLE_ADMIN
+POST {{host}}/admin/user-invite
+Content-Type: application/json
+
+{
+    "email": "invited-user@example.com"
+}
+
+### Weryfikacja tokenu zaproszenia - publiczny endpoint
+GET {{host}}/invitation/verify?token=742f0e1c7f8e0764de5f7468e3e9d614
+Content-Type: application/json
+
+### Aktywacja konta (ustawienie hasła) - publiczny endpoint
+POST {{host}}/invitation/complete
+Content-Type: application/json
+
+{
+    "token": "742f0e1c7f8e0764de5f7468e3e9d614",
+    "password": "NoweHaslo123"
+}

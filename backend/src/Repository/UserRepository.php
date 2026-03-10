@@ -50,7 +50,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ?int $excludeGroupId = null,
     ): array {
         $qb = $this->createQueryBuilder('u')
-            ->orderBy('u.email', 'ASC');
+            ->orderBy('u.id', 'ASC');
 
         // Apply search filter
         if (null !== $search && '' !== $search) {

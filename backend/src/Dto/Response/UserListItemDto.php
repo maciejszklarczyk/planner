@@ -2,6 +2,7 @@
 
 namespace App\Dto\Response;
 
+use App\Entity\Enum\UserStatusEnum;
 use App\Entity\User;
 
 class UserListItemDto
@@ -11,6 +12,7 @@ class UserListItemDto
         public readonly string $email,
         public readonly string $name,
         public readonly array $roles,
+        public readonly UserStatusEnum $status,
     ) {
     }
 
@@ -20,7 +22,8 @@ class UserListItemDto
             id: $user->getId(),
             email: $user->getEmail(),
             name: $user->getName() ?? '',
-            roles: $user->getRoles()
+            roles: $user->getRoles(),
+            status: $user->getStatus(),
         );
     }
 

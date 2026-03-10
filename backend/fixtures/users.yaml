@@ -3,30 +3,35 @@ App\Entity\User:
         email: 'admin@example.com'
         password: 'password'
         roles: ['ROLE_ADMIN']
+        status: active
         name: 'Admin User'
 
     user_1:
         email: 'user1@example.com'
         password: 'password'
         roles: ['ROLE_USER']
+        status: active
         name: '<firstName()> <lastName()>'
 
     user_2:
         email: 'user2@example.com'
         password: 'password'
         roles: ['ROLE_USER']
+        status: inactive
         name: '<firstName()> <lastName()>'
 
     user_3:
         email: 'user3@example.com'
         password: 'password'
         roles: ['ROLE_USER']
+        status: blocked
         name: '<firstName()> <lastName()>'
 
     user_4:
         email: 'user4@example.com'
         password: 'password'
         roles: ['ROLE_USER']
+        status: deleted
         name: '<firstName()> <lastName()>'
 
     user_5:

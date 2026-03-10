@@ -5,7 +5,10 @@ namespace App\Controller\Admin;
 use App\Dto\GroupMembership\AddUserToGroupDto;
 use App\Dto\Response\GroupMembershipDto;
 use App\Entity\User;
+use App\Entity\UserHasGroup;
 use App\Exception\UserAlreadyInGroupException;
+use App\Repository\GroupRepository;
+use App\Repository\UserHasGroupRepository;
 use App\Service\GroupMembershipService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +27,8 @@ class GroupMembershipController extends AbstractController
 {
     public function __construct(
         private readonly GroupMembershipService $groupMembershipService,
+        private readonly GroupRepository $groupRepository,
+        private readonly UserHasGroupRepository $userHasGroupRepository,
     ) {
     }
 
@@ -57,8 +62,25 @@ class GroupMembershipController extends AbstractController
         }
     }
 
+    #[Route('/{groupId}/users', name: 'admin_group_list_users', methods: ['GET'])]
+    public function listUsers(int $groupId): JsonResponse
+    {
+        $group = $this->groupRepository->find($groupId);
+        if (!$group) {
+            return $this->json(['error' => 'NOT_FOUND', 'message' => 'Group not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $memberships = $this->userHasGroupRepository->findByGroup($groupId);
+
+        return $this->json([
+            'data' => array_map(
+                fn (UserHasGroup $m) => GroupMembershipDto::fromEntity($m),
+                $memberships
+            ),
+        ]);
+    }
+
     // TODO: Implement endpoints:
-    // - GET /admin/groups/{groupId}/users
     // - PATCH /admin/groups/{groupId}/users/{userId}/role
     // - DELETE /admin/groups/{groupId}/users/{userId}
 }
