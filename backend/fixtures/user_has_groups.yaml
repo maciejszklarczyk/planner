@@ -1,21 +1,77 @@
 App\Entity\UserHasGroup:
-    # Admin is owner of group 1
-    user_has_group_1:
+    # group_1: admin=owner, user_1=member, user_2=member
+    user_has_group_admin_g1:
         user: '@user_admin'
         group: '@group_1'
         role: 'owner'
         addedBy: null
 
-    # Admin is member of group 2
-    user_has_group_2:
+    user_has_group_u1_g1:
+        user: '@user_1'
+        group: '@group_1'
+        role: 'member'
+        addedBy: '@user_admin'
+
+    user_has_group_u2_g1:
+        user: '@user_2'
+        group: '@group_1'
+        role: 'member'
+        addedBy: '@user_admin'
+
+    # group_2: admin=member, user_1=owner, user_3=member
+    user_has_group_admin_g2:
         user: '@user_admin'
         group: '@group_2'
         role: 'member'
         addedBy: null
 
-    # Random user-group relations
-    user_has_group_{3..10}:
-        user: '@user_<numberBetween(1, 5)>'
-        group: '@group_<numberBetween(1, 5)>'
-        role: '<randomElement(["owner", "member"])>'
+    user_has_group_u1_g2:
+        user: '@user_1'
+        group: '@group_2'
+        role: 'owner'
+        addedBy: null
+
+    user_has_group_u3_g2:
+        user: '@user_3'
+        group: '@group_2'
+        role: 'member'
+        addedBy: '@user_1'
+
+    # group_3: user_2=owner, user_3=member, user_4=member
+    user_has_group_u2_g3:
+        user: '@user_2'
+        group: '@group_3'
+        role: 'owner'
+        addedBy: null
+
+    user_has_group_u3_g3:
+        user: '@user_3'
+        group: '@group_3'
+        role: 'member'
+        addedBy: '@user_2'
+
+    user_has_group_u4_g3:
+        user: '@user_4'
+        group: '@group_3'
+        role: 'member'
+        addedBy: '@user_2'
+
+    # group_4: user_4=owner, user_5=member
+    user_has_group_u4_g4:
+        user: '@user_4'
+        group: '@group_4'
+        role: 'owner'
+        addedBy: null
+
+    user_has_group_u5_g4:
+        user: '@user_5'
+        group: '@group_4'
+        role: 'member'
+        addedBy: '@user_4'
+
+    # group_5: user_5=owner
+    user_has_group_u5_g5:
+        user: '@user_5'
+        group: '@group_5'
+        role: 'owner'
         addedBy: null

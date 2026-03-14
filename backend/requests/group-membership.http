@@ -5,13 +5,7 @@
 ###############################################################################
 
 ### Pobieranie członków grupy
-GET {{host}}/admin/groups/1/users?page=1&limit=20
-Content-Type: application/json
-
-###
-
-### Pobieranie członków grupy z filtrem po roli
-GET {{host}}/admin/groups/1/users?role=OWNER
+GET {{host}}/admin/groups/1/users
 Content-Type: application/json
 
 ###
@@ -86,6 +80,10 @@ Content-Type: application/json
 ###
 
 ### Zmiana roli użytkownika w grupie na OWNER
+# Odpowiedzi:
+# - 200 OK - sukces (zwraca GroupMembershipDto)
+# - 404 NOT_FOUND - user nie jest członkiem grupy lub grupa nie istnieje
+# - 422 CANNOT_REMOVE_LAST_OWNER - próba degradacji ostatniego ownera
 PATCH {{host}}/admin/groups/1/users/2/role
 Content-Type: application/json
 
@@ -106,5 +104,45 @@ Content-Type: application/json
 ###
 
 ### Usunięcie użytkownika z grupy
+# Odpowiedzi:
+# - 204 NO CONTENT - sukces
+# - 404 NOT_FOUND - user nie jest członkiem grupy lub grupa nie istnieje
+# - 422 CANNOT_REMOVE_LAST_OWNER - próba usunięcia ostatniego ownera
 DELETE {{host}}/admin/groups/1/users/2
 Content-Type: application/json
+
+###
+
+### Test: Próba usunięcia ostatniego ownera z grupy
+# Ten request powinien zwrócić błąd 422 CANNOT_REMOVE_LAST_OWNER
+DELETE {{host}}/admin/groups/1/users/1
+Content-Type: application/json
+
+###
+
+### Test: Próba usunięcia użytkownika który nie jest w grupie
+# Ten request powinien zwrócić błąd 404 NOT_FOUND
+DELETE {{host}}/admin/groups/1/users/999
+Content-Type: application/json
+
+###
+
+### Test: Próba zmiany roli ostatniego ownera na MEMBER
+# Ten request powinien zwrócić błąd 422 CANNOT_REMOVE_LAST_OWNER
+PATCH {{host}}/admin/groups/1/users/1/role
+Content-Type: application/json
+
+{
+  "role": "MEMBER"
+}
+
+###
+
+### Test: Próba zmiany roli użytkownika który nie jest w grupie
+# Ten request powinien zwrócić błąd 404 NOT_FOUND
+PATCH {{host}}/admin/groups/1/users/999/role
+Content-Type: application/json
+
+{
+  "role": "MEMBER"
+}

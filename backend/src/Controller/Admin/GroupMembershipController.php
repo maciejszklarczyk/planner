@@ -3,9 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Dto\GroupMembership\AddUserToGroupDto;
+use App\Dto\GroupMembership\UpdateUserRoleDto;
 use App\Dto\Response\GroupMembershipDto;
 use App\Entity\User;
 use App\Entity\UserHasGroup;
+use App\Exception\CannotRemoveLastOwnerException;
+use App\Exception\GroupAlreadyHasOwnerException;
 use App\Exception\UserAlreadyInGroupException;
 use App\Repository\GroupRepository;
 use App\Repository\UserHasGroupRepository;
@@ -59,6 +62,11 @@ class GroupMembershipController extends AbstractController
                 'error' => 'USER_ALREADY_IN_GROUP',
                 'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
+        } catch (GroupAlreadyHasOwnerException $e) {
+            return $this->json([
+                'error' => 'GROUP_ALREADY_HAS_OWNER',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -80,7 +88,51 @@ class GroupMembershipController extends AbstractController
         ]);
     }
 
-    // TODO: Implement endpoints:
-    // - PATCH /admin/groups/{groupId}/users/{userId}/role
-    // - DELETE /admin/groups/{groupId}/users/{userId}
+    #[Route('/{groupId}/users/{userId}', name: 'admin_group_remove_user', methods: ['DELETE'])]
+    public function removeUser(int $groupId, int $userId): JsonResponse
+    {
+        try {
+            $this->groupMembershipService->removeUserFromGroup($groupId, $userId);
+
+            return $this->json(null, Response::HTTP_NO_CONTENT);
+        } catch (NotFoundHttpException $e) {
+            return $this->json([
+                'error' => 'NOT_FOUND',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        } catch (CannotRemoveLastOwnerException $e) {
+            return $this->json([
+                'error' => 'CANNOT_REMOVE_LAST_OWNER',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    #[Route('/{groupId}/users/{userId}/role', name: 'admin_group_update_user_role', methods: ['PATCH'])]
+    public function updateUserRole(
+        int $groupId,
+        int $userId,
+        #[MapRequestPayload] UpdateUserRoleDto $dto,
+    ): JsonResponse {
+        try {
+            $membership = $this->groupMembershipService->updateUserRole($groupId, $userId, $dto->role);
+
+            return $this->json(GroupMembershipDto::fromEntity($membership));
+        } catch (NotFoundHttpException $e) {
+            return $this->json([
+                'error' => 'NOT_FOUND',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        } catch (CannotRemoveLastOwnerException $e) {
+            return $this->json([
+                'error' => 'CANNOT_REMOVE_LAST_OWNER',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (GroupAlreadyHasOwnerException $e) {
+            return $this->json([
+                'error' => 'GROUP_ALREADY_HAS_OWNER',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
 }

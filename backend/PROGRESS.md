@@ -16,26 +16,15 @@
 ### Zarządzanie członkostwem w grupach
 - `GET /admin/groups/{groupId}/users` — lista członków grupy z rolami
 - `POST /admin/groups/{groupId}/users` — dodanie użytkownika do grupy (było wcześniej)
-
-### Frontend
-- Hook `useInvite` + `useResendInvite`
-- `ResendInviteButton` w tabeli użytkowników (widoczny tylko dla `status === 'new'`)
-- `EditUserModal` w tabeli użytkowników
-- Hook `useGroupMembers(groupId, enabled)` — odpala się dopiero po otwarciu modala
-- `EditGroupModal` — wyświetla listę członków grupy z rolami
+- `DELETE /admin/groups/{groupId}/users/{userId}` — usunięcie użytkownika z grupy (z ochroną ostatniego ownera)
+- `PATCH /admin/groups/{groupId}/users/{userId}/role` — zmiana roli użytkownika w grupie (z ochroną ostatniego ownera)
 
 ---
 
 ## Do zrobienia
 
 ### Backend
-- `DELETE /admin/groups/{groupId}/users/{userId}` — usunięcie użytkownika z grupy
-- `PATCH /admin/groups/{groupId}/users/{userId}/role` — zmiana roli użytkownika w grupie
-
-### Frontend
-- Formularz dodania użytkownika do grupy w `EditGroupModal` (search po liście userów + wybór roli)
-- Przycisk usunięcia użytkownika z grupy w `EditGroupModal`
-- Obsługa błędu 405 przy resendie (sprawdzić skąd GET zamiast POST — patrz notatka niżej)
+- (brak otwartych zadań)
 
 ### Otwarte kwestie
 - Brak możliwości ponownego zaproszenia jeśli poprzedni token wygasł a user ma status inny niż `new` — rozważyć reset statusu lub osobny flow
