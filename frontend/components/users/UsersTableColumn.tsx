@@ -11,10 +11,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/api";
-import {toast} from "sonner";
-import {useResendInvite} from "@/hooks/useResendInvite";
 import {
     Dialog,
     DialogContent,
@@ -27,6 +23,9 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
+import {useResendInvite} from "@/hooks/useResendInvite";
+import {useUpdateUser} from "@/hooks/useUpdateUser";
+import {useDeleteUser} from "@/hooks/useDeleteUser";
 
 const editUserSchema = z.object({
     id: z.number(),
@@ -37,7 +36,9 @@ const editUserSchema = z.object({
 type EditUserFormValues = z.infer<typeof editUserSchema>;
 
 function EditUserModal({ user, open, onOpenChange }: { user: User; open: boolean; onOpenChange: (open: boolean) => void }) {
-    const queryClient = useQueryClient();
+    const { mutate: updateUser, isPending } = useUpdateUser({
+        onSuccess: () => onOpenChange(false),
+    });
 
     const form = useForm<EditUserFormValues>({
         resolver: zodResolver(editUserSchema),
@@ -48,29 +49,13 @@ function EditUserModal({ user, open, onOpenChange }: { user: User; open: boolean
         },
     });
 
-    const updateUserMutation = useMutation({
-        mutationFn: (data: EditUserFormValues) => api.put('/user', data),
-        onSuccess: () => {
-            toast.success('Dane zaktualizowane', {
-                description: 'Dane użytkownika zostały pomyślnie zaktualizowane',
-            });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-            onOpenChange(false);
-        },
-        onError: () => {
-            toast.error('Błąd', {
-                description: 'Nie udało się zaktualizować danych użytkownika',
-            });
-        },
-    });
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edytuj użytkownika</DialogTitle>
                 </DialogHeader>
-                <form id="edit-user-form" onSubmit={form.handleSubmit((data) => updateUserMutation.mutate(data))}>
+                <form id="edit-user-form" onSubmit={form.handleSubmit((data) => updateUser(data))}>
                     <FieldGroup>
                         <Controller
                             name="name"
@@ -108,9 +93,9 @@ function EditUserModal({ user, open, onOpenChange }: { user: User; open: boolean
                         <Button
                             type="submit"
                             form="edit-user-form"
-                            disabled={updateUserMutation.isPending}
+                            disabled={isPending}
                         >
-                            {updateUserMutation.isPending ? 'Zapisywanie...' : 'Zapisz'}
+                            {isPending ? 'Zapisywanie...' : 'Zapisz'}
                         </Button>
                     </FieldGroup>
                 </form>
@@ -153,28 +138,7 @@ function ResendInviteButton({ user }: { user: User }) {
 }
 
 function DeleteUserButton({ user }: { user: User }) {
-    const queryClient = useQueryClient();
-
-    const deleteUserMutation = useMutation({
-        mutationFn: (userId: number) =>
-            api.delete(`/user/${userId}`),
-        onSuccess: () => {
-            toast.success('Użytkownik usunięty', {
-                description: 'Użytkownik został pomyślnie usunięty',
-            });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-        },
-        onError: (error) => {
-            toast.error('Błąd', {
-                description: 'Nie udało się usunąć użytkownika',
-            });
-            console.error('Delete error:', error);
-        },
-    });
-
-    const handleDelete = () => {
-        deleteUserMutation.mutate(user.id);
-    };
+    const { mutate: deleteUser, isPending } = useDeleteUser();
 
     return (
         <AlertDialog>
@@ -193,10 +157,10 @@ function DeleteUserButton({ user }: { user: User }) {
                 <AlertDialogFooter>
                     <AlertDialogCancel>Anuluj</AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={handleDelete}
-                        disabled={deleteUserMutation.isPending}
+                        onClick={() => deleteUser(user.id)}
+                        disabled={isPending}
                     >
-                        {deleteUserMutation.isPending ? 'Usuwanie...' : 'Usuń'}
+                        {isPending ? 'Usuwanie...' : 'Usuń'}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

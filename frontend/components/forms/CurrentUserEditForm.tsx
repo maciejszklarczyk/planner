@@ -8,9 +8,7 @@ import {Input} from "@/components/ui/input";
 import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {useAuth} from "@/hooks/useAuth";
 import {Button} from "@/components/ui/button";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/api";
-import {toast} from "sonner";
+import {useUpdateUser} from "@/hooks/useUpdateUser";
 
 const formSchema = z.object({
     id: z
@@ -26,7 +24,7 @@ const formSchema = z.object({
 
 export default function CurrentUserEditForm() {
     const { user, isLoading } = useAuth();
-    const queryClient = useQueryClient();
+    const { mutate: updateUser, isPending } = useUpdateUser({ invalidateKeys: [['auth', 'me']] });
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -47,25 +45,8 @@ export default function CurrentUserEditForm() {
         }
     }, [user]);
 
-    const updateUserMutation = useMutation({
-        mutationFn: (data: z.infer<typeof formSchema>) =>
-            api.put('/user', data),
-        onSuccess: () => {
-            toast.success('Dane zaktualizowane', {
-                description: 'Twoje dane zostały pomyślnie zaktualizowane',
-            });
-            queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-        },
-        onError: (error) => {
-            toast.error('Błąd', {
-                description: 'Nie udało się zaktualizować danych',
-            });
-            console.error('Update error:', error);
-        },
-    });
-
     function onSubmit(data: z.infer<typeof formSchema>) {
-        updateUserMutation.mutate(data);
+        updateUser(data);
     }
 
     if (isLoading) {
@@ -137,9 +118,9 @@ export default function CurrentUserEditForm() {
                     <Button
                         type="submit"
                         form="current-user-edit-form"
-                        disabled={updateUserMutation.isPending}
+                        disabled={isPending}
                     >
-                        {updateUserMutation.isPending ? 'Zapisywanie...' : 'Zapisz'}
+                        {isPending ? 'Zapisywanie...' : 'Zapisz'}
                     </Button>
                 </FieldGroup>
             </form>

@@ -18,13 +18,16 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {useState} from "react";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/api";
-import {toast} from "sonner";
 import {useGroupMembers} from "@/hooks/useGroupMembers";
+import {useRemoveGroupMember} from "@/hooks/useRemoveGroupMember";
+import {useDeleteGroup} from "@/hooks/useDeleteGroup";
 
 function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boolean; onOpenChange: (open: boolean) => void }) {
     const { data, isLoading } = useGroupMembers(group.id, open);
+    const { mutate: removeGroupMember, isPending } = useRemoveGroupMember(group.id);
+
+    const members = data?.data ?? [];
+    const isOnlyMember = members.length === 1;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -40,27 +43,43 @@ function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boo
                         <div className="flex justify-center py-6">
                             <div className="h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-orange-600"/>
                         </div>
-                    ) : data?.data.length === 0 ? (
+                    ) : members.length === 0 ? (
                         <p className="text-sm text-muted-foreground text-center py-4">
                             Brak członków w tej grupie.
                         </p>
                     ) : (
                         <ul className="divide-y divide-border rounded-md border">
-                            {data?.data.map((membership) => (
-                                <li key={membership.id} className="flex items-center justify-between px-3 py-2 text-sm">
-                                    <div>
-                                        <span className="font-medium">
-                                            {membership.user.name || membership.user.email}
-                                        </span>
-                                        <span className="ml-2 text-muted-foreground">
-                                            {membership.user.email}
-                                        </span>
-                                    </div>
-                                    <span className="text-xs text-muted-foreground capitalize">
-                                        {membership.role}
-                                    </span>
-                                </li>
-                            ))}
+                            {members.map((membership) => {
+                                const canRemove = membership.role !== 'owner' && !isOnlyMember;
+                                return (
+                                    <li key={membership.id} className="flex items-center justify-between px-3 py-2 text-sm">
+                                        <div>
+                                            <span className="font-medium">
+                                                {membership.user.name || membership.user.email}
+                                            </span>
+                                            <span className="ml-2 text-muted-foreground">
+                                                {membership.user.email}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-muted-foreground capitalize">
+                                                {membership.role}
+                                            </span>
+                                            {canRemove && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-7 w-7"
+                                                    disabled={isPending}
+                                                    onClick={() => removeGroupMember(membership.user.id)}
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5 text-destructive"/>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </div>
@@ -87,28 +106,7 @@ function EditGroupButton({ group }: { group: Group }) {
 }
 
 function DeleteGroupButton({ group }: { group: Group }) {
-    const queryClient = useQueryClient();
-
-    const deleteGroupMutation = useMutation({
-        mutationFn: (groupId: number) =>
-            api.delete(`/admin/groups/${groupId}`),
-        onSuccess: () => {
-            toast.success('Grupa usunięta', {
-                description: 'Grupa została pomyślnie usunięta',
-            });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'groups'] });
-        },
-        onError: (error) => {
-            toast.error('Błąd', {
-                description: 'Nie udało się usunąć grupy',
-            });
-            console.error('Delete error:', error);
-        },
-    });
-
-    const handleDelete = () => {
-        deleteGroupMutation.mutate(group.id);
-    };
+    const { mutate: deleteGroup, isPending } = useDeleteGroup();
 
     return (
         <AlertDialog>
@@ -127,10 +125,10 @@ function DeleteGroupButton({ group }: { group: Group }) {
                 <AlertDialogFooter>
                     <AlertDialogCancel>Anuluj</AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={handleDelete}
-                        disabled={deleteGroupMutation.isPending}
+                        onClick={() => deleteGroup(group.id)}
+                        disabled={isPending}
                     >
-                        {deleteGroupMutation.isPending ? 'Usuwanie...' : 'Usuń'}
+                        {isPending ? 'Usuwanie...' : 'Usuń'}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
