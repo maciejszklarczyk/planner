@@ -28,8 +28,8 @@ class GroupMembershipService
     /**
      * Add user to group with specified role.
      *
-     * @throws NotFoundHttpException        if user or group not found
-     * @throws UserAlreadyInGroupException  if user is already in the group
+     * @throws NotFoundHttpException         if user or group not found
+     * @throws UserAlreadyInGroupException   if user is already in the group
      * @throws GroupAlreadyHasOwnerException if adding as owner and group already has one
      */
     public function addUserToGroup(
@@ -52,7 +52,7 @@ class GroupMembershipService
             throw new UserAlreadyInGroupException($userId, $groupId);
         }
 
-        if ($role === UserGroupRoleEnum::OWNER && $this->userHasGroupRepository->countOwnersByGroup($groupId) > 0) {
+        if (UserGroupRoleEnum::OWNER === $role && $this->userHasGroupRepository->countOwnersByGroup($groupId) > 0) {
             throw new GroupAlreadyHasOwnerException($groupId);
         }
 
@@ -71,7 +71,7 @@ class GroupMembershipService
     /**
      * Remove user from group.
      *
-     * @throws NotFoundHttpException         if group or membership not found
+     * @throws NotFoundHttpException          if group or membership not found
      * @throws CannotRemoveLastOwnerException if user is the last owner of the group
      */
     public function removeUserFromGroup(int $groupId, int $userId): void
@@ -86,7 +86,7 @@ class GroupMembershipService
             throw new NotFoundHttpException("User with ID {$userId} is not a member of group {$groupId}");
         }
 
-        if ($membership->getRole() === UserGroupRoleEnum::OWNER) {
+        if (UserGroupRoleEnum::OWNER === $membership->getRole()) {
             $ownerCount = $this->userHasGroupRepository->countOwnersByGroup($groupId);
             if ($ownerCount <= 1) {
                 throw new CannotRemoveLastOwnerException($groupId);
@@ -100,7 +100,7 @@ class GroupMembershipService
     /**
      * Update user role in group.
      *
-     * @throws NotFoundHttpException         if group or membership not found
+     * @throws NotFoundHttpException          if group or membership not found
      * @throws CannotRemoveLastOwnerException if downgrading the last owner
      * @throws GroupAlreadyHasOwnerException  if promoting to owner and group already has one
      */
@@ -118,13 +118,13 @@ class GroupMembershipService
 
         $currentRole = $membership->getRole();
 
-        if ($currentRole === UserGroupRoleEnum::OWNER && $newRole !== UserGroupRoleEnum::OWNER) {
+        if (UserGroupRoleEnum::OWNER === $currentRole && UserGroupRoleEnum::OWNER !== $newRole) {
             if ($this->userHasGroupRepository->countOwnersByGroup($groupId) <= 1) {
                 throw new CannotRemoveLastOwnerException($groupId);
             }
         }
 
-        if ($currentRole !== UserGroupRoleEnum::OWNER && $newRole === UserGroupRoleEnum::OWNER) {
+        if (UserGroupRoleEnum::OWNER !== $currentRole && UserGroupRoleEnum::OWNER === $newRole) {
             if ($this->userHasGroupRepository->countOwnersByGroup($groupId) > 0) {
                 throw new GroupAlreadyHasOwnerException($groupId);
             }
