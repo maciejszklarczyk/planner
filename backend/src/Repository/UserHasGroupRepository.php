@@ -50,8 +50,25 @@ class UserHasGroupRepository extends ServiceEntityRepository
             ->addSelect('ab')
             ->andWhere('uhg.group = :groupId')
             ->setParameter('groupId', $groupId)
+            ->orderBy('uhg.role', 'DESC')
+            ->addOrderBy('u.id', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Count owners in a group.
+     */
+    public function countOwnersByGroup(int $groupId): int
+    {
+        return (int) $this->createQueryBuilder('uhg')
+            ->select('COUNT(uhg.id)')
+            ->andWhere('uhg.group = :groupId')
+            ->andWhere('uhg.role = :role')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('role', \App\Entity\Enum\UserGroupRoleEnum::OWNER)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     //    /**

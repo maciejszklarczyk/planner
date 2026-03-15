@@ -12,8 +12,8 @@ class AddUserToGroupDto
     #[Assert\Positive(message: 'User ID must be a positive integer')]
     public int $userId;
 
-    #[Assert\NotNull(message: 'Role is required')]
-    public UserGroupRoleEnum $role = UserGroupRoleEnum::MEMBER;
+    #[Assert\NotNull(message: 'Role must be one of: owner, member')]
+    public ?UserGroupRoleEnum $role = UserGroupRoleEnum::MEMBER;
 
     public function __construct(
         int $userId,
@@ -22,8 +22,7 @@ class AddUserToGroupDto
         $this->userId = $userId;
 
         if (null !== $role) {
-            // Convert to lowercase to match enum backing values
-            $this->role = UserGroupRoleEnum::from(strtolower($role));
+            $this->role = UserGroupRoleEnum::tryFrom(strtolower($role));
         }
     }
 }
