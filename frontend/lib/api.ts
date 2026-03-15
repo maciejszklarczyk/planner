@@ -58,6 +58,9 @@ export const api = {
         if (!res.ok) {
             throw new ApiError(res.status, res.statusText, await res.json());
         }
+        if (res.status === 204 || res.headers.get('content-length') === '0') {
+            return undefined as T;
+        }
         return res.json();
     },
 };
