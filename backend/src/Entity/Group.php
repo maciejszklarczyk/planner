@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Enum\UserGroupRoleEnum;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -98,5 +99,16 @@ class Group
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getGroupOwnerUser(): ?User
+    {
+        foreach ($this->userHasGroups as $userHasGroup) {
+            if (UserGroupRoleEnum::OWNER === $userHasGroup->getRole()) {
+                return $userHasGroup->getUser();
+            }
+        }
+
+        return null;
     }
 }

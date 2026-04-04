@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Tests\Functional\Controller;
+namespace App\Tests\Functional\Controller\Admin;
 
+use App\Controller\Admin\GroupMembershipController;
 use App\Tests\DatabaseTestCase;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\HttpFoundation\Response;
 
+#[UsesClass(GroupMembershipController::class)]
 class GroupMembershipControllerTest extends DatabaseTestCase
 {
     private const ADMIN_EMAIL = 'admin@example.com';
@@ -41,7 +44,7 @@ class GroupMembershipControllerTest extends DatabaseTestCase
 
     private function getGroupIdByName(\Symfony\Bundle\FrameworkBundle\KernelBrowser $client, string $name): int
     {
-        $client->request('GET', '/admin/groups');
+        $client->request('GET', '/groups');
         $data = json_decode($client->getResponse()->getContent(), true);
         foreach ($data['data'] as $group) {
             if ($group['name'] === $name) {

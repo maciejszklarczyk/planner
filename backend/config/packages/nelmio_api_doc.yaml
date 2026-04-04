@@ -12,6 +12,8 @@ nelmio_api_doc:
               description: Endpointy administracyjne (/admin)
             - name: User
               description: Endpointy użytkownika (/user)
+            - name: Group
+              description: Endpointy grup (/groups)
         paths:
             /auth/login:
                 post:
