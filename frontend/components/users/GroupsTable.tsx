@@ -26,7 +26,7 @@ interface DataTableProps {
 export function GroupsTable({columns}: DataTableProps) {
     const { data, isLoading } = useQuery<GroupsResponse>({
         queryKey: ['admin', 'groups'],
-        queryFn: () => api.get<GroupsResponse>('/admin/groups'),
+        queryFn: () => api.get<GroupsResponse>('/groups'),
     });
 
     const table = useReactTable({
