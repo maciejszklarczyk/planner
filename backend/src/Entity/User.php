@@ -155,6 +155,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->userHasGroups;
     }
 
+    public function isMemberOf(Group $group): bool
+    {
+        return $this->userHasGroups->exists(
+            fn (int $key, UserHasGroup $uhg) => $uhg->getGroup() === $group
+        );
+    }
+
     public function addUserHasGroup(UserHasGroup $userHasGroup): static
     {
         if (!$this->userHasGroups->contains($userHasGroup)) {
