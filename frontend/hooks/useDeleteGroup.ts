@@ -9,7 +9,7 @@ export function useDeleteGroup() {
 
     return useMutation({
         mutationFn: (groupId: number) =>
-            api.delete(`/admin/groups/${groupId}`),
+            api.delete(`/groups/${groupId}`),
         onSuccess: () => {
             toast.success('Grupa usunięta', {
                 description: 'Grupa została pomyślnie usunięta',
