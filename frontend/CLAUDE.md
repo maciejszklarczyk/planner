@@ -110,6 +110,10 @@ interface GroupMembership {
 - `useGroupMembers(groupId, open)` — enabled jest przekazywane jako drugi arg
 - Warunek usuwania membera: `role !== 'owner' && members.length > 1`
 
+## Ograniczenia
+
+- **Nie modyfikuj plików w `components/ui/`** — są to prymitywy generowane automatycznie (shadcn/ui), zmiany zostaną nadpisane
+
 ## Konwencje
 
 - `'use client'` na komponentach interaktywnych

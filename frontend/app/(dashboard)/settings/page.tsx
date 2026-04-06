@@ -1,6 +1,5 @@
 import type {Metadata} from 'next'
-import {AdminUserSettingsWrapper} from "@/components/users/AdminUserSettingsWrapper";
-import CurrentUserEditForm from "@/components/forms/CurrentUserEditForm";
+import {SettingsTabs} from "@/components/settings/SettingsTabs";
 
 export const metadata: Metadata = {
     title: 'Ustawienia',
@@ -9,10 +8,7 @@ export const metadata: Metadata = {
 export default function SettingsPage() {
     return (
         <div>
-            <div className="mb-6 flex items-center justify-between">
-            </div>
-            <CurrentUserEditForm />
-            <AdminUserSettingsWrapper/>
+            <SettingsTabs/>
         </div>
     );
 }

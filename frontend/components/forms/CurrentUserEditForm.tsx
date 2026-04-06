@@ -76,7 +76,7 @@ export default function CurrentUserEditForm() {
                         name="name"
                         control={form.control}
                         render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
+                            <Field data-invalid={fieldState.invalid} className={'md:w-1/3'}>
                                 <FieldLabel htmlFor="current-user-edit-form-name">
                                     Name
                                 </FieldLabel>
@@ -97,7 +97,7 @@ export default function CurrentUserEditForm() {
                         name="email"
                         control={form.control}
                         render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
+                            <Field data-invalid={fieldState.invalid} className={'md:w-1/3'}>
                                 <FieldLabel htmlFor="current-user-edit-form-email">
                                     E-Mail
                                 </FieldLabel>
