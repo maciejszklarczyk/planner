@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Group;
@@ -19,7 +21,7 @@ class UserGroupService
     public function addUserToGroup(User $user, Group $group, ?User $addedBy = null): UserHasGroup
     {
         // sprawdź czy już nie należy
-        if ($this->isMember($user, $group)) {
+        if ($user->isMemberOf($group)) {
             throw new \LogicException('User is already a member of this group');
         }
 

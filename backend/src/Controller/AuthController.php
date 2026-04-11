@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Dto\Response\UserListItemDto;
@@ -29,6 +31,7 @@ class AuthController extends AbstractController
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
                 'roles' => $user->getRoles(),
+                'avatar' => $user->getAvatar(),
             ],
         ]);
     }

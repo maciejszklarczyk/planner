@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Dto\User\EditUserDto;
@@ -55,6 +57,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(enumType: UserStatusEnum::class, options: ['default' => UserStatusEnum::NEW])]
     private ?UserStatusEnum $status = UserStatusEnum::NEW;
+
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $avatar = null;
 
     public function __construct()
     {
@@ -224,6 +229,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(UserStatusEnum $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }
