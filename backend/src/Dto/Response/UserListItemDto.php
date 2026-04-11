@@ -13,6 +13,7 @@ class UserListItemDto
         public readonly string $name,
         public readonly array $roles,
         public readonly UserStatusEnum $status,
+        public readonly ?string $avatar,
     ) {
     }
 
@@ -24,6 +25,7 @@ class UserListItemDto
             name: $user->getName() ?? '',
             roles: $user->getRoles(),
             status: $user->getStatus(),
+            avatar: $user->getAvatar(),
         );
     }
 
