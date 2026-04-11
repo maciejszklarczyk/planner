@@ -8,6 +8,9 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
+        'declare_strict_types' => true,
     ])
     ->setFinder($finder)
+    ->setRiskyAllowed(true)
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
 ;

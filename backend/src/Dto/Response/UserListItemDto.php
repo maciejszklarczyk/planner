@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Dto\Response;
 
 use App\Entity\Enum\UserStatusEnum;
@@ -20,11 +22,11 @@ class UserListItemDto
     public static function fromEntity(User $user): self
     {
         return new self(
-            id: $user->getId(),
-            email: $user->getEmail(),
+            id: $user->getId() ?? throw new \LogicException('User must have an ID.'),
+            email: $user->getEmail() ?? throw new \LogicException('User must have an email.'),
             name: $user->getName() ?? '',
             roles: $user->getRoles(),
-            status: $user->getStatus(),
+            status: $user->getStatus() ?? throw new \LogicException('User must have a status.'),
             avatar: $user->getAvatar(),
         );
     }

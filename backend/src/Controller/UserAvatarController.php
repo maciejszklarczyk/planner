@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -11,16 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use function imagecopyresampled;
-use function imagecreatefrompng;
-use function imagecreatefromwebp;
-use function imagecreatefromgif;
-use function imagecreatefromjpeg;
-use function imagecreatetruecolor;
-use function imagedestroy;
-use function imagesx;
-use function imagesy;
-use function imagewebp;
 
 #[OA\Tag(name: 'User')]
 class UserAvatarController extends AbstractController
@@ -57,12 +49,13 @@ class UserAvatarController extends AbstractController
             return $this->json(['message' => 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $filename = sprintf('user_%d.webp', $user->getId());
+        $userId = $user->getId() ?? throw new \LogicException('User must have an ID to upload avatar.');
+        $filename = sprintf('user_%d.webp', $userId);
         $sourcePath = $file->getPathname();
 
-        $this->resizeAndCrop($sourcePath, $this->avatarsDir . '/' . $filename, $file->getMimeType());
+        $this->resizeAndCrop($sourcePath, $this->avatarsDir.'/'.$filename, $file->getMimeType());
 
-        $avatarUrl = $this->avatarsPublicPath . '/' . $filename;
+        $avatarUrl = $this->avatarsPublicPath.'/'.$filename;
         $user->setAvatar($avatarUrl);
         $this->entityManager->flush();
 
@@ -72,14 +65,18 @@ class UserAvatarController extends AbstractController
     private function resizeAndCrop(string $sourcePath, string $destPath, string $mimeType): void
     {
         $src = match ($mimeType) {
-            'image/png'  => imagecreatefrompng($sourcePath),
-            'image/webp' => imagecreatefromwebp($sourcePath),
-            'image/gif'  => imagecreatefromgif($sourcePath),
-            default      => imagecreatefromjpeg($sourcePath),
+            'image/png' => \imagecreatefrompng($sourcePath),
+            'image/webp' => \imagecreatefromwebp($sourcePath),
+            'image/gif' => \imagecreatefromgif($sourcePath),
+            default => \imagecreatefromjpeg($sourcePath),
         };
 
-        $srcW = imagesx($src);
-        $srcH = imagesy($src);
+        if (!$src instanceof \GdImage) {
+            throw new \RuntimeException('Failed to create image resource from: '.$sourcePath);
+        }
+
+        $srcW = \imagesx($src);
+        $srcH = \imagesy($src);
         $size = self::AVATAR_SIZE;
 
         // Center crop to square
@@ -93,13 +90,15 @@ class UserAvatarController extends AbstractController
             $cropSize = $srcW;
         }
 
-        $dst = imagecreatetruecolor($size, $size);
-        imagecopyresampled($dst, $src, 0, 0, $cropX, $cropY, $size, $size, $cropSize, $cropSize);
+        $dst = \imagecreatetruecolor($size, $size);
+        if (!$dst instanceof \GdImage) {
+            throw new \RuntimeException('Failed to create destination image resource.');
+        }
 
-        imagewebp($dst, $destPath, 85);
-
-        imagedestroy($src);
-        imagedestroy($dst);
+        \imagecopyresampled($dst, $src, 0, 0, $cropX, $cropY, $size, $size, $cropSize, $cropSize);
+        \imagewebp($dst, $destPath, 85);
+        \imagedestroy($src);
+        \imagedestroy($dst);
     }
 
     #[Route('/user/avatar', name: 'delete_user_avatar', methods: ['DELETE'])]
@@ -111,9 +110,12 @@ class UserAvatarController extends AbstractController
 
         $currentAvatar = $user->getAvatar();
         if ($currentAvatar) {
-            $filePath = $this->avatarsDir . '/' . basename(parse_url($currentAvatar, PHP_URL_PATH));
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            $urlPath = parse_url($currentAvatar, PHP_URL_PATH);
+            if (is_string($urlPath)) {
+                $filePath = $this->avatarsDir.'/'.basename($urlPath);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
             }
         }
 

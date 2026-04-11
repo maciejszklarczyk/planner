@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Dto\Response;
 
 use App\Entity\UserHasGroup;
@@ -18,11 +20,14 @@ class GroupMembershipDto
 
     public static function fromEntity(UserHasGroup $membership): self
     {
+        $group = $membership->getGroup() ?? throw new \LogicException('Membership must have a group.');
+        $user = $membership->getUser() ?? throw new \LogicException('Membership must have a user.');
+
         return new self(
-            id: $membership->getId(),
-            user: UserListItemDto::fromEntity($membership->getUser()),
-            groupId: $membership->getGroup()->getId(),
-            groupName: $membership->getGroup()->getName(),
+            id: $membership->getId() ?? throw new \LogicException('Membership must have an ID.'),
+            user: UserListItemDto::fromEntity($user),
+            groupId: $group->getId() ?? throw new \LogicException('Group must have an ID.'),
+            groupName: $group->getName() ?? throw new \LogicException('Group must have a name.'),
             role: $membership->getRole()->value,
             addedBy: $membership->getAddedBy()
                 ? UserListItemDto::fromEntity($membership->getAddedBy())
