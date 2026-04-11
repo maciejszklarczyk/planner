@@ -49,6 +49,18 @@ export const api = {
         return res.json();
     },
 
+    async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+        });
+        if (!res.ok) {
+            throw new ApiError(res.status, res.statusText, await res.json());
+        }
+        return res.json();
+    },
+
     async delete<T>(endpoint: string): Promise<T> {
         const res = await fetch(`${API_URL}${endpoint}`, {
             method: 'DELETE',
