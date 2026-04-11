@@ -44,4 +44,3 @@ deploy-production:
     url: https://planner.msolve.it
   only:
     - main
-  when: manual
