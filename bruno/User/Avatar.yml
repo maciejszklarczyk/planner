@@ -1,0 +1,23 @@
+info:
+  name: Avatar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{url}}/user/avatar"
+  body:
+    type: multipart-form
+    data:
+      - name: avatar
+        type: file
+        value:
+          - /Users/maciejszklarczyk/Documents/wp9355922-black-4k-aesthetic-wallpapers.jpg
+        contentType: File
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
