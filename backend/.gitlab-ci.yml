@@ -21,7 +21,7 @@ php-cs-fixer:
     stage: test
     image: composer:2.9.4
     script:
-        - composer install --no-interaction --prefer-dist
+        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
     cache:
         paths:
@@ -33,7 +33,7 @@ phpunit:
     stage: test
     image: composer:2.9.4
     script:
-        - composer install --no-interaction --prefer-dist
+        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/phpunit
     cache:
         paths:
@@ -45,7 +45,7 @@ composer:
     stage: build
     image: composer:2.9.4
     script:
-        - composer install --no-interaction --prefer-dist
+        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
     artifacts:
         paths:
             - vendor/

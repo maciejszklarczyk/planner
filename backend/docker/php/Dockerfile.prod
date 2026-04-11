@@ -5,10 +5,11 @@ FROM dunglas/frankenphp:1-php8.4
 
 # Install PostgreSQL and Redis extensions
 RUN apt-get update && \
-    apt-get install -y libpq-dev curl git unzip && \
+    apt-get install -y libpq-dev libpng-dev libjpeg-dev libwebp-dev libgif-dev curl git unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    docker-php-ext-install pdo pdo_pgsql opcache && \
+    docker-php-ext-configure gd --with-jpeg --with-webp && \
+    docker-php-ext-install pdo pdo_pgsql opcache gd && \
     pecl install redis-6.1.0 && \
     docker-php-ext-enable redis
 
