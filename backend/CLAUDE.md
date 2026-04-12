@@ -36,6 +36,7 @@ Poniżej znajdziesz wytyczne dla tego projektu. Uzupełniaj je w punktach.
 - Request DTOs w `src/Dto/` — walidacja inputu
 - CS Fixer skonfigurowany dla PSR-12 + styl Symfony: `vendor/bin/php-cs-fixer fix`
 - Admin endpointy zabezpieczone przez `#[IsGranted('ROLE_ADMIN')]`
+- Domena jest osobna dla frontu i dla api więc nie musimy dodawać segmentu /api/ do URL endpointów
 
 ## Ważne ścieżki i pliki
 

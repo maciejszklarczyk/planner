@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-04-12 — c62457d
+
+- Add `GET /version` endpoint returning app version from `composer.json`
+- Add `version` field (`0.0.2`) to `composer.json`
+- Expose `/version` as public route in `security.yaml`
+
 ## 2026-04-12 — PLA-15
 
 - Add `league/flysystem-bundle` and `league/flysystem-aws-s3-v3` dependencies

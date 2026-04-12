@@ -40,6 +40,7 @@ security:
         - { path: ^/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/auth/register, roles: PUBLIC_ACCESS }
         - { path: ^/health, roles: PUBLIC_ACCESS }
+        - { path: ^/version, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/invitation/verify, roles: PUBLIC_ACCESS }
         - { path: ^/invitation/complete, roles: PUBLIC_ACCESS }
