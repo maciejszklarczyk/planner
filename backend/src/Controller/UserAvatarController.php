@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,11 +21,13 @@ class UserAvatarController extends AbstractController
     private const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
     private const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     private const AVATAR_SIZE = 256;
+    private const AVATARS_PATH = 'avatars';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly string $avatarsDir,
-        private readonly string $avatarsPublicPath,
+        private readonly FilesystemOperator $uploadsStorage,
+        private readonly string $s3PublicUrl,
+        private readonly string $s3Bucket,
     ) {
     }
 
@@ -50,19 +53,44 @@ class UserAvatarController extends AbstractController
         }
 
         $userId = $user->getId() ?? throw new \LogicException('User must have an ID to upload avatar.');
-        $filename = sprintf('user_%d.webp', $userId);
-        $sourcePath = $file->getPathname();
+        $filename = sprintf('%s/user_%d.webp', self::AVATARS_PATH, $userId);
 
-        $this->resizeAndCrop($sourcePath, $this->avatarsDir.'/'.$filename, $file->getMimeType());
+        $webpContent = $this->resizeAndCropToWebp($file->getPathname(), $file->getMimeType());
+        $this->uploadsStorage->write($filename, $webpContent);
 
-        $avatarUrl = $this->avatarsPublicPath.'/'.$filename;
+        $avatarUrl = sprintf('%s/%s/%s', rtrim($this->s3PublicUrl, '/'), $this->s3Bucket, $filename);
         $user->setAvatar($avatarUrl);
         $this->entityManager->flush();
 
         return $this->json(['avatar' => $avatarUrl]);
     }
 
-    private function resizeAndCrop(string $sourcePath, string $destPath, string $mimeType): void
+    #[Route('/user/avatar', name: 'delete_user_avatar', methods: ['DELETE'])]
+    public function delete(#[CurrentUser] ?User $user): JsonResponse
+    {
+        if (!$user) {
+            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $currentAvatar = $user->getAvatar();
+        if ($currentAvatar) {
+            $path = parse_url($currentAvatar, PHP_URL_PATH);
+            if (is_string($path)) {
+                // Strip leading /{bucket}/ prefix to get the storage key
+                $key = preg_replace('#^/[^/]+/#', '', $path);
+                if ($key && $this->uploadsStorage->fileExists($key)) {
+                    $this->uploadsStorage->delete($key);
+                }
+            }
+        }
+
+        $user->setAvatar(null);
+        $this->entityManager->flush();
+
+        return $this->json(['avatar' => null]);
+    }
+
+    private function resizeAndCropToWebp(string $sourcePath, string $mimeType): string
     {
         $src = match ($mimeType) {
             'image/png' => \imagecreatefrompng($sourcePath),
@@ -79,7 +107,6 @@ class UserAvatarController extends AbstractController
         $srcH = \imagesy($src);
         $size = self::AVATAR_SIZE;
 
-        // Center crop to square
         if ($srcW > $srcH) {
             $cropX = (int) (($srcW - $srcH) / 2);
             $cropY = 0;
@@ -96,32 +123,18 @@ class UserAvatarController extends AbstractController
         }
 
         \imagecopyresampled($dst, $src, 0, 0, $cropX, $cropY, $size, $size, $cropSize, $cropSize);
-        \imagewebp($dst, $destPath, 85);
+
+        ob_start();
+        \imagewebp($dst, null, 85);
+        $content = ob_get_clean();
+
         \imagedestroy($src);
         \imagedestroy($dst);
-    }
 
-    #[Route('/user/avatar', name: 'delete_user_avatar', methods: ['DELETE'])]
-    public function delete(#[CurrentUser] ?User $user): JsonResponse
-    {
-        if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+        if ($content === false || $content === '') {
+            throw new \RuntimeException('Failed to encode image as WebP.');
         }
 
-        $currentAvatar = $user->getAvatar();
-        if ($currentAvatar) {
-            $urlPath = parse_url($currentAvatar, PHP_URL_PATH);
-            if (is_string($urlPath)) {
-                $filePath = $this->avatarsDir.'/'.basename($urlPath);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-            }
-        }
-
-        $user->setAvatar(null);
-        $this->entityManager->flush();
-
-        return $this->json(['avatar' => null]);
+        return $content;
     }
 }
