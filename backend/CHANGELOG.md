@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-04-12 — PLA-15
+
+- Add `league/flysystem-bundle` and `league/flysystem-aws-s3-v3` dependencies
+- Configure `uploads.storage` with S3 adapter (RustFS-compatible) in `config/packages/flysystem.yaml`
+- Define `aws_s3_client` as Symfony service in `services.yaml` with path-style endpoint support
+- Refactor `UserAvatarController`: upload/delete via Flysystem, in-memory WebP encoding with output buffering, avatar URL is now full public S3 URL
+- Add S3 env vars (`S3_ENDPOINT`, `S3_PUBLIC_URL`, `S3_KEY`, `S3_SECRET`, `S3_BUCKET`, `S3_REGION`) to `.env`, `.env.dev`, `.env.example`
+- Add RustFS service and init container (creates public `uploads` bucket) to `compose.override.yaml`
+- Remove `uploads_data` volume from `docker-compose.prod.yaml` (files now stored in RustFS)
+
 ## 2026-04-11 — strict-types
 
 - Add `declare_strict_types` rule to `.php-cs-fixer.dist.php`

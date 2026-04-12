@@ -1454,6 +1454,22 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     skip_translation_on_load?: bool|Param, // Default: false
  *     metadata_cache_pool?: scalar|Param|null, // Default: null
  * }
+ * @psalm-type FlysystemConfig = array{
+ *     storages?: array<string, array{ // Default: []
+ *         adapter: scalar|Param|null,
+ *         options?: list<mixed>,
+ *         visibility?: scalar|Param|null, // Default: null
+ *         directory_visibility?: scalar|Param|null, // Default: null
+ *         retain_visibility?: bool|Param|null, // Default: null
+ *         case_sensitive?: bool|Param, // Default: true
+ *         disable_asserts?: bool|Param, // Default: false
+ *         public_url?: list<scalar|Param|null>,
+ *         path_normalizer?: scalar|Param|null, // Default: null
+ *         public_url_generator?: scalar|Param|null, // Default: null
+ *         temporary_url_generator?: scalar|Param|null, // Default: null
+ *         read_only?: bool|Param, // Default: false
+ *     }>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1467,6 +1483,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     nelmio_api_doc?: NelmioApiDocConfig,
  *     nelmio_cors?: NelmioCorsConfig,
  *     stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
+ *     flysystem?: FlysystemConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1485,6 +1502,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         hautelook_alice?: HautelookAliceConfig,
  *         web_profiler?: WebProfilerConfig,
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
+ *         flysystem?: FlysystemConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1499,6 +1517,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nelmio_api_doc?: NelmioApiDocConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
+ *         flysystem?: FlysystemConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1517,6 +1536,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         hautelook_alice?: HautelookAliceConfig,
  *         web_profiler?: WebProfilerConfig,
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
+ *         flysystem?: FlysystemConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

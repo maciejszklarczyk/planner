@@ -19,3 +19,44 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 ###< symfony/mailer ###
+
+###> rustfs/s3 ###
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: ${PROJECT_NAME}-rustfs
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: rustfsadmin
+      RUSTFS_SECRET_KEY: rustfsadmin
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_VOLUMES: /data
+    volumes:
+      - rustfs_data:/data
+    networks:
+      - default
+    command: /data
+
+  rustfs-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      - rustfs
+    environment:
+      AWS_ACCESS_KEY_ID: rustfsadmin
+      AWS_SECRET_ACCESS_KEY: rustfsadmin
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5;
+        aws --endpoint-url http://${PROJECT_NAME}-rustfs:9000 s3 mb s3://uploads --region us-east-1 || true;
+        aws --endpoint-url http://${PROJECT_NAME}-rustfs:9000 s3api put-bucket-policy --bucket uploads --policy '{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::uploads/*\"]}]}' || true;
+        echo 'RustFS bucket initialized';
+      "
+    networks:
+      - default
+    restart: "no"
+###< rustfs/s3 ###
+
+volumes:
+  rustfs_data:

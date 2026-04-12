@@ -8,8 +8,6 @@ services:
     environment:
       - APP_ENV=prod
       - APP_DEBUG=0
-    volumes:
-      - uploads_data:/app/public/uploads
     networks:
       - zbyszek-network
       - internal
@@ -83,6 +81,4 @@ volumes:
   database_data:
     driver: local
   redis_data:
-    driver: local
-  uploads_data:
     driver: local
