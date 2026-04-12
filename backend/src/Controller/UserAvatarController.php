@@ -131,7 +131,7 @@ class UserAvatarController extends AbstractController
         \imagedestroy($src);
         \imagedestroy($dst);
 
-        if ($content === false || $content === '') {
+        if (false === $content || '' === $content) {
             throw new \RuntimeException('Failed to encode image as WebP.');
         }
 
