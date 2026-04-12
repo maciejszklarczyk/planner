@@ -13,8 +13,6 @@ import {Separator} from "@/components/ui/separator";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useDeleteAvatar, useUploadAvatar} from "@/hooks/useUploadAvatar";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 const formSchema = z.object({
     id: z
         .number(),
@@ -87,7 +85,7 @@ export default function CurrentUserEditForm() {
         .join('')
         .toUpperCase() ?? '?';
 
-    const avatarSrc = user.avatar ? `${API_URL}${user.avatar}?v=${avatarBust}` : undefined;
+    const avatarSrc = user.avatar ? `${user.avatar}?v=${avatarBust}` : undefined;
 
     return (
         <div className="flex flex-col gap-8">
