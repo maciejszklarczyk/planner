@@ -29,7 +29,7 @@ export function AppSidebar({user, ...props}: SidebarProps) {
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-medium">EventPlanner4000</span>
-                                    <span className="">v0.0.1-pre-alfa</span>
+                                    <span className="">v0.0.2</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
