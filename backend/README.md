@@ -1,267 +1,68 @@
 # Planner Backend API
 
-API do zarządzania zadaniami oparte na Symfony 7.4 i Doctrine ORM.
+Symfony 7.4 + Doctrine ORM API.
 
-## Wymagania
-
-- PHP >= 8.2
-- Composer
-- Docker & Docker Compose (opcjonalnie)
-- PostgreSQL/MySQL (w zależności od konfiguracji)
-
-## Instalacja
-
-### Lokalna instalacja
+## Uruchamianie
 
 ```bash
-# Instalacja zależności
-composer install
-
-# Konfiguracja środowiska
-cp .env.example .env
-# Edytuj .env i ustaw dane dostępowe do bazy danych
-
-# Migracje bazy danych
-php bin/console doctrine:migrations:migrate
-```
-
-### Instalacja z Docker
-
-```bash
-# Uruchomienie kontenerów
+# Docker (zalecane)
 docker-compose up -d
 
-# Instalacja zależności wewnątrz kontenera
-docker-compose exec php composer install
-
-# Migracje
-docker-compose exec php bin/console doctrine:migrations:migrate
+# Lokalnie
+composer install
+cp .env.example .env
+php bin/console doctrine:migrations:migrate
+symfony serve
 ```
 
 ## Dokumentacja API
 
-Projekt wykorzystuje **Nelmio API Doc Bundle** do automatycznego generowania dokumentacji API w formacie OpenAPI/Swagger.
+- Swagger UI: http://localhost:8000/api/doc
+- OpenAPI JSON: http://localhost:8000/api/doc.json
 
-### Dostęp do dokumentacji
-
-Po uruchomieniu aplikacji, dokumentacja API jest dostępna pod następującymi adresami:
-
-- **Swagger UI (interfejs graficzny)**: [http://localhost:8000/api/doc](http://localhost:8000/api/doc)
-- **Specyfikacja OpenAPI (JSON)**: [http://localhost:8000/api/doc.json](http://localhost:8000/api/doc.json)
-
-Endpointy są zorganizowane w sekcje:
-- **Authentication** - operacje związane z autoryzacją
-- **Admin** - endpointy administracyjne (/admin)
-- **User** - endpointy użytkownika (/user)
-
-Jeśli używasz Docker, upewnij się, że aplikacja działa na odpowiednim porcie (sprawdź `docker-compose.yaml`).
-
-### Uruchomienie serwera
+## Komendy
 
 ```bash
-# Lokalnie
-symfony serve
-# lub
-php -S localhost:8000 -t public
+# Migracje
+php bin/console doctrine:migrations:migrate
+php bin/console doctrine:migrations:diff
 
-# Z Docker
-docker-compose up -d
-```
-
-Następnie otwórz przeglądarkę i przejdź do: http://localhost:8000/api/doc
-
-### Organizacja endpointów w dokumentacji
-
-Aby przypisać endpointy do odpowiedniej sekcji, dodaj atrybut `#[OA\Tag]` do kontrolera:
-
-```php
-use OpenApi\Attributes as OA;
-
-#[OA\Tag(name: 'Admin')]
-class UserController extends AbstractController
-{
-    // endpointy będą w sekcji "Admin"
-}
-```
-
-Dostępne tagi:
-- `Authentication` - operacje związane z autoryzacją
-- `Admin` - endpointy administracyjne
-- `User` - endpointy użytkownika
-
-## Podstawowe komendy
-
-### Symfony Console
-
-```bash
-# Lista wszystkich dostępnych komend
-php bin/console list
+# Fixtures
+php bin/console doctrine:fixtures:load --no-interaction
+# lub z Docker:
+docker exec planner-php php bin/console doctrine:fixtures:load --no-interaction
 
 # Cache
 php bin/console cache:clear
-php bin/console cache:warmup
 
-# Debugowanie
+# Debug
 php bin/console debug:router
 php bin/console debug:container
 ```
 
-### Doctrine
-
-```bash
-# Utworzenie bazy danych
-php bin/console doctrine:database:create
-
-# Migracje
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:migrations:diff
-php bin/console doctrine:migrations:status
-
-# Schema
-php bin/console doctrine:schema:validate
-php bin/console doctrine:schema:update --dump-sql
-
-# Fixtures (dane testowe)
-php bin/console doctrine:fixtures:load --no-interaction
-# Z Docker:
-docker exec planner-php php bin/console doctrine:fixtures:load --no-interaction
-```
-
-### Maker Bundle
-
-```bash
-# Utworzenie nowej encji
-php bin/console make:entity
-
-# Utworzenie kontrolera
-php bin/console make:controller
-
-# Utworzenie migracji
-php bin/console make:migration
-```
-
-### Docker
-
-```bash
-# Uruchomienie kontenerów
-docker-compose up -d
-
-# Zatrzymanie kontenerów
-docker-compose down
-
-# Logi
-docker-compose logs -f
-
-# Wejście do kontenera PHP
-docker-compose exec php bash
-
-# Rebuild kontenerów
-docker-compose up -d --build
-```
-
-### Git
-
-```bash
-# Status
-git status
-
-# Commit
-git add .
-git commit -m "commit message"
-
-# Push
-git push origin branch-name
-
-# Pull
-git pull origin branch-name
-```
-
-## Struktura projektu
+## Struktura
 
 ```
-.
-├── bin/              # Pliki wykonywalne (console)
-├── config/           # Konfiguracja aplikacji
-├── docker/           # Pliki Docker
-├── docs/             # Dokumentacja
-├── fixtures/         # Dane testowe (YAML)
-├── migrations/       # Migracje bazy danych
-├── public/           # Publiczny katalog (index.php)
-├── src/              # Kod źródłowy aplikacji
-│   ├── DataFixtures/ # Loadery fixtur
-│   ├── Entity/       # Encje Doctrine
-│   ├── Repository/   # Repozytoria
-│   └── ...
-├── var/              # Pliki tymczasowe (cache, logs)
-└── vendor/           # Zależności Composer
-```
-
-## Fixtures (Dane testowe)
-
-Projekt używa **nelmio/alice** i **hautelook/alice-bundle** do zarządzania danymi testowymi.
-
-### Struktura
-
-```
+src/
+├── Controller/   # Kontrolery HTTP
+├── Entity/       # Encje Doctrine
+├── Repository/   # Repozytoria
+├── Service/      # Logika biznesowa
+├── Dto/          # Request/Response DTOs
+└── Exception/    # Wyjątki domenowe
 fixtures/
-├── users.yaml              # Definicje użytkowników
-├── groups.yaml             # Definicje grup
-└── user_has_groups.yaml    # Relacje użytkownik-grupa
+├── users.yaml
+├── groups.yaml
+└── user_has_groups.yaml
 ```
 
-### Edycja fixtur
-
-Fixtures są definiowane w plikach YAML z użyciem Faker do losowych danych:
-
-```yaml
-# fixtures/users.yaml
-App\Entity\User:
-    user_admin:
-        email: 'admin@example.com'
-        password: 'password'
-        roles: ['ROLE_ADMIN']
-        name: 'Admin User'
-
-    user_1:
-        email: 'user1@example.com'
-        password: 'password'
-        roles: []
-        name: '<firstName()> <lastName()>'  # Faker
-```
-
-### Użyteczne Faker formattery
-
-- `<firstName()>`, `<lastName()>` - losowe imiona/nazwiska
-- `<safeEmail()>` - losowy email
-- `<sentence()>` - losowe zdanie
-- `<randomElement(['option1', 'option2'])>` - losowy wybór
-- `<numberBetween(1, 10)>` - losowa liczba
-
-Hasła są automatycznie hashowane przez `UserPasswordProcessor`.
-
-## Konfiguracja środowiska
-
-Główne zmienne środowiskowe w pliku `.env`:
+## Środowisko
 
 ```
 APP_ENV=dev
 APP_SECRET=your-secret-key
 DATABASE_URL="postgresql://user:password@localhost:5432/database?serverVersion=16&charset=utf8"
 ```
-
-## Dodatkowe informacje
-
-### API Endpoints
-
-(Tutaj dodaj swoje endpointy)
-
-### Troubleshooting
-
-(Tutaj dodaj typowe problemy i rozwiązania)
-
-### Notatki
-
-(Tutaj dodaj swoje notatki)
 
 ## Licencja
 
