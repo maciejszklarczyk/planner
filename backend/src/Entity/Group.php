@@ -61,7 +61,7 @@ class Group
     {
         if (!$this->userHasGroups->contains($userHasGroup)) {
             $this->userHasGroups->add($userHasGroup);
-            $userHasGroup->setGroups($this);
+            $userHasGroup->setGroup($this);
         }
 
         return $this;
@@ -71,8 +71,8 @@ class Group
     {
         if ($this->userHasGroups->removeElement($userHasGroup)) {
             // set the owning side to null (unless already changed)
-            if ($userHasGroup->getGroups() === $this) {
-                $userHasGroup->setGroups(null);
+            if ($userHasGroup->getGroup() === $this) {
+                $userHasGroup->setGroup(null);
             }
         }
 

@@ -171,7 +171,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->userHasGroups->contains($userHasGroup)) {
             $this->userHasGroups->add($userHasGroup);
-            $userHasGroup->setUsers($this);
+            $userHasGroup->setUser($this);
         }
 
         return $this;
@@ -181,8 +181,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->userHasGroups->removeElement($userHasGroup)) {
             // set the owning side to null (unless already changed)
-            if ($userHasGroup->getUsers() === $this) {
-                $userHasGroup->setUsers(null);
+            if ($userHasGroup->getUser() === $this) {
+                $userHasGroup->setUser(null);
             }
         }
 
