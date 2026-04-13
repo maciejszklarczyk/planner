@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-13 — 6efd525
+
+- Add `git-commit` skill as default commit message generator (CLAUDE.md)
+
 ## 2026-04-12 — c62457d
 
 - Add `GET /version` endpoint returning app version from `composer.json`
