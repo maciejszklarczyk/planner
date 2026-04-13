@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-13 — f0e47b8
+
+- Add OpenAPI response schemas for GET /health and GET /version endpoints
+
 ## 2026-04-13 — 3626ced
 
 - Regenerate composer.lock after version bump
