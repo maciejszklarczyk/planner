@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-13 — 3626ced
+
+- Regenerate composer.lock after version bump
+
 ## 2026-04-13 — a12dd48
 
 - Bump version to 0.0.3
