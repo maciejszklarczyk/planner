@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-13 — a12dd48
+
+- Bump version to 0.0.3
+
 ## 2026-04-13 — 6efd525
 
 - Add `git-commit` skill as default commit message generator (CLAUDE.md)
