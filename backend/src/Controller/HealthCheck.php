@@ -23,7 +23,7 @@ class HealthCheck extends AbstractController
     #[Route('/version', name: 'app_version', methods: ['GET'])]
     public function version(KernelInterface $kernel): Response
     {
-        $composerJson = $kernel->getProjectDir() . '/composer.json';
+        $composerJson = $kernel->getProjectDir().'/composer.json';
         $data = json_decode((string) file_get_contents($composerJson), true);
 
         return $this->json([
