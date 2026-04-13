@@ -46,7 +46,7 @@ class HealthCheck extends AbstractController
                 description: 'Application version',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'version', type: 'string', example: '0.0.3'),
+                        new OA\Property(property: 'version', type: 'string', example: '0.0.4'),
                     ]
                 )
             ),

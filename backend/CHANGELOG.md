@@ -3,6 +3,7 @@
 ## 2026-04-13 — 08b275a
 
 - Remove --strict flag from composer validate in lint CI stage
+- 4e18c4e Update OpenAPI version example to 0.0.4 in GET /version response
 
 ## 2026-04-13 — f0e47b8
 
