@@ -1,7 +1,7 @@
 {
     "name": "planner/backend",
     "description": "Planner API to manage tasks",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

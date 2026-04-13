@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-04-13 — 08b275a
+
+- Remove --strict flag from composer validate in lint CI stage
+- 4e18c4e Update OpenAPI version example to 0.0.4 in GET /version response
+
+## 2026-04-13 — f0e47b8
+
+- Add OpenAPI response schemas for GET /health and GET /version endpoints
+
+## 2026-04-13 — 3626ced
+
+- Regenerate composer.lock after version bump
+
+## 2026-04-13 — a12dd48
+
+- Bump version to 0.0.3
+
 ## 2026-04-13 — 6efd525
 
 - Add `git-commit` skill as default commit message generator (CLAUDE.md)
