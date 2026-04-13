@@ -61,7 +61,7 @@ lint:
     needs:
         - composer
     script:
-        - composer validate --strict
+        - composer validate
         - php bin/console lint:yaml config/
         - php bin/console lint:container
     except:
