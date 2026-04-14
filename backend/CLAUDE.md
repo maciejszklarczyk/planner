@@ -2,10 +2,6 @@
 
 Wytyczne projektu. Uzupełniaj w punktach.
 
-## Ogólne zasady
-
-- Do generowania commit messages używaj skilla `git-commit`
-
 ## Stack technologiczny
 
 - **PHP 8.4** (FrankenPHP jako serwer)

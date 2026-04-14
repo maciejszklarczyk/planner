@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-14 — docs: remove redundant git-commit rule from CLAUDE.md
+
+- [6f274f7] docs: remove redundant git-commit rule from CLAUDE.md
+
 ## 2026-04-13 — 08b275a
 
 - Remove --strict flag from composer validate in lint CI stage
