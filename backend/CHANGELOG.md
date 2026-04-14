@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-14 — docs: add user activity log implementation plan
+
+- [8a7022b] docs: add user activity log implementation plan
+
 ## 2026-04-14 — docs: add user activity log design spec
 
 - [97fbcdd] docs: add user activity log design spec
