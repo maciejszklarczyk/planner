@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-14 — docs: add user activity log design spec
+
+- [97fbcdd] docs: add user activity log design spec
+
 ## 2026-04-14 — docs: remove redundant git-commit rule from CLAUDE.md
 
 - [6f274f7] docs: remove redundant git-commit rule from CLAUDE.md
