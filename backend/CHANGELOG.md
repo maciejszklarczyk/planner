@@ -1,7 +1,8 @@
 # Changelog
 
-## 2026-04-15 — security: hash invitation tokens and add coverage tooling
+## 2026-04-15
 
+- [SHA_PLACEHOLDER_1] feat(activity-log): add UserActivityLog entity and UserActivityTypeEnum enum
 - [181d2a0] security: hash invitation tokens and add coverage tooling
 
 ## 2026-04-14 — docs: add user activity log implementation plan
