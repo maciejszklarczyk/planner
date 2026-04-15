@@ -36,11 +36,22 @@
 | `src/Service/` | Business logic, orchestration of repositories | HTTP handling, direct DB calls |
 | `src/Repository/` | Doctrine queries, pagination | Business rules, HTTP concerns |
 | `src/Entity/` | Doctrine entities + ORM mapping, enums | Business logic beyond entity state |
+| `src/Entity/Enum/` | PHP 8.1 backed enums (`UserGroupRoleEnum`, `UserStatusEnum`, `UserActivityTypeEnum`) | Business logic |
 | `src/Dto/` | Input validation (`src/Dto/`) and response transformation (`src/Dto/Response/`) | Persistence, routing |
 | `src/Security/` | Voters, auth handlers, entry points | Business rules |
 | `src/Exception/` | Domain exception classes | Catching exceptions (controllers handle that) |
-| `src/Event/` | Symfony event classes (to be added per plan) | Listeners/subscribers |
-| `src/EventSubscriber/` | Event listeners (to be added per plan) | HTTP handling |
+| `src/Event/` | Symfony event classes (**planned** — not yet created) | Listeners/subscribers |
+| `src/EventSubscriber/` | Event listeners (**planned** — not yet created) | HTTP handling |
+
+### 3a) Key Entities
+
+| Entity | File | Notes |
+|--------|------|-------|
+| `User` | `src/Entity/User.php` | SoftDeleteable, `UserStatusEnum` (PENDING/ACTIVE/INACTIVE), nullable password |
+| `Group` | `src/Entity/Group.php` | SoftDeleteable |
+| `UserHasGroup` | `src/Entity/UserHasGroup.php` | Join entity for User↔Group with `UserGroupRoleEnum` (owner/member) |
+| `UserInvitationToken` | `src/Entity/UserInvitationToken.php` | SHA-256 hashed token, 1-day TTL |
+| `UserActivityLog` | `src/Entity/UserActivityLog.php` | Append-only log; `eventType` stored as string from `UserActivityTypeEnum`; `onDelete: CASCADE` on User FK |
 
 ### 4) Naming and Organization Rules
 
@@ -58,5 +69,7 @@
 - `src/Service/GroupMembershipService.php`
 - `src/Entity/User.php`
 - `src/Entity/Group.php`
+- `src/Entity/UserActivityLog.php`
+- `src/Entity/Enum/UserActivityTypeEnum.php`
 - `config/packages/doctrine.yaml`
 - `composer.json` (autoload PSR-4 `App\\ -> src/`)

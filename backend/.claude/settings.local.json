@@ -6,7 +6,12 @@
       "Bash(php bin/console cache:clear:*)",
       "Bash(php bin/console debug:router:*)",
       "Bash(composer show:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Skill(git-commit)",
+      "Bash(python3 /Users/maciejszklarczyk/.claude/skills/acquire-codebase-knowledge/scripts/scan.py --output /Users/maciejszklarczyk/htdocs/plan/backend/docs/codebase/.codebase-scan.txt)",
+      "Bash(grep -v '^$')",
+      "Bash(python3 /Users/maciejszklarczyk/.claude/skills/acquire-codebase-knowledge/scripts/scan.py --output /Users/maciejszklarczyk/htdocs/plan/backend/docs/codebase/.codebase-scan.txt --root /Users/maciejszklarczyk/htdocs/plan/backend)",
+      "Bash(python3 /Users/maciejszklarczyk/.claude/skills/acquire-codebase-knowledge/scripts/scan.py --output docs/codebase/.codebase-scan.txt)"
     ]
   }
 }

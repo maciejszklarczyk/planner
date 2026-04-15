@@ -28,7 +28,7 @@ HTTP Request
 
 Notable side paths:
 - Voter check (`#[IsGranted('view', 'group')]`) happens between Security and Controller for resource-level authorization
-- Invitations: `InvitationController::complete()` sets `UserStatusEnum::ACTIVE` (dispatch point for future `UserRegisteredEvent`)
+- Invitations: `InvitationController::complete()` sets `UserStatusEnum::ACTIVE` — planned dispatch point for `UserRegisteredEvent` (not yet wired; Phase 2 of branch 16 activity log feature)
 - File upload: `UserAvatarController` → Flysystem → S3
 
 ### 3) Layer/Module Responsibilities

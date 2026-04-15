@@ -18,7 +18,8 @@
 |-----------|---------------|-------|-----------------|---------------|
 | Two PHPUnit config files | `phpunit.dist.xml` (active) and `phpunit.xml.dist` (old) both present | root | Confusion about which config is active | Delete `phpunit.xml.dist` |
 | Business logic in `InvitationController` | No service was created when this was built | `src/Controller/InvitationController.php` | Controller grows harder to test; breaks layer rules | Extract to service |
-| Missing `UserRegisteredEvent` dispatch | Plan exists but not yet implemented | `src/Controller/InvitationController.php` line after `setStatus(ACTIVE)` | Activity log feature (branch 16) requires this | Implement per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` |
+| Activity log Phase 1 partial: entity + enum created, rest missing | Implementation started on branch 16 | `src/Entity/UserActivityLog.php`, `src/Entity/Enum/UserActivityTypeEnum.php` exist; no Repository, migration, Event, Subscriber, Service, or Controller yet | Feature non-functional until Phase 2–4 complete | Implement per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` |
+| `UserRegisteredEvent` not yet dispatched | Phase 2 not started | `src/Controller/InvitationController.php` — no event dispatch after `setStatus(ACTIVE)` | Activity log will never receive registrations | Dispatch in `InvitationController::complete()` per plan |
 
 ### 3) Security Concerns
 

@@ -71,7 +71,7 @@ tests/
   - `UserController`, `InvitationController`, `UserAvatarController`, `GroupController` — no dedicated test files
   - `UserGroupService`, `InvitationMailer` services — no unit tests
   - Admin `UserController` (invite/resend) — not directly tested
-  - Planned: `UserActivityLogController` tests (per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md`)
+  - `UserActivityLog` entity/service/controller — entity + enum created on branch 16 but repository, migration, service, subscriber and controller not yet written; tests pending (4 planned functional tests per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md`)
 
 ### 6) Evidence
 
