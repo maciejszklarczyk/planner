@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-15 — security: hash invitation tokens and add coverage tooling
+
+- [181d2a0] security: hash invitation tokens and add coverage tooling
+
 ## 2026-04-14 — docs: add user activity log implementation plan
 
 - [8a7022b] docs: add user activity log implementation plan

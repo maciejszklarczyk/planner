@@ -1,5 +1,7 @@
 # Planner Backend API
 
+![coverage](https://img.shields.io/badge/coverage-50.6%25-yellow)
+
 Symfony 7.4 + Doctrine ORM API.
 
 ## Uruchamianie

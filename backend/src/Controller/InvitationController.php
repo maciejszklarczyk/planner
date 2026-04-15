@@ -8,6 +8,7 @@ use App\Dto\User\InvitationCompleteDto;
 use App\Entity\Enum\UserStatusEnum;
 use App\Entity\UserInvitationToken;
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,7 +31,7 @@ class InvitationController extends AbstractController
     #[Route('/invitation/verify', name: 'verify-invitation', methods: ['GET'])]
     public function verify(#[MapQueryParameter] string $token): JsonResponse
     {
-        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => $token]);
+        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $token)]);
         if (!$invitationToken) {
             return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
         }
@@ -39,7 +40,7 @@ class InvitationController extends AbstractController
             return $this->json(['valid' => false, 'message' => 'Token already used.'], 400);
         }
 
-        if ($invitationToken->getExpiresAt() < new \DateTimeImmutable()) {
+        if ($invitationToken->getExpiresAt() < new DateTimeImmutable()) {
             return $this->json(['valid' => false, 'message' => 'Token expired.'], 400);
         }
 
@@ -49,7 +50,7 @@ class InvitationController extends AbstractController
     #[Route('/invitation/complete', name: 'complete-invitation', methods: ['POST'])]
     public function complete(#[MapRequestPayload] InvitationCompleteDto $dto): JsonResponse
     {
-        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => $dto->token]);
+        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $dto->token)]);
         if (!$invitationToken) {
             return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
         }
@@ -58,7 +59,7 @@ class InvitationController extends AbstractController
             return $this->json(['valid' => false, 'message' => 'Token already used.'], 400);
         }
 
-        if ($invitationToken->getExpiresAt() < new \DateTimeImmutable()) {
+        if ($invitationToken->getExpiresAt() < new DateTimeImmutable()) {
             return $this->json(['valid' => false, 'message' => 'Token expired.'], 400);
         }
 
@@ -69,7 +70,7 @@ class InvitationController extends AbstractController
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $dto->password));
         $user->setStatus(UserStatusEnum::ACTIVE);
-        $invitationToken->setUsedAt(new \DateTimeImmutable());
+        $invitationToken->setUsedAt(new DateTimeImmutable());
         $this->entityManager->flush();
 
         return $this->json(['valid' => true]);

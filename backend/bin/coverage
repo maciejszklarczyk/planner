@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+XDEBUG_MODE=coverage \
+APP_ENV=test \
+php /app/vendor/phpunit/phpunit/phpunit \
+    --bootstrap /app/tests/bootstrap.php \
+    --configuration /app/phpunit.dist.xml \
+    --coverage-clover /app/coverage/clover.xml \
+    --coverage-html /app/coverage/html \
+    --coverage-text
