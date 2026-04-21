@@ -46,6 +46,13 @@ security:
         - { path: ^/invitation/complete, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
 
+when@dev:
+    security:
+        firewalls:
+            main:
+                custom_authenticators:
+                    - App\Security\DevHeaderAuthenticator
+
 when@test:
     security:
         password_hashers:
