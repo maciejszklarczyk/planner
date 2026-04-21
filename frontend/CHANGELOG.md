@@ -1,5 +1,9 @@
 # Changelog
 
+## [fde7936] — 2026-04-21
+
+- Apply shadcn/ui design rule fixes: `FieldGroup`/`FieldError` in forms, `Skeleton` for loading states, `Badge` for status, `data-icon` on icons, remove raw colors and `space-y-*`
+
 ## [1480c7f] — 2026-04-12
 
 - Remove `API_URL` prefix from avatar URL in `CurrentUserEditForm` — backend now returns full S3 public URL

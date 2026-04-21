@@ -4,6 +4,7 @@ import {ColumnDef} from "@tanstack/react-table"
 import {User} from "@/types/auth";
 import {MailCheck, Pencil, Trash2} from "lucide-react"
 import {Button} from "@/components/ui/button"
+import {Badge} from "@/components/ui/badge"
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -114,7 +115,7 @@ function EditUserButton({ user }: { user: User }) {
                 size="icon"
                 onClick={() => setOpen(true)}
             >
-                <Pencil className="h-4 w-4"/>
+                <Pencil data-icon />
             </Button>
             <EditUserModal user={user} open={open} onOpenChange={setOpen}/>
         </>
@@ -132,7 +133,7 @@ function ResendInviteButton({ user }: { user: User }) {
             onClick={() => resend({ email: user.email })}
             title="Wyślij zaproszenie ponownie"
         >
-            <MailCheck className="h-4 w-4"/>
+            <MailCheck data-icon />
         </Button>
     );
 }
@@ -144,7 +145,7 @@ function DeleteUserButton({ user }: { user: User }) {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4 text-destructive"/>
+                    <Trash2 data-icon className="text-destructive"/>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -185,6 +186,14 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "status",
         header: "Status",
+        cell: ({ row }) => {
+            const status = row.original.status;
+            return (
+                <Badge variant={status === 'active' ? 'default' : 'secondary'} className="capitalize">
+                    {status}
+                </Badge>
+            );
+        },
     },
     {
         id: "resend-invite",
