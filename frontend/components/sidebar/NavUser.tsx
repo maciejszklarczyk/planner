@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar"
 import {User} from "@/types/auth";
 import {useLogout} from "@/hooks/useLogout";
+import Link from "next/link";
 
 
 interface NavUserProps {
@@ -90,17 +91,21 @@ export function NavUser({user}: NavUserProps) {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <IconUserCircle />
-                                Account
+                            <DropdownMenuItem asChild>
+                                <Link href="/settings?tab=profile">
+                                    <IconUserCircle />
+                                    Account
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <IconCreditCard />
                                 Billing
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <IconNotification />
-                                Notifications
+                            <DropdownMenuItem asChild>
+                                <Link href="/settings?tab=notifications">
+                                    <IconNotification />
+                                    Notifications
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
