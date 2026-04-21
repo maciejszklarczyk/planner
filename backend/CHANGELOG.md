@@ -2,6 +2,7 @@
 
 ## 2026-04-21
 
+- [38a92d9] feat(event): add Event entity, controller, migration and fixtures
 - [2313887] build: add .dockerignore to exclude docs and dev files from prod image
 
 ## 2026-04-15

@@ -6,6 +6,7 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Name\OptionallyQualifiedName;
 use Doctrine\Persistence\ObjectManager;
 use Fidry\AliceDataFixtures\LoaderInterface;
 
@@ -26,6 +27,7 @@ class AppFixtures extends Fixture
             __DIR__.'/../../fixtures/users.yaml',
             __DIR__.'/../../fixtures/groups.yaml',
             __DIR__.'/../../fixtures/user_has_groups.yaml',
+            __DIR__.'/../../fixtures/events.yaml',
         ]);
     }
 
@@ -39,10 +41,11 @@ class AppFixtures extends Fixture
             return;
         }
 
-        $tables = $this->connection->createSchemaManager()->listTableNames();
+        $tables = $this->connection->createSchemaManager()->introspectTableNames();
 
+        /** @var OptionallyQualifiedName $table */
         foreach ($tables as $table) {
-            $cleanTable = trim($table, '"');
+            $cleanTable = trim($table->toString(), '"');
             $this->connection->executeStatement(
                 "ALTER SEQUENCE IF EXISTS \"{$cleanTable}_id_seq\" RESTART WITH 1"
             );
