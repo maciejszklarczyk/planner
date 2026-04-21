@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-21
+
+- [2313887] build: add .dockerignore to exclude docs and dev files from prod image
+
 ## 2026-04-15
 
 - [7591b44] docs(codebase): update knowledge docs to reflect activity log Phase 1 state
