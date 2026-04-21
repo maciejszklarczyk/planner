@@ -55,6 +55,10 @@ when@dev:
 
 when@test:
     security:
+        firewalls:
+            main:
+                custom_authenticators:
+                    - App\Security\DevHeaderAuthenticator
         password_hashers:
             # Password hashers are resource-intensive by design to ensure security.
             # In tests, it's safe to reduce their cost to improve performance.

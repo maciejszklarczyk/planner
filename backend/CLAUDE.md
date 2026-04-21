@@ -49,6 +49,16 @@ Wytyczne projektu. Uzupełniaj w punktach.
 
 - Serwer deweloperski: `docker compose up`
 
+## Autentykacja w testach i lokalnym dev
+
+- W środowiskach `dev` i `test` działa `DevHeaderAuthenticator` — wystarczy wysłać nagłówek `X-Dev-User: email@example.com`, aby uwierzytelnić się jako dowolny użytkownik z fixtures.
+- W testach przekazuj nagłówek przez `HTTP_X_DEV_USER` (Symfony konwertuje automatycznie):
+  ```php
+  $client->request('GET', '/events', [], [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
+  ```
+- Nie używaj logowania przez `/auth/login` w nowych testach — `X-Dev-User` jest prostsze i nie wymaga sesji.
+- ModHeader (lub odpowiednik) w przeglądarce: dodaj nagłówek `X-Dev-User: admin@example.com` i przełączaj użytkowników bez wylogowywania.
+
 ## Testy
 
 - Testy funkcjonalne wymagają `.env.test` jako zmiennych środowiskowych — bez tego Symfony nie załaduje `framework.test: true` i `createClient()` rzuci LogicException.

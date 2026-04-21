@@ -2,6 +2,7 @@
 
 ## 2026-04-21
 
+- [16f65cc] test(event): use X-Dev-User header auth in EventControllerTest
 - [72ceea6] feat(dev-auth): add X-Dev-User header authenticator for local development
 - [38a92d9] feat(event): add Event entity, controller, migration and fixtures
 - [2313887] build: add .dockerignore to exclude docs and dev files from prod image
