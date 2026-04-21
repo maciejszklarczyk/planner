@@ -13,6 +13,11 @@ config:
         username: ""
         password: ""
       bypassProxy: ""
+
+request:
+  headers:
+    - name: X-Dev-User
+      value: admin@example.com
 bundled: false
 extensions:
   bruno:
