@@ -4,6 +4,10 @@ import {ThemeProvider} from "@/components/layout/ThemeProvider";
 import type {Metadata} from "next";
 
 export const metadata: Metadata = {
+    title: {
+        template: '%s | EventPlanner4000',
+        default: 'EventPlanner4000',
+    },
     robots: {
         index: false,
         follow: false,
