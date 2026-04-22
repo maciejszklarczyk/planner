@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-22
+
+- [78f057f] test: add unit and functional test coverage
+
 ## 2026-04-21
 
 - [16f65cc] test(event): use X-Dev-User header auth in EventControllerTest
