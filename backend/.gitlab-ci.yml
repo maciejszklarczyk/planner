@@ -34,7 +34,14 @@ phpunit:
     image: composer:2.9.4
     script:
         - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
-        - vendor/bin/phpunit
+        - pecl install pcov && docker-php-ext-enable pcov
+        - vendor/bin/phpunit --coverage-text --coverage-cobertura=coverage.xml
+    coverage: '/Lines:\s+(\d+\.\d+)%/'
+    artifacts:
+        reports:
+            coverage_report:
+                coverage_format: cobertura
+                path: coverage.xml
     cache:
         paths:
             - vendor/
