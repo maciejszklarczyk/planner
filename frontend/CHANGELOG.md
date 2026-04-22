@@ -2,6 +2,8 @@
 
 ## 2026-04-22
 
+- [f41a730] chore: ignore .claude/ and .superpowers/ personal tooling dirs
+
 - [defa1f2] feat(events): add EventsView component with mock data and page metadata
 
 ## [b9a4180] — 2026-04-21
