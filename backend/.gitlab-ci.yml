@@ -46,8 +46,6 @@ phpunit:
     cache:
         paths:
             - vendor/
-    except:
-        - main
 
 composer:
     stage: build
