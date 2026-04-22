@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-04-21
+
+- [16f65cc] test(event): use X-Dev-User header auth in EventControllerTest
+- [72ceea6] feat(dev-auth): add X-Dev-User header authenticator for local development
+- [38a92d9] feat(event): add Event entity, controller, migration and fixtures
+- [2313887] build: add .dockerignore to exclude docs and dev files from prod image
+
+## 2026-04-15
+
+- [7591b44] docs(codebase): update knowledge docs to reflect activity log Phase 1 state
+- [c53693f] feat(activity-log): add UserActivityLog entity and UserActivityTypeEnum enum
+- [181d2a0] security: hash invitation tokens and add coverage tooling
+
+## 2026-04-14 — docs: add user activity log implementation plan
+
+- [8a7022b] docs: add user activity log implementation plan
+
+## 2026-04-14 — docs: add user activity log design spec
+
+- [97fbcdd] docs: add user activity log design spec
+
 ## 2026-04-14 — docs: remove redundant git-commit rule from CLAUDE.md
 
 - [6f274f7] docs: remove redundant git-commit rule from CLAUDE.md

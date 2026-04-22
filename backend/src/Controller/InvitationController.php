@@ -30,7 +30,7 @@ class InvitationController extends AbstractController
     #[Route('/invitation/verify', name: 'verify-invitation', methods: ['GET'])]
     public function verify(#[MapQueryParameter] string $token): JsonResponse
     {
-        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => $token]);
+        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $token)]);
         if (!$invitationToken) {
             return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
         }
@@ -49,7 +49,7 @@ class InvitationController extends AbstractController
     #[Route('/invitation/complete', name: 'complete-invitation', methods: ['POST'])]
     public function complete(#[MapRequestPayload] InvitationCompleteDto $dto): JsonResponse
     {
-        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => $dto->token]);
+        $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $dto->token)]);
         if (!$invitationToken) {
             return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
         }

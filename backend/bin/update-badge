@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$cloverFile = __DIR__ . '/../coverage/clover.xml';
+
+if (!file_exists($cloverFile)) {
+    echo "coverage/clover.xml not found. Run coverage first:\n";
+    echo "  XDEBUG_MODE=coverage bin/phpunit --coverage-clover coverage/clover.xml\n";
+    exit(1);
+}
+
+$xml = simplexml_load_file($cloverFile);
+$metrics = $xml->xpath('//project/metrics')[0];
+
+$total = (int) $metrics['statements'];
+$covered = (int) $metrics['coveredstatements'];
+
+if ($total === 0) {
+    echo "No statements found in coverage report.\n";
+    exit(1);
+}
+
+$percentage = round($covered / $total * 100, 1);
+
+$color = match (true) {
+    $percentage >= 90 => 'brightgreen',
+    $percentage >= 80 => 'green',
+    $percentage >= 70 => 'yellowgreen',
+    $percentage >= 50 => 'yellow',
+    default           => 'red',
+};
+
+$badge = "![coverage](https://img.shields.io/badge/coverage-{$percentage}%25-{$color})";
+
+$readmeFile = __DIR__ . '/../README.md';
+$readme = file_get_contents($readmeFile);
+$updated = preg_replace(
+    '/!\[coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[^)]+\)/',
+    $badge,
+    $readme,
+    count: $replaced
+);
+
+if ($replaced === 0) {
+    echo "Badge placeholder not found in README.md.\n";
+    exit(1);
+}
+
+file_put_contents($readmeFile, $updated);
+
+echo "Coverage: {$percentage}% — badge updated in README.md\n";

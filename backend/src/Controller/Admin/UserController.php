@@ -14,6 +14,7 @@ use App\Repository\UserRepository;
 use App\Service\InvitationMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,6 +68,9 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws RandomException
+     */
     #[Route('/admin/user-invite', name: 'send_user_invite', methods: ['POST'])]
     public function sendUserInvite(#[MapRequestPayload] UserInviteDto $dto, #[CurrentUser] User $currentUser): JsonResponse
     {
@@ -81,18 +85,17 @@ class UserController extends AbstractController
         $newUser->setAddedBy($currentUser);
         $this->entityManager->persist($newUser);
 
-        $token = new UserInvitationToken(
-            token: bin2hex(random_bytes(32)),
-            email: $dto->email,
-        );
-        $this->entityManager->persist($token);
+        [$rawToken] = $this->createToken($dto->email);
         $this->entityManager->flush();
 
-        $this->invitationMailer->sendInvitation($dto->email, $token->getToken());
+        $this->invitationMailer->sendInvitation($dto->email, $rawToken);
 
         return $this->json(['status' => 'ok', 'email' => $dto->email]);
     }
 
+    /**
+     * @throws RandomException
+     */
     #[Route('/admin/user-invite/resend', name: 'resend_user_invite', methods: ['POST'])]
     public function resendUserInvite(#[MapRequestPayload] UserInviteDto $dto): JsonResponse
     {
@@ -109,15 +112,28 @@ class UserController extends AbstractController
             $oldToken->setUsedAt(new \DateTimeImmutable());
         }
 
-        $newToken = new UserInvitationToken(
-            token: bin2hex(random_bytes(32)),
-            email: $dto->email,
-        );
-        $this->entityManager->persist($newToken);
+        [$rawToken] = $this->createToken($dto->email);
         $this->entityManager->flush();
 
-        $this->invitationMailer->sendInvitation($dto->email, $newToken->getToken());
+        $this->invitationMailer->sendInvitation($dto->email, $rawToken);
 
         return $this->json(['status' => 'ok', 'email' => $dto->email]);
+    }
+
+    /**
+     * @return array{string, UserInvitationToken} [rawToken, persistedEntity]
+     *
+     * @throws RandomException
+     */
+    private function createToken(string $email): array
+    {
+        $rawToken = bin2hex(random_bytes(32));
+        $token = new UserInvitationToken(
+            token: hash('sha256', $rawToken),
+            email: $email,
+        );
+        $this->entityManager->persist($token);
+
+        return [$rawToken, $token];
     }
 }

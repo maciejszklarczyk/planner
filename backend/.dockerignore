@@ -1,0 +1,39 @@
+# Docs
+*.md
+docs/
+
+# Claude / AI config
+CLAUDE*
+.claude/
+
+# Tests
+tests/
+phpunit.dist.xml
+.phpunit.cache/
+
+# Dev tools
+.php-cs-fixer.cache
+.php-cs-fixer.php
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker source files (not needed in image)
+docker/
+
+# Var (rebuilt in image)
+var/
+
+# Node (if any)
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# Env overrides (prod uses real env vars)
+.env.local
+.env.test
+.env.dev

@@ -1,0 +1,11 @@
+App\Entity\Event:
+    event_1:
+        name: Spring Planning Test
+        startDate: '<(new DateTimeImmutable("2025-04-01"))>'
+    event_2:
+        name: Summer Kickoff
+        startDate: '<(new DateTimeImmutable("2025-06-15"))>'
+    event_3:
+        name: Deleted Event
+        startDate: '<(new DateTimeImmutable("2025-06-16"))>'
+        deletedAt: '<(new DateTimeImmutable("2025-06-17"))>'

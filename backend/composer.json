@@ -85,6 +85,8 @@
         "cs-fix-analyse": "php-cs-fixer fix --dry-run --stop-on-violation --config=.php-cs-fixer.dist.php",
         "phpstan": "/app/vendor/bin/phpstan analyse src tests --memory-limit 1G",
         "run-tests": "APP_ENV=test php /app/vendor/phpunit/phpunit/phpunit --bootstrap /app/tests/bootstrap.php --configuration /app/phpunit.dist.xml --display-deprecations --display-notices --display-warnings --display-phpunit-notices /app/tests",
+        "run-coverage": "sh /app/bin/coverage",
+        "update-badge": "php /app/bin/update-badge",
         "run-all": [
             "@cs-fix-analyse",
             "@phpstan",

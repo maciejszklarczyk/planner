@@ -6,7 +6,8 @@
       "Bash(php bin/console cache:clear:*)",
       "Bash(php bin/console debug:router:*)",
       "Bash(composer show:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Skill(git-commit)"
     ]
   }
 }
