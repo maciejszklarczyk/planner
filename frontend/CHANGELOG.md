@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-04-22
+
+- [dc1c6a3] chore: exclude tooling dirs and docs from Docker build context
+- [f41a730] chore: ignore .claude/ and .superpowers/ personal tooling dirs
+
+- [defa1f2] feat(events): add EventsView component with mock data and page metadata
+
+## [b9a4180] — 2026-04-21
+
+- Link NavUser Notifications dropdown item to `/settings?tab=notifications` — reads `tab` search param in `SettingsTabs` for initial active tab; wrap in `Suspense` for Next.js App Router compatibility
+
 ## [fde7936] — 2026-04-21
 
 - Apply shadcn/ui design rule fixes: `FieldGroup`/`FieldError` in forms, `Skeleton` for loading states, `Badge` for status, `data-icon` on icons, remove raw colors and `space-y-*`

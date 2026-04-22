@@ -8,6 +8,7 @@ import {GroupsTable} from "@/components/users/GroupsTable";
 import {groupColumns} from "@/components/users/GroupsTableColumn";
 import {InviteUserDialog} from "@/components/users/InviteUserDialog";
 import {useState} from "react";
+import {useSearchParams} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {Separator} from "@/components/ui/separator";
@@ -16,7 +17,9 @@ type Tab = 'profile' | 'notifications' | 'users' | 'groups' | 'logs';
 
 export function SettingsTabs() {
     const {user, isLoading} = useAuth();
-    const [activeTab, setActiveTab] = useState<Tab>('profile');
+    const searchParams = useSearchParams();
+    const initialTab = (searchParams.get('tab') as Tab) ?? 'profile';
+    const [activeTab, setActiveTab] = useState<Tab>(initialTab);
 
     if (isLoading) {
         return (

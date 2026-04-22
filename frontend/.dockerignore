@@ -38,3 +38,11 @@ coverage
 .prettierrc
 .eslintrc
 tsconfig.tsbuildinfo
+
+# Local tooling
+.agents/
+.claude/
+.superpowers/
+skills-lock.json
+docker-compose.prod.yaml
+docs/
