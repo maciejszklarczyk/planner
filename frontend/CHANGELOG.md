@@ -2,6 +2,7 @@
 
 ## 2026-04-22
 
+- [dc1c6a3] chore: exclude tooling dirs and docs from Docker build context
 - [f41a730] chore: ignore .claude/ and .superpowers/ personal tooling dirs
 
 - [defa1f2] feat(events): add EventsView component with mock data and page metadata

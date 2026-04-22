@@ -25,7 +25,6 @@
 *.pem
 
 # tooling
-.claude/
 .superpowers/
 
 # debug
