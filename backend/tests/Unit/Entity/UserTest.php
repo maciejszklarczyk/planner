@@ -82,7 +82,7 @@ final class UserTest extends TestCase
 
         $data = $user->__serialize();
 
-        $key = "\0" . User::class . "\0password";
+        $key = "\0".User::class."\0password";
         self::assertArrayHasKey($key, $data);
         self::assertSame(hash('crc32c', 'plain'), $data[$key]);
     }

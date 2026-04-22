@@ -1,6 +1,6 @@
 # Planner Backend API
 
-![coverage](https://img.shields.io/badge/coverage-51.8%25-yellow)
+![coverage](https://img.shields.io/badge/coverage-67.7%25-yellow)
 
 Symfony 7.4 + Doctrine ORM API.
 

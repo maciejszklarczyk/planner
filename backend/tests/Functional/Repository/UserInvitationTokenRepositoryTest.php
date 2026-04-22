@@ -7,7 +7,6 @@ namespace App\Tests\Functional\Repository;
 use App\Entity\UserInvitationToken;
 use App\Repository\UserInvitationTokenRepository;
 use App\Tests\DatabaseTestCase;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -32,16 +31,16 @@ final class UserInvitationTokenRepositoryTest extends DatabaseTestCase
     private function persistToken(
         string $email,
         string $token,
-        ?DateTimeImmutable $expiresAt = null,
-        ?DateTimeImmutable $usedAt = null,
+        ?\DateTimeImmutable $expiresAt = null,
+        ?\DateTimeImmutable $usedAt = null,
     ): void {
         $entity = new UserInvitationToken($token, $email);
 
-        if ($expiresAt !== null) {
+        if (null !== $expiresAt) {
             $entity->setExpiresAt($expiresAt);
         }
 
-        if ($usedAt !== null) {
+        if (null !== $usedAt) {
             $entity->setUsedAt($usedAt);
         }
 
@@ -74,7 +73,7 @@ final class UserInvitationTokenRepositoryTest extends DatabaseTestCase
         $this->persistToken(
             email: 'invited@example.com',
             token: 'used_token',
-            usedAt: new DateTimeImmutable('-1 hour'),
+            usedAt: new \DateTimeImmutable('-1 hour'),
         );
 
         $result = $this->repository->findActiveByEmail('invited@example.com');
@@ -87,7 +86,7 @@ final class UserInvitationTokenRepositoryTest extends DatabaseTestCase
         $this->persistToken(
             email: 'invited@example.com',
             token: 'expired_token',
-            expiresAt: new DateTimeImmutable('-1 second'),
+            expiresAt: new \DateTimeImmutable('-1 second'),
         );
 
         $result = $this->repository->findActiveByEmail('invited@example.com');
