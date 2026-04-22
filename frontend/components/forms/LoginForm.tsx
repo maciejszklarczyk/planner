@@ -6,8 +6,8 @@ import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { toast } from 'sonner';
 import { useLogin } from '@/hooks/useLogin';
 
@@ -52,32 +52,32 @@ export function LoginForm() {
                 <CardDescription>Zaloguj się do EventPlanner4000</CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            {...register('email')}
-                            disabled={isPending}
-                        />
-                        {errors.email && (
-                            <p className="text-sm text-red-500">{errors.email.message}</p>
-                        )}
-                    </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                    <FieldGroup>
+                        <Field data-invalid={!!errors.email}>
+                            <FieldLabel htmlFor="email">Email</FieldLabel>
+                            <Input
+                                id="email"
+                                type="email"
+                                {...register('email')}
+                                aria-invalid={!!errors.email}
+                                disabled={isPending}
+                            />
+                            {errors.email && <FieldError errors={[errors.email]} />}
+                        </Field>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="password">Hasło</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            {...register('password')}
-                            disabled={isPending}
-                        />
-                        {errors.password && (
-                            <p className="text-sm text-red-500">{errors.password.message}</p>
-                        )}
-                    </div>
+                        <Field data-invalid={!!errors.password}>
+                            <FieldLabel htmlFor="password">Hasło</FieldLabel>
+                            <Input
+                                id="password"
+                                type="password"
+                                {...register('password')}
+                                aria-invalid={!!errors.password}
+                                disabled={isPending}
+                            />
+                            {errors.password && <FieldError errors={[errors.password]} />}
+                        </Field>
+                    </FieldGroup>
 
                     <Button type="submit" className="w-full" disabled={isPending}>
                         {isPending ? 'Logowanie...' : 'Zaloguj się'}

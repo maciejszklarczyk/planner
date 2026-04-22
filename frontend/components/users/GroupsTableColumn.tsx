@@ -25,6 +25,7 @@ import {useSearchUsers} from "@/hooks/useSearchUsers";
 import {useDeleteGroup} from "@/hooks/useDeleteGroup";
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 
 function AddMemberDropdown({ groupId, onAdd }: { groupId: number; onAdd: () => void }) {
     const [search, setSearch] = useState('');
@@ -65,7 +66,7 @@ function AddMemberDropdown({ groupId, onAdd }: { groupId: number; onAdd: () => v
                 <ul className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
                     {isFetching ? (
                         <li className="flex justify-center py-3">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-200 border-t-orange-600"/>
+                            <Skeleton className="size-4 rounded-full" />
                         </li>
                     ) : results.length === 0 ? (
                         <li className="px-3 py-2 text-sm text-muted-foreground">Brak wyników</li>
@@ -104,7 +105,7 @@ function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boo
                 <DialogHeader>
                     <DialogTitle>{group.name}</DialogTitle>
                 </DialogHeader>
-                <div className="mt-2 space-y-4">
+                <div className="mt-2 flex flex-col gap-4">
                     <div>
                         <p className="text-sm font-medium mb-2">Dodaj członka</p>
                         <AddMemberDropdown groupId={group.id} onAdd={() => {}}/>
@@ -115,7 +116,7 @@ function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boo
                         </p>
                         {isLoading ? (
                             <div className="flex justify-center py-6">
-                                <div className="h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-orange-600"/>
+                                <Skeleton className="size-6 rounded-full" />
                             </div>
                         ) : members.length === 0 ? (
                             <p className="text-sm text-muted-foreground text-center py-4">
@@ -143,11 +144,10 @@ function EditGroupModal({ group, open, onOpenChange }: { group: Group; open: boo
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-7 w-7"
                                                         disabled={isPending}
                                                         onClick={() => removeGroupMember(membership.user.id)}
                                                     >
-                                                        <Trash2 className="h-3.5 w-3.5 text-destructive"/>
+                                                        <Trash2 data-icon className="text-destructive"/>
                                                     </Button>
                                                 )}
                                             </div>
@@ -173,7 +173,7 @@ function EditGroupButton({ group }: { group: Group }) {
                 size="icon"
                 onClick={() => setOpen(true)}
             >
-                <Pencil className="h-4 w-4"/>
+                <Pencil data-icon />
             </Button>
             <EditGroupModal group={group} open={open} onOpenChange={setOpen}/>
         </>
@@ -187,7 +187,7 @@ function DeleteGroupButton({ group }: { group: Group }) {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4 text-destructive"/>
+                    <Trash2 data-icon className="text-destructive"/>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

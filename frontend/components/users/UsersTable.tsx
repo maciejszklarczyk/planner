@@ -19,6 +19,7 @@ import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/api";
 import {UsersResponse} from "@/types/api";
 import {User} from "@/types/auth";
+import {Skeleton} from "@/components/ui/skeleton";
 
 interface DataTableProps {
     columns: ColumnDef<User, any>[]
@@ -37,7 +38,13 @@ export function UsersTable({columns}: DataTableProps) {
     })
 
     if (isLoading) {
-        return <div className="text-center py-10">Ładowanie...</div>
+        return (
+            <div className="flex flex-col gap-2 p-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                ))}
+            </div>
+        )
     }
 
     return (

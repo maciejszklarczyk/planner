@@ -9,8 +9,7 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import {Field, FieldGroup} from "@/components/ui/field";
-import {Label} from "@/components/ui/label";
+import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {toast} from "sonner";
 import {z} from "zod";
@@ -50,7 +49,7 @@ export function InviteUserDialog() {
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm" type="button">
-                    <IconPlus/>
+                    <IconPlus data-icon="inline-start"/>
                     <span className="hidden lg:inline">Dodaj użytkownika</span>
                 </Button>
             </DialogTrigger>
@@ -64,15 +63,16 @@ export function InviteUserDialog() {
                         </DialogDescription>
                     </DialogHeader>
                     <FieldGroup className="pt-5">
-                        <Field>
-                            <Label htmlFor="invitation-email">E-Mail</Label>
+                        <Field data-invalid={!!errors.email}>
+                            <FieldLabel htmlFor="invitation-email">E-Mail</FieldLabel>
                             <Input
                                 id="invitation-email"
                                 type="email"
                                 placeholder="name@example.com"
+                                aria-invalid={!!errors.email}
                                 {...register('email')}
                             />
-                            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                            {errors.email && <FieldError errors={[errors.email]} />}
                         </Field>
                     </FieldGroup>
                     <DialogFooter className="pt-5">

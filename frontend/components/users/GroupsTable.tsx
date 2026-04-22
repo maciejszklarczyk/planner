@@ -18,6 +18,7 @@ import {
 import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/api";
 import {Group, GroupsResponse} from "@/types/groups";
+import {Skeleton} from "@/components/ui/skeleton";
 
 interface DataTableProps {
     columns: ColumnDef<Group, any>[]
@@ -36,7 +37,13 @@ export function GroupsTable({columns}: DataTableProps) {
     })
 
     if (isLoading) {
-        return <div className="text-center py-10">Ładowanie...</div>
+        return (
+            <div className="flex flex-col gap-2 p-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                ))}
+            </div>
+        )
     }
 
     return (
