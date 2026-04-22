@@ -36,7 +36,7 @@ phpunit:
         - apk add --no-cache $PHPIZE_DEPS linux-headers
         - pecl install pcov && docker-php-ext-enable pcov
         - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
-        - vendor/bin/phpunit --coverage-text --coverage-cobertura=coverage.xml
+        - vendor/bin/phpunit --coverage-cobertura=coverage.xml
     coverage: '/Lines:\s+(\d+\.\d+)%/'
     artifacts:
         reports:
