@@ -38,9 +38,7 @@ final class DevHeaderAuthenticator extends AbstractAuthenticator
                 $user = $this->userRepository->findOneBy(['email' => $email]);
 
                 if (!$user) {
-                    throw new CustomUserMessageAuthenticationException(
-                        sprintf('No user found for email "%s".', $email)
-                    );
+                    throw new CustomUserMessageAuthenticationException(sprintf('No user found for email "%s".', $email));
                 }
 
                 return $user;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\EventRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
@@ -25,7 +24,7 @@ class Event
     private string $name;
 
     #[ORM\Column]
-    private DateTimeImmutable $startDate;
+    private \DateTimeImmutable $startDate;
 
     public function getId(): ?int
     {
@@ -42,12 +41,12 @@ class Event
         $this->name = $name;
     }
 
-    public function getStartDate(): DateTimeImmutable
+    public function getStartDate(): \DateTimeImmutable
     {
         return $this->startDate;
     }
 
-    public function setStartDate(DateTimeImmutable $startDate): void
+    public function setStartDate(\DateTimeImmutable $startDate): void
     {
         $this->startDate = $startDate;
     }

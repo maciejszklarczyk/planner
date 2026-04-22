@@ -12,10 +12,9 @@ use App\Entity\UserInvitationToken;
 use App\Repository\UserInvitationTokenRepository;
 use App\Repository\UserRepository;
 use App\Service\InvitationMailer;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Random\RandomException;
 use OpenApi\Attributes as OA;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,7 +109,7 @@ class UserController extends AbstractController
         }
 
         foreach ($this->invitationTokenRepository->findActiveByEmail($dto->email) as $oldToken) {
-            $oldToken->setUsedAt(new DateTimeImmutable());
+            $oldToken->setUsedAt(new \DateTimeImmutable());
         }
 
         [$rawToken] = $this->createToken($dto->email);
