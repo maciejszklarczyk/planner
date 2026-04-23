@@ -37,7 +37,7 @@ phpunit:
         - pecl install pcov && docker-php-ext-enable pcov
         - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/phpunit --coverage-cobertura=coverage.xml --coverage-text
-    coverage: '/^\s+Lines:\s+(\d+\.\d+)%/'
+    coverage: '/Lines:\s{3,}(\d+\.\d+)%/'
     artifacts:
         reports:
             coverage_report:
