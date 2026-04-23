@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-23
+
+- [a60d803] feat(event): implement full CRUD with mapper pattern and separate request DTOs
+
 ## 2026-04-22
 
 - [78f057f] test: add unit and functional test coverage

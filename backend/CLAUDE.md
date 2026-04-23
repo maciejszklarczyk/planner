@@ -25,7 +25,7 @@ Wytyczne projektu. Uzupełniaj w punktach.
 - Kontrolery dziedziczą po `AbstractController` Symfony
 - DTOs walidowane przez `#[Assert\...]` + `$validator->validate()`
 - Encje mapowane przez atrybuty Doctrine (`#[ORM\Entity]`, `#[ORM\Column]`, itp.)
-- Soft delete: Gedmo `SoftDeleteable` — encje mają pole `deletedAt`, nie usuwane fizycznie
+- Soft delete: Gedmo `SoftDeleteable` — encje mają pole `deletedAt` z datą w typie \DateTime(), nie usuwane fizycznie
 - Enumy PHP 8.1 (np. `UserStatusEnum`, `UserGroupRoleEnum`) z metodą `::from()`
 - Wyjątki domenowe w `src/Exception/` — rzucane z serwisów, łapane w kontrolerach
 - Response DTOs w `src/Dto/Response/` — transformacja encji do JSON
