@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-04-25
+
+- [21a3dff] chore: bump version to v0.0.3, update deps, add frontend docker-compose
+- [572e584] feat(events): add new event page and link "Nowe wydarzenie" button
+
 ## 2026-04-22
 
 - [dc1c6a3] chore: exclude tooling dirs and docs from Docker build context

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Calendar, MapPin, Users, Clock, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -186,9 +187,11 @@ export function EventsView() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <h1 className="text-2xl font-bold tracking-tight">Twoje wydarzenia</h1>
-                <Button>
-                    <Plus data-icon="inline-start" />
-                    Nowe wydarzenie
+                <Button asChild>
+                    <Link href="/events/new">
+                        <Plus data-icon="inline-start" />
+                        Nowe wydarzenie
+                    </Link>
                 </Button>
             </div>
 
