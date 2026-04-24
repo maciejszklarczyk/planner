@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-25
+
+- [f01151a] test: add coverage for DevHeaderAuthenticator, User DTOs and fix SQLite test config
+
 ## 2026-04-23
 
 - [a60d803] feat(event): implement full CRUD with mapper pattern and separate request DTOs

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Controller\AuthController;
 use App\Tests\DatabaseTestCase;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\HttpFoundation\Response;
 
+#[UsesClass(AuthController::class)]
 class AuthControllerTest extends DatabaseTestCase
 {
     private const ADMIN_EMAIL = 'admin@example.com';

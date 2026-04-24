@@ -74,6 +74,7 @@ Wytyczne projektu. Uzupełniaj w punktach.
   - `group_3`: user_2=owner, user_3=member, user_4=member
   - `group_4`: user_4=owner, user_5=member
   - `group_5`: user_5=owner
+- Jeśli się da używaj data providerów, żeby zmniejszyć rozmiar testu.
 
 ## Inne uwagi
 

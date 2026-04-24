@@ -1,4 +1,2 @@
 doctrine:
-    dbal:
-        # Use SQLite for tests - faster and isolated
-        dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+    dbal: ~
