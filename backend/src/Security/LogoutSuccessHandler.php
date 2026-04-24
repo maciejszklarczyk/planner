@@ -8,6 +8,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
+/**
+ * @codeCoverageIgnore
+ */
 class LogoutSuccessHandler implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
