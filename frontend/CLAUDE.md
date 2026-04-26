@@ -122,6 +122,8 @@ interface GroupMembership {
 - Ikony z `lucide-react`, rozmiar `h-4 w-4` (lub `h-3.5 w-3.5` w kompaktowych listach)
 - Przyciski destructive: `<Trash2 className="text-destructive"/>`
 - **Wszystkie `useMutation` żyją w hookach** w `hooks/` — nigdy inline w komponentach
+- Używaj skilla shadcn do weryfikacji poprawności zmian na stronach, czy są z zachowaniem konwencji
+- Używaj skilla tailwind-design-system przy zmianach w layoucie strony
 
 ## Hooki mutacji
 

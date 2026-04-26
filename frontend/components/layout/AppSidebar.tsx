@@ -8,9 +8,9 @@ import {
 import type {User} from "@/types/auth";
 import {NavUser} from "@/components/sidebar/NavUser";
 import {GalleryVerticalEnd} from "lucide-react";
-import {NavSettings} from "@/components/sidebar/NavSettings";
 import Link from "next/link";
 import {ComponentProps} from "react";
+import {NavPages} from "@/components/sidebar/NavPages";
 
 type SidebarProps = ComponentProps<typeof Sidebar> & {
     user: User;
@@ -38,7 +38,7 @@ export function AppSidebar({user, ...props}: SidebarProps) {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup/>
-                <NavSettings className="mt-auto" />
+                <NavPages className="mt-0" />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={user}/>

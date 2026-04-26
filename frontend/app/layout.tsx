@@ -2,6 +2,13 @@ import "./globals.css";
 import {Providers} from "@/components/providers/Providers";
 import {ThemeProvider} from "@/components/layout/ThemeProvider";
 import type {Metadata} from "next";
+import {Manrope} from "next/font/google";
+
+const manrope = Manrope({
+    subsets: ["latin"],
+    variable: "--font-manrope",
+    display: "swap",
+});
 
 export const metadata: Metadata = {
     title: {
@@ -20,11 +27,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="pl" suppressHydrationWarning>
-            <body className="antialiased">
+        <html lang="pl" suppressHydrationWarning className={manrope.variable}>
+            <body className="antialiased font-sans">
             <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="dark"
                 enableSystem
                 disableTransitionOnChange
             >

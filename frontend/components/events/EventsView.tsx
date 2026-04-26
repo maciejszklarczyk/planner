@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, Users, Clock, Plus } from 'lucide-react'
+import { Calendar, MapPin, Users, Clock, Plus, CalendarClock, CalendarCheck, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import type { Event, EventStatus } from '@/types/events'
+
+type Filter = 'upcoming' | 'past' | 'all'
 
 // ---------------------------------------------------------------------------
 // Mock data — replace with API query when backend is ready
@@ -23,7 +26,7 @@ const MOCK_EVENTS: Event[] = [
     { id: 8, name: 'Product Design Sprint', startDate: '2026-06-28', endDate: '2026-07-01', location: 'Startup Hub, Warszawa', attendees: 25, category: 'Product' },
 ]
 
-const EVENTS_PER_PAGE = 6
+const EVENTS_PER_PAGE = 3
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -66,10 +69,14 @@ function SpotlightCard({ event, status, now }: { event: Event; status: EventStat
                 <div className="flex items-center gap-2 mb-2.5">
                     {isActive ? (
                         <>
-                            <span className="relative flex size-2 shrink-0">
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                                <span className="relative inline-flex size-2 rounded-full bg-green-500" />
-                            </span>
+                            {status === 'live' ? (
+                                <span className="relative flex size-2 shrink-0">
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                                    <span className="relative inline-flex size-2 rounded-full bg-green-500" />
+                                </span>
+                            ) : (
+                                <span className="size-2 shrink-0 rounded-full bg-red-500" />
+                            )}
                             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
                                 {status === 'live' ? 'Trwa teraz' : 'Ostatnio zakończone'}
                             </span>
@@ -162,10 +169,44 @@ function EventCard({ event }: { event: Event }) {
 }
 
 // ---------------------------------------------------------------------------
+// StatsRow — placeholder stats, values come from API later
+// ---------------------------------------------------------------------------
+function StatsRow({ upcomingCount }: { upcomingCount: number }) {
+    const stats = [
+        { label: 'Nadchodzące', value: upcomingCount, icon: CalendarClock },
+        { label: 'Zakończone', value: '—', icon: CalendarCheck },
+        { label: 'Twoje', value: '—', icon: Star },
+    ]
+
+    return (
+        <div className="flex flex-col sm:flex-row gap-3">
+            {stats.map(({ label, value, icon: Icon }) => (
+                <Card key={label} className="flex-1 px-4 py-3 gap-0">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-muted-foreground text-xs">{label}</span>
+                        <div className="flex size-6 items-center justify-center rounded-md bg-primary/10 shrink-0">
+                            <Icon className="size-3.5 text-primary shrink-0" />
+                        </div>
+                    </div>
+                    <p className="text-2xl font-bold tracking-tight">{value}</p>
+                </Card>
+            ))}
+        </div>
+    )
+}
+
+// ---------------------------------------------------------------------------
 // EventsView — main page component
 // ---------------------------------------------------------------------------
+const GRID_LABELS: Record<Filter, string> = {
+    upcoming: 'Nadchodzące',
+    past: 'Minione',
+    all: 'Wszystkie',
+}
+
 export function EventsView() {
     const [page, setPage] = useState(1)
+    const [filter, setFilter] = useState<Filter>('upcoming')
     const now = new Date()
 
     const withStatus = MOCK_EVENTS.map(e => ({ event: e, status: getStatus(e, now) }))
@@ -173,14 +214,33 @@ export function EventsView() {
     const activeEntry = withStatus.find(e => e.status === 'live') ?? withStatus.find(e => e.status === 'recent')
     const nextEntry = withStatus.find(e => e.status === 'upcoming')
 
-    const gridEvents = withStatus
-        .filter(e => e.status === 'upcoming' && e.event.id !== nextEntry?.event.id)
-        .map(e => e.event)
+    const hasSpotlight = activeEntry || nextEntry
+
+    const gridEvents = (() => {
+        if (filter === 'upcoming') {
+            return withStatus
+                .filter(e => e.status === 'upcoming' && e.event.id !== nextEntry?.event.id)
+                .map(e => e.event)
+        }
+        if (filter === 'past') {
+            return withStatus
+                .filter(e => e.status === 'ended' || e.status === 'recent')
+                .map(e => e.event)
+        }
+        return withStatus
+            .filter(e => e.event.id !== activeEntry?.event.id && e.event.id !== nextEntry?.event.id)
+            .map(e => e.event)
+    })()
 
     const totalPages = Math.ceil(gridEvents.length / EVENTS_PER_PAGE)
     const pagedEvents = gridEvents.slice((page - 1) * EVENTS_PER_PAGE, page * EVENTS_PER_PAGE)
 
-    const hasSpotlight = activeEntry || nextEntry
+    const upcomingCount = withStatus.filter(e => e.status === 'upcoming').length
+
+    const handleFilterChange = (value: string) => {
+        setFilter(value as Filter)
+        setPage(1)
+    }
 
     return (
         <div className="flex flex-col gap-8">
@@ -195,7 +255,10 @@ export function EventsView() {
                 </Button>
             </div>
 
-            {/* Spotlight */}
+            {/* Stats */}
+            <StatsRow upcomingCount={upcomingCount} />
+
+            {/* Spotlight — always visible, not affected by filter */}
             {hasSpotlight && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {activeEntry && (
@@ -207,11 +270,20 @@ export function EventsView() {
                 </div>
             )}
 
-            {/* Upcoming grid */}
+            {/* Filter tabs */}
+            <Tabs value={filter} onValueChange={handleFilterChange}>
+                <TabsList>
+                    <TabsTrigger value="upcoming">Nadchodzące</TabsTrigger>
+                    <TabsTrigger value="past">Minione</TabsTrigger>
+                    <TabsTrigger value="all">Wszystkie</TabsTrigger>
+                </TabsList>
+            </Tabs>
+
+            {/* Grid */}
             {pagedEvents.length > 0 && (
                 <div className="flex flex-col gap-3">
                     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Nadchodzące
+                        {GRID_LABELS[filter]}
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {pagedEvents.map(event => (
@@ -253,7 +325,7 @@ export function EventsView() {
             )}
 
             {/* Empty state */}
-            {!hasSpotlight && pagedEvents.length === 0 && (
+            {pagedEvents.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
                     <p className="text-sm">Brak wydarzeń. Utwórz pierwsze!</p>
                 </div>
