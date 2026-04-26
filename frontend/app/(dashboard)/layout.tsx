@@ -25,7 +25,7 @@ export default function DashboardLayout({children}: {children: React.ReactNode;
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-orange-600"/>
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary"/>
             </div>
         );
     }

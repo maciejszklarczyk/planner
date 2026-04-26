@@ -46,7 +46,7 @@ export function LoginForm() {
     };
 
     return (
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md backdrop-blur-md bg-card/60 border-white/10">
             <CardHeader>
                 <CardTitle>Logowanie</CardTitle>
                 <CardDescription>Zaloguj się do EventPlanner4000</CardDescription>
