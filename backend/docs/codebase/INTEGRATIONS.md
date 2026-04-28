@@ -40,7 +40,22 @@
 - **Metrics/tracing**: none configured
 - **Missing visibility gaps**: no structured logs for integration failures (Redis down, S3 unavailable, DB connection lost), no alerts, no health check for Redis or S3 (only `/health` endpoint exists but its implementation is minimal — `src/Controller/HealthCheck.php`)
 
-### 6) Evidence
+### 6) Dev Tooling for API
+
+| Tool | Location | Purpose |
+|------|----------|---------|
+| Bruno | `bruno/` (project root) | Manual API request collection — replaces IntelliJ `.http` files in `backend/requests/` |
+| IntelliJ HTTP | `backend/requests/` | Legacy `.http` files — superseded by Bruno but still present |
+
+**Bruno collection details:**
+- Collection name: `Planner`
+- Format: OpenCollection 1.0.0 (YAML per request)
+- Default header: `X-Dev-User: admin@example.com` (dev auth, set at collection level)
+- Environments: `DEV` (`http://localhost:8000`), `LIVE` (`https://api-planner.msolve.it`)
+- Folders: `auth/`, `Event/`, `Groups/`, `User/`
+- Covered endpoints: login (admin + user1), logout, me, health, events CRUD, groups CRUD, user avatar upload
+
+### 7) Evidence
 
 - `.env`
 - `config/packages/doctrine.yaml`
@@ -50,3 +65,5 @@
 - `config/packages/mailer.yaml`
 - `config/packages/nelmio_cors.yaml`
 - `src/Service/InvitationMailer.php`
+- `bruno/opencollection.yml`
+- `bruno/environments/DEV.yml`

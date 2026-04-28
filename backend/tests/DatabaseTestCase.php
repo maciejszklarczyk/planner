@@ -31,8 +31,7 @@ abstract class DatabaseTestCase extends WebTestCase
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
-        // Create database if not exists, then reset schema
-        $application->run(new StringInput('doctrine:database:create --if-not-exists --env=test'));
+        // SQLite file is created automatically; just reset schema
         $application->run(new StringInput('doctrine:schema:drop --force --env=test'));
         $application->run(new StringInput('doctrine:schema:create --env=test'));
 

@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Controller\Admin;
 
 use App\Controller\Admin\GroupMembershipController;
 use App\Tests\DatabaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -100,13 +101,22 @@ class GroupMembershipControllerTest extends DatabaseTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function testListUsersRequiresAuthentication(): void
+    #[DataProvider('unauthenticatedRequestsProvider')]
+    public function testEndpointRequiresAuthentication(string $method, string $url): void
     {
         $client = static::createClient();
-
-        $client->request('GET', '/admin/groups/1/users');
+        $client->request($method, $url);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public static function unauthenticatedRequestsProvider(): array
+    {
+        return [
+            'list users' => ['GET',    '/admin/groups/1/users'],
+            'remove user' => ['DELETE', '/admin/groups/1/users/1'],
+            'update role' => ['PATCH',  '/admin/groups/1/users/1/role'],
+        ];
     }
 
     // -------------------------------------------------------------------------
@@ -168,26 +178,25 @@ class GroupMembershipControllerTest extends DatabaseTestCase
         $this->assertEquals('NOT_FOUND', $body['error']);
     }
 
-    public function testRemoveUserRequiresAuthentication(): void
-    {
-        $client = static::createClient();
-
-        $client->request('DELETE', '/admin/groups/1/users/1');
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
-    }
-
-    public function testRemoveUserRequiresAdminRole(): void
+    #[DataProvider('nonAdminRequestsProvider')]
+    public function testEndpointRequiresAdminRole(string $method, string $url): void
     {
         $client = static::createClient();
         $client->jsonRequest('POST', '/auth/login', [
             'email' => self::USER_EMAIL,
             'password' => self::USER_PASSWORD,
         ]);
-
-        $client->request('DELETE', '/admin/groups/1/users/1');
+        $client->request($method, $url);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public static function nonAdminRequestsProvider(): array
+    {
+        return [
+            'remove user' => ['DELETE', '/admin/groups/1/users/1'],
+            'update role' => ['PATCH',  '/admin/groups/1/users/1/role'],
+        ];
     }
 
     // -------------------------------------------------------------------------
@@ -281,32 +290,6 @@ class GroupMembershipControllerTest extends DatabaseTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testUpdateRoleRequiresAuthentication(): void
-    {
-        $client = static::createClient();
-
-        $client->jsonRequest('PATCH', '/admin/groups/1/users/1/role', [
-            'role' => 'member',
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
-    }
-
-    public function testUpdateRoleRequiresAdminRole(): void
-    {
-        $client = static::createClient();
-        $client->jsonRequest('POST', '/auth/login', [
-            'email' => self::USER_EMAIL,
-            'password' => self::USER_PASSWORD,
-        ]);
-
-        $client->jsonRequest('PATCH', '/admin/groups/1/users/1/role', [
-            'role' => 'member',
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-    }
-
     // -------------------------------------------------------------------------
     // GROUP_ALREADY_HAS_OWNER — add as owner when group already has one
     // -------------------------------------------------------------------------
@@ -343,35 +326,25 @@ class GroupMembershipControllerTest extends DatabaseTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
     }
 
-    public function testPromoteToOwnerWhenGroupAlreadyHasOwnerReturnsUnprocessableEntity(): void
+    #[DataProvider('promoteToOwnerWithExistingOwnerProvider')]
+    public function testPromoteToOwnerInGroupWithExistingOwnerFails(string $groupName, string $userEmail): void
     {
         $client = $this->loginAsAdmin();
-        // group_1: admin=owner, user_1=member — try to promote user_1 to owner
-        $groupId = $this->getGroupIdByName($client, 'Group 1');
-        $user1Id = $this->getUserIdByEmail($client, 'user1@example.com');
+        $groupId = $this->getGroupIdByName($client, $groupName);
+        $userId = $this->getUserIdByEmail($client, $userEmail);
 
-        $client->jsonRequest('PATCH', "/admin/groups/{$groupId}/users/{$user1Id}/role", [
-            'role' => 'owner',
-        ]);
+        $client->jsonRequest('PATCH', "/admin/groups/{$groupId}/users/{$userId}/role", ['role' => 'owner']);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $body = json_decode($client->getResponse()->getContent(), true);
         $this->assertEquals('GROUP_ALREADY_HAS_OWNER', $body['error']);
     }
 
-    public function testPromoteToOwnerInGroupWithExistingOwnerFails(): void
+    public static function promoteToOwnerWithExistingOwnerProvider(): array
     {
-        $client = $this->loginAsAdmin();
-        // group_4: user_4=owner, user_5=member — try to promote user_5 to owner
-        $groupId = $this->getGroupIdByName($client, 'Group 4');
-        $user5Id = $this->getUserIdByEmail($client, 'user5@example.com');
-
-        $client->jsonRequest('PATCH', "/admin/groups/{$groupId}/users/{$user5Id}/role", [
-            'role' => 'owner',
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $body = json_decode($client->getResponse()->getContent(), true);
-        $this->assertEquals('GROUP_ALREADY_HAS_OWNER', $body['error']);
+        return [
+            'group_1 promote user_1' => ['Group 1', 'user1@example.com'],
+            'group_4 promote user_5' => ['Group 4', 'user5@example.com'],
+        ];
     }
 }

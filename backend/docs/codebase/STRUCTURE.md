@@ -18,7 +18,7 @@
 | `docs/` | Architecture specs, plans, codebase docs | `docs/` |
 | `var/` | Cache, logs (runtime generated) | `.gitignore` |
 | `vendor/` | Composer dependencies (not edited) | `vendor/` |
-| `requests/` | HTTP request files (dev/manual testing) | `requests/` |
+| `requests/` | Legacy IntelliJ `.http` files — superseded by Bruno collection at project root (`bruno/`) | `requests/` |
 
 ### 2) Entry Points
 
