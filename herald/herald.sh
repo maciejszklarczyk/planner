@@ -43,6 +43,62 @@ health() {
   _check "frontend" "http://localhost:3000"
 }
 
+test() {
+  docker compose -f "$ROOT/backend/docker-compose.yaml" run --rm php \
+    env $(cat "$ROOT/backend/.env.test" | grep -v '^#' | xargs) \
+    composer run-tests
+}
+
+dirty() {
+  local clean=true
+  for repo in backend frontend bruno herald; do
+    local dir="$ROOT/$repo"
+    local branch
+    branch=$(git -C "$dir" branch --show-current 2>/dev/null)
+    local uncommitted
+    uncommitted=$(git -C "$dir" status --porcelain 2>/dev/null)
+    local unpushed
+    unpushed=$(git -C "$dir" log --oneline "@{u}..HEAD" 2>/dev/null || true)
+    if [[ -n "$uncommitted" || -n "$unpushed" ]]; then
+      clean=false
+      echo "✖ $repo ($branch)"
+      [[ -n "$uncommitted" ]] && echo "    uncommitted: $(echo "$uncommitted" | wc -l | tr -d ' ') file(s)"
+      [[ -n "$unpushed"    ]] && echo "    unpushed:    $(echo "$unpushed"    | wc -l | tr -d ' ') commit(s)"
+    else
+      echo "✔ $repo ($branch)"
+    fi
+  done
+  $clean && echo "All repos clean." || true
+}
+
+cleanup() {
+  local has_changes=false
+  for repo in backend frontend bruno herald; do
+    local dir="$ROOT/$repo"
+    local modified untracked
+    modified=$(git -C "$dir" status --porcelain 2>/dev/null)
+    untracked=$(git -C "$dir" clean -nfd 2>/dev/null)
+    if [[ -n "$modified" || -n "$untracked" ]]; then
+      has_changes=true
+      echo "── $repo ──"
+      [[ -n "$modified"  ]] && echo "$modified" | sed 's/^/  /'
+      [[ -n "$untracked" ]] && echo "$untracked" | sed 's/^/  /'
+    fi
+  done
+  if [[ "$has_changes" == false ]]; then
+    echo "Nothing to clean."; return
+  fi
+  echo ""
+  echo "All listed files will be permanently lost (reset --hard + clean -fd)."
+  read -r -p "Are you sure? [y/N] " confirm
+  [[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return; }
+  for repo in backend frontend bruno herald; do
+    git -C "$ROOT/$repo" reset --hard
+    git -C "$ROOT/$repo" clean -fd
+    echo "✔ $repo — clean"
+  done
+}
+
 case "${1:-}" in
   up)       up ;;
   down)     down ;;
@@ -50,5 +106,8 @@ case "${1:-}" in
   db-reset) db-reset ;;
   status)   status ;;
   health)   health ;;
-  *)        echo "Usage: $0 {up|down|restart|db-reset|status|health}"; exit 1 ;;
+  test)     test ;;
+  dirty)    dirty ;;
+  cleanup)  cleanup ;;
+  *)        echo "Usage: $0 {up|down|restart|db-reset|status|health|test|dirty|cleanup}"; exit 1 ;;
 esac
