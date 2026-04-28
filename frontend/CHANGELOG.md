@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-28
+
+- [0b7289a] docs(claude): trim CLAUDE.md and add api.patch, auth query key, missing conventions
+
 ## 2026-04-25
 
 - [21a3dff] chore: bump version to v0.0.3, update deps, add frontend docker-compose
