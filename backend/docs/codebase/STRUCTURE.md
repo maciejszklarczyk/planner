@@ -33,7 +33,7 @@
 |----------|-------------------|------------------------|
 | `src/Controller/` | HTTP request handling, input extraction, JSON response building | Business logic, DB queries |
 | `src/Controller/Admin/` | Admin-only endpoints (`#[IsGranted('ROLE_ADMIN')]`) | Non-admin user flows |
-| `src/Service/` | Business logic, orchestration of repositories | HTTP handling, direct DB calls |
+| `src/Service/` | Business logic, orchestration of repositories; `EventMapper` maps DTOs to Event entity | HTTP handling, direct DB calls |
 | `src/Repository/` | Doctrine queries, pagination | Business rules, HTTP concerns |
 | `src/Entity/` | Doctrine entities + ORM mapping, enums | Business logic beyond entity state |
 | `src/Entity/Enum/` | PHP 8.1 backed enums (`UserGroupRoleEnum`, `UserStatusEnum`, `UserActivityTypeEnum`) | Business logic |
@@ -52,6 +52,7 @@
 | `UserHasGroup` | `src/Entity/UserHasGroup.php` | Join entity for User↔Group with `UserGroupRoleEnum` (owner/member) |
 | `UserInvitationToken` | `src/Entity/UserInvitationToken.php` | SHA-256 hashed token, 1-day TTL |
 | `UserActivityLog` | `src/Entity/UserActivityLog.php` | Append-only log; `eventType` stored as string from `UserActivityTypeEnum`; `onDelete: CASCADE` on User FK |
+| `Event` | `src/Entity/Event.php` | SoftDeleteable; fields: `name` (string), `startDate` (DateTimeImmutable) |
 
 ### 4) Naming and Organization Rules
 

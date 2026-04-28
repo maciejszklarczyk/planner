@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-28
+
+- [75fca6b] docs: update README and sync codebase knowledge docs with current state
+
 ## 2026-04-25
 
 - [f01151a] test: add coverage for DevHeaderAuthenticator, User DTOs and fix SQLite test config

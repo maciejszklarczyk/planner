@@ -29,29 +29,49 @@ composer run-tests
 
 ```
 tests/
-├── bootstrap.php                          # Symfony test bootstrap
-├── DatabaseTestCase.php                   # Base class: real DB setup + fixtures
-├── Unit/
+├── bootstrap.php
+├── DatabaseTestCase.php                                        # Base class: real DB setup + fixtures
+├── Controller/                                                 # Mixed functional (no Functional/ prefix)
+│   ├── EventControllerTest.php
+│   └── HealthCheckControllerTest.php
+├── Functional/
+│   ├── Controller/
+│   │   ├── AuthControllerTest.php
+│   │   ├── GroupControllerTest.php
+│   │   └── Admin/
+│   │       ├── GroupMembershipControllerTest.php
+│   │       └── UserControllerTest.php
+│   ├── Repository/
+│   │   ├── UserInvitationTokenRepositoryTest.php
+│   │   └── UserRepositoryTest.php
 │   └── Security/
-│       └── GroupVoterTest.php             # Unit test with PHPUnit mocks
-└── Functional/
-    └── Controller/
-        ├── AuthControllerTest.php         # 10 auth flow tests
-        ├── GroupControllerTest.php        # Group endpoints
-        └── Admin/
-            └── GroupMembershipControllerTest.php  # Admin group member management
+│       └── DevHeaderAuthenticatorTest.php
+└── Unit/
+    ├── Dto/
+    │   ├── EditUserDtoTest.php
+    │   ├── InvitationCompleteDtoTest.php
+    │   └── UserInviteDtoTest.php
+    ├── Entity/
+    │   ├── EventTest.php
+    │   ├── GroupTest.php
+    │   └── UserTest.php
+    ├── Security/
+    │   └── GroupVoterTest.php
+    └── Service/
+        └── InvitationMailerTest.php
 ```
 
 - Naming convention: `{ClassName}Test.php`
 - Functional tests extend `App\Tests\DatabaseTestCase` (which extends `WebTestCase`)
 - Unit tests extend `PHPUnit\Framework\TestCase` directly (no DB needed)
+- Note: `tests/Controller/` is a second root-level functional dir (EventController, HealthCheckController tests live here, not under `tests/Functional/`)
 
 ### 3) Test Scope Matrix
 
 | Scope | Covered? | Typical target | Notes |
 |-------|----------|----------------|-------|
-| Unit | Yes (1 file) | `GroupVoter` security voter | Uses PHPUnit mocks for `AccessDecisionManagerInterface` |
-| Functional/Integration | Yes (3 files) | Auth, Group, Admin group membership controllers | Hit real PostgreSQL test DB; no mocking of services or repos |
+| Unit | Yes (7 files) | DTOs, entities, GroupVoter, InvitationMailer | Uses PHPUnit mocks for dependencies |
+| Functional/Integration | Yes (9 files) | Auth, Group, Event, Admin, Repo, Security | Hit real PostgreSQL test DB; no mocking of services or repos |
 | E2E | No | — | No browser/Panther tests |
 
 ### 4) Mocking and Isolation Strategy
@@ -68,10 +88,9 @@ tests/
 - **Coverage tool**: Xdebug + PHPUnit `--coverage-html`
 - **Coverage threshold**: none configured in `phpunit.dist.xml`
 - **Current gaps**:
-  - `UserController`, `InvitationController`, `UserAvatarController`, `GroupController` — no dedicated test files
-  - `UserGroupService`, `InvitationMailer` services — no unit tests
-  - Admin `UserController` (invite/resend) — not directly tested
-  - `UserActivityLog` entity/service/controller — entity + enum created on branch 16 but repository, migration, service, subscriber and controller not yet written; tests pending (4 planned functional tests per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md`)
+  - `UserController` (PUT /user, DELETE /user/{userId}) — no dedicated test file
+  - `InvitationController`, `UserAvatarController` — no dedicated test files
+  - `UserActivityLog` — entity, repository (stub, buggy), and migration exist; no service, event, subscriber, or controller; no tests
 
 ### 6) Evidence
 
