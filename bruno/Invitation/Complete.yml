@@ -1,20 +1,17 @@
 info:
-  name: Edycja grupy
+  name: Complete
   type: http
-  seq: 4
+  seq: 2
 
 http:
-  method: PATCH
-  url: "{{url}}/groups/:groupId"
-  params:
-    - name: groupId
-      value: "1"
-      type: path
+  method: POST
+  url: "{{url}}/invitation/complete"
   body:
     type: json
     data: |-
       {
-        "name": "Nowa nazwa grupy"
+        "token": "your-raw-token-here",
+        "password": "newpassword123"
       }
   auth: inherit
 

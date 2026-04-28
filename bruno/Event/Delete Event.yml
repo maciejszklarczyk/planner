@@ -1,0 +1,19 @@
+info:
+  name: Delete Event
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{url}}/events/:id"
+  params:
+    - name: id
+      value: "4"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

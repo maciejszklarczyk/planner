@@ -1,20 +1,21 @@
 info:
-  name: Edycja grupy
+  name: Update Event
   type: http
   seq: 4
 
 http:
-  method: PATCH
-  url: "{{url}}/groups/:groupId"
+  method: PUT
+  url: "{{url}}/events/:id"
   params:
-    - name: groupId
-      value: "1"
+    - name: id
+      value: "4"
       type: path
   body:
     type: json
     data: |-
       {
-        "name": "Nowa nazwa grupy"
+        "name": "test name from bruno updated",
+        "startDate": "2026-07-11 11:50:00"
       }
   auth: inherit
 
