@@ -1,70 +1,89 @@
 # Planner Backend API
 
-![coverage](https://img.shields.io/badge/coverage-67.7%25-yellow)
+Symfony 7.4 + PHP 8.4 + FrankenPHP + PostgreSQL 16.
 
-Symfony 7.4 + Doctrine ORM API.
-
-## Uruchamianie
+## Uruchamianie (dev)
 
 ```bash
-# Docker (zalecane)
-docker-compose up -d
+# z projektu root (zalecane — startuje backend + frontend razem)
+./herald/herald.sh up
 
-# Lokalnie
-composer install
-cp .env.example .env
-php bin/console doctrine:migrations:migrate
-symfony serve
+# lub tylko backend
+docker compose up -d
 ```
 
-## Dokumentacja API
-
+- API: http://localhost:8000
 - Swagger UI: http://localhost:8000/api/doc
-- OpenAPI JSON: http://localhost:8000/api/doc.json
 
 ## Komendy
 
 ```bash
 # Migracje
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
+bin/console doctrine:migrations:diff
 
-# Fixtures
-php bin/console doctrine:fixtures:load --no-interaction
-# lub z Docker:
+# Fixtures (wewnątrz kontenera)
 docker exec planner-php php bin/console doctrine:fixtures:load --no-interaction
+# lub przez herald:
+./herald/herald.sh db-reset
 
 # Cache
-php bin/console cache:clear
+bin/console cache:clear
 
 # Debug
-php bin/console debug:router
-php bin/console debug:container
+bin/console debug:router
+bin/console debug:container
 ```
 
-## Struktura
+## Testy i jakość kodu
 
+```bash
+# Wszystkie sprawdzenia (CS + PHPStan + testy)
+composer run-all
+
+# Tylko testy
+docker compose run --rm php env $(cat .env.test | grep -v '^#' | xargs) bin/phpunit
+
+# CS Fixer
+composer cs-fix           # napraw
+composer cs-fix-analyse   # dry-run
+
+# PHPStan
+composer phpstan
+
+# Coverage (wymaga Xdebug)
+composer run-coverage
 ```
-src/
-├── Controller/   # Kontrolery HTTP
-├── Entity/       # Encje Doctrine
-├── Repository/   # Repozytoria
-├── Service/      # Logika biznesowa
-├── Dto/          # Request/Response DTOs
-└── Exception/    # Wyjątki domenowe
-fixtures/
-├── users.yaml
-├── groups.yaml
-└── user_has_groups.yaml
-```
+
+> Testy wymagają `.env.test`. Bez niego `createClient()` rzuci `LogicException`.
+> Config PHPUnit: `phpunit.dist.xml`.
 
 ## Środowisko
 
-```
-APP_ENV=dev
-APP_SECRET=your-secret-key
-DATABASE_URL="postgresql://user:password@localhost:5432/database?serverVersion=16&charset=utf8"
-```
+Wymagane zmienne (patrz `.env.example`):
+
+| Zmienna | Cel |
+|---------|-----|
+| `DATABASE_URL` | PostgreSQL DSN |
+| `REDIS_URL` | Redis DSN (cache + rate limiter) |
+| `MAILER_DSN` | SMTP (Mailpit w dev) |
+| `APP_SECRET` | Symfony security secret |
+| `S3_ENDPOINT`, `S3_KEY`, `S3_SECRET`, `S3_BUCKET`, `S3_REGION` | Przechowywanie avatarów |
+| `FRONTEND_URL` | Adres frontendu (CORS) |
+
+## Dokumentacja codebase
+
+Szczegółowa wiedza o projekcie w `docs/codebase/`:
+
+| Plik | Zawartość |
+|------|-----------|
+| [STACK.md](docs/codebase/STACK.md) | Runtime, frameworki, zależności, komendy |
+| [STRUCTURE.md](docs/codebase/STRUCTURE.md) | Struktura katalogów, encje, granice modułów |
+| [ARCHITECTURE.md](docs/codebase/ARCHITECTURE.md) | Warstwy, przepływ danych, wzorce |
+| [CONVENTIONS.md](docs/codebase/CONVENTIONS.md) | Nazewnictwo, formatowanie, obsługa błędów |
+| [INTEGRATIONS.md](docs/codebase/INTEGRATIONS.md) | Baza danych, Redis, S3, mailer |
+| [TESTING.md](docs/codebase/TESTING.md) | Frameworki testowe, układ plików, mocking |
+| [CONCERNS.md](docs/codebase/CONCERNS.md) | Dług techniczny, ryzyka, luki bezpieczeństwa |
 
 ## Licencja
 

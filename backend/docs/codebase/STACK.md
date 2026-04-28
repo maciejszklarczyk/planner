@@ -18,7 +18,7 @@
 | symfony/framework-bundle | 7.4.* | Core Symfony DI, routing, HTTP kernel | `composer.json` |
 | symfony/security-bundle | 7.4.* | Session auth, json_login, voters | `composer.json`, `config/packages/security.yaml` |
 | doctrine/orm | ^3.6.3 | ORM, entity mapping via attributes | `composer.json`, `config/packages/doctrine.yaml` |
-| doctrine/doctrine-migrations-bundle | ^4.0 | DB schema versioning (11 migrations) | `composer.json`, `migrations/` |
+| doctrine/doctrine-migrations-bundle | ^4.0 | DB schema versioning (12 migrations) | `composer.json`, `migrations/` |
 | stof/doctrine-extensions-bundle | ^1.15.3 | SoftDeleteable trait (`deletedAt` field) | `composer.json`, `config/packages/stof_doctrine_extensions.yaml` |
 | nelmio/api-doc-bundle | ^5.10.0 | OpenAPI/Swagger docs at `/api/doc` | `composer.json`, `config/packages/nelmio_api_doc.yaml` |
 | nelmio/cors-bundle | ^2.6.1 | CORS for `localhost:3000` and `planner.msolve.it` | `composer.json`, `config/packages/nelmio_cors.yaml` |

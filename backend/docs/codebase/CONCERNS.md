@@ -18,7 +18,7 @@
 |-----------|---------------|-------|-----------------|---------------|
 | Two PHPUnit config files | `phpunit.dist.xml` (active) and `phpunit.xml.dist` (old) both present | root | Confusion about which config is active | Delete `phpunit.xml.dist` |
 | Business logic in `InvitationController` | No service was created when this was built | `src/Controller/InvitationController.php` | Controller grows harder to test; breaks layer rules | Extract to service |
-| Activity log Phase 1 partial: entity + enum created, rest missing | Implementation started on branch 16 | `src/Entity/UserActivityLog.php`, `src/Entity/Enum/UserActivityTypeEnum.php` exist; no Repository, migration, Event, Subscriber, Service, or Controller yet | Feature non-functional until Phase 2–4 complete | Implement per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` |
+| Activity log partially implemented — repository stub is broken | Entity, enum, migration, and `UserActivityLogRepository` exist; but the repository has a bug: `parent::__construct($registry, Group::class)` — references `Group::class` instead of `UserActivityLog::class`. No service, event, subscriber, or controller yet. | `src/Repository/UserActivityLogRepository.php`, `src/Entity/UserActivityLog.php` | Feature non-functional; broken repository will cause runtime errors if called | Fix repository generic; implement service, event, subscriber, controller per `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` |
 | `UserRegisteredEvent` not yet dispatched | Phase 2 not started | `src/Controller/InvitationController.php` — no event dispatch after `setStatus(ACTIVE)` | Activity log will never receive registrations | Dispatch in `InvitationController::complete()` per plan |
 
 ### 3) Security Concerns
@@ -57,7 +57,8 @@
 
 - `src/Controller/InvitationController.php` (business logic in controller; `UserRegisteredEvent` dispatch missing)
 - `src/Controller/Admin/UserController.php` (SHA-256 token hashing implemented)
+- `src/Repository/UserActivityLogRepository.php` (broken: `Group::class` in constructor)
 - `tests/DatabaseTestCase.php` (per-class DB setup)
 - `src/Controller/GroupController.php` (`findAll()` without pagination)
 - `phpunit.dist.xml` + `phpunit.xml.dist` (two config files)
-- `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` (unimplemented feature on current branch)
+- `docs/superpowers/plans/2026-04-14-user-activity-log-plan.md` (partially implemented)
