@@ -2,6 +2,7 @@
 
 ## 2026-04-28
 
+- [1c75917] test: refactor auth guard tests to data providers and fix SQLite warning
 - [75fca6b] docs: update README and sync codebase knowledge docs with current state
 
 ## 2026-04-25
