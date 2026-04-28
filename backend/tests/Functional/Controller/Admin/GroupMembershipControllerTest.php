@@ -113,7 +113,7 @@ class GroupMembershipControllerTest extends DatabaseTestCase
     public static function unauthenticatedRequestsProvider(): array
     {
         return [
-            'list users'  => ['GET',    '/admin/groups/1/users'],
+            'list users' => ['GET',    '/admin/groups/1/users'],
             'remove user' => ['DELETE', '/admin/groups/1/users/1'],
             'update role' => ['PATCH',  '/admin/groups/1/users/1/role'],
         ];
@@ -289,7 +289,6 @@ class GroupMembershipControllerTest extends DatabaseTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
-
 
     // -------------------------------------------------------------------------
     // GROUP_ALREADY_HAS_OWNER — add as owner when group already has one
