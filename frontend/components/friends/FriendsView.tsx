@@ -100,7 +100,7 @@ function StatsRow({ friendsCount, pendingCount }: { friendsCount: number; pendin
     ]
 
     return (
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
             {stats.map(({ label, value, icon: Icon }) => (
                 <Card key={label} className="flex-1 px-4 py-3 gap-0">
                     <div className="flex items-center justify-between mb-2">

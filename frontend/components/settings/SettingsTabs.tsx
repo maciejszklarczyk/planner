@@ -40,8 +40,8 @@ export function SettingsTabs() {
     ];
 
     return (
-        <div className="flex gap-8">
-            <nav className="w-44 shrink-0 flex flex-col gap-1">
+        <div className="md:flex gap-8">
+            <nav className="md:w-44 shrink-0 flex md:flex-col gap-1 overflow-x-auto mb-4 md:mb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {navItems
                     .filter(item => !item.adminOnly || isAdmin)
                     .map(item => (

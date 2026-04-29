@@ -131,7 +131,7 @@ export default function CurrentUserEditForm() {
                     </div>
                 </div>
                 <form id="current-user-edit-form" onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="flex flex-col gap-4 max-w-sm">
+                    <div className="flex flex-col gap-4 md:max-w-sm">
                         <Controller
                             name="name"
                             control={form.control}
@@ -192,7 +192,7 @@ export default function CurrentUserEditForm() {
             <section>
                 <h2 className="text-lg font-semibold mb-1">Zmiana hasła</h2>
                 <p className="text-sm text-muted-foreground mb-4">Funkcja w przygotowaniu.</p>
-                <div className="flex flex-col gap-4 max-w-sm">
+                <div className="flex flex-col gap-4 md:max-w-sm">
                     <Input placeholder="Aktualne hasło" type="password" disabled/>
                     <Input placeholder="Nowe hasło" type="password" disabled/>
                     <Input placeholder="Powtórz nowe hasło" type="password" disabled/>

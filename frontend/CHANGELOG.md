@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-29
+
+- [cda5dc8] style(responsive): make settings nav horizontal on mobile, fix card layouts to stack on mobile
+
 ## 2026-04-28
 
 - [0b7289a] docs(claude): trim CLAUDE.md and add api.patch, auth query key, missing conventions
