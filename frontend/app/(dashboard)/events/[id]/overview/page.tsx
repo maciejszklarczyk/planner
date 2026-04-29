@@ -10,7 +10,7 @@ export default function OverviewPage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Przegląd
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 {['Rejestracje', 'Potwierdzeni', 'Oczekujący'].map(label => (
                     <Card key={label} className="flex-1 px-4 py-3 gap-0">
                         <span className="text-muted-foreground text-xs">{label}</span>
