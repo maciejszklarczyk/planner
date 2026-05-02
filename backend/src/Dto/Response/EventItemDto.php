@@ -12,6 +12,10 @@ class EventItemDto
         public readonly int $id,
         public readonly string $name,
         public readonly \DateTimeImmutable $startDate,
+        public readonly \DateTimeImmutable $endDate,
+        public readonly string $location,
+        public readonly int $attendees = 0,
+        public readonly string $category = 'Cat 1',
     ) {
     }
 
@@ -21,11 +25,15 @@ class EventItemDto
             id: $event->getId() ?? throw new \LogicException('Event must have an ID.'),
             name: $event->getName() ?? throw new \LogicException('Event must have a name.'),
             startDate: $event->getStartDate(),
+            endDate: $event->getEndDate(),
+            location: $event->getLocation(),
+            attendees: rand(10, 20),
+            category: sprintf('Cat %d', rand(1, 5)),
         );
     }
 
     /**
-     * @param Events[] $events
+     * @param Event[] $events
      *
      * @return self[]
      */

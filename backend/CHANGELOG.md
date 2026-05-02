@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-05-03
+
+- [89b7188] feat(events): add endDate/location fields and extend test fixtures
+
 ## 2026-04-28
 
 - [1c75917] test: refactor auth guard tests to data providers and fix SQLite warning

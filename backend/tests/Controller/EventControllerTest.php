@@ -34,6 +34,10 @@ final class EventControllerTest extends DatabaseTestCase
         self::assertIsInt($data['id']);
         self::assertIsString($data['name']);
         self::assertIsString($data['startDate']);
+        self::assertIsString($data['endDate']);
+        self::assertIsString($data['location']);
+        self::assertIsInt($data['attendees']);
+        self::assertIsString($data['category']);
     }
 
     public function testItemCreateRequest(): void
@@ -43,6 +47,8 @@ final class EventControllerTest extends DatabaseTestCase
         $client->request('POST', '/events', [
             'name' => 'New Event Name',
             'startDate' => '2024-01-01',
+            'endDate' => '2024-01-02',
+            'location' => 'location',
         ], [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -55,6 +61,8 @@ final class EventControllerTest extends DatabaseTestCase
         $client->request('PUT', '/events/1', [
             'name' => 'Updated Event Name',
             'startDate' => '2024-01-01',
+            'endDate' => '2024-01-02',
+            'location' => 'location',
         ], [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);

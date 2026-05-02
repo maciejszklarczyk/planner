@@ -26,6 +26,12 @@ class Event
     #[ORM\Column]
     private \DateTimeImmutable $startDate;
 
+    #[ORM\Column]
+    private \DateTimeImmutable $endDate;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $location = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -49,5 +55,27 @@ class Event
     public function setStartDate(\DateTimeImmutable $startDate): void
     {
         $this->startDate = $startDate;
+    }
+
+    public function getEndDate(): \DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(\DateTimeImmutable $endDate): void
+    {
+        $this->endDate = $endDate;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?string $location): static
+    {
+        $this->location = $location;
+
+        return $this;
     }
 }

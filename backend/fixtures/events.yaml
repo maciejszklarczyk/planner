@@ -1,11 +1,66 @@
 App\Entity\Event:
-    event_1:
-        name: Spring Planning Test
-        startDate: '<(new DateTimeImmutable("2025-04-01"))>'
-    event_2:
-        name: Summer Kickoff
-        startDate: '<(new DateTimeImmutable("2025-06-15"))>'
-    event_3:
-        name: Deleted Event
-        startDate: '<(new DateTimeImmutable("2025-06-16"))>'
-        deletedAt: '<(new DateTimeImmutable("2025-06-17"))>'
+    # live — trwa teraz
+    event_live:
+        name: 'Konferencja Backend Summit 2026'
+        startDate: '<(new DateTimeImmutable("now - 1 day"))>'
+        endDate: '<(new DateTimeImmutable("now + 2 days"))>'
+        location: 'Centrum Kongresowe, Warszawa'
+
+    # recent — zakończone w ostatnich 7 dniach
+    event_recent:
+        name: 'Warsztaty UX Design'
+        startDate: '<(new DateTimeImmutable("now - 5 days"))>'
+        endDate: '<(new DateTimeImmutable("now - 2 days"))>'
+        location: 'Studio Kreatywne, Kraków'
+
+    # upcoming — nadchodzące (kilka, żeby paginacja miała sens)
+    event_upcoming_1:
+        name: 'Hackathon AI 2026'
+        startDate: '<(new DateTimeImmutable("now + 12 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 13 days"))>'
+        location: 'Hub Innowacji, Wrocław'
+
+    event_upcoming_2:
+        name: 'Meetup React Warsaw'
+        startDate: '<(new DateTimeImmutable("now + 20 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 20 days"))>'
+        location: 'Coworking Space, Warszawa'
+
+    event_upcoming_3:
+        name: 'DevOps Summit'
+        startDate: '<(new DateTimeImmutable("now + 35 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 36 days"))>'
+        location: 'Hotel Marriott, Gdańsk'
+
+    event_upcoming_4:
+        name: 'Scrum Master Camp'
+        startDate: '<(new DateTimeImmutable("now + 42 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 42 days"))>'
+        location: 'Centrum Biznesu, Łódź'
+
+    event_upcoming_5:
+        name: 'Cloud Native Day'
+        startDate: '<(new DateTimeImmutable("now + 55 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 55 days"))>'
+        location: 'Centrum Konferencyjne, Poznań'
+
+    # ended — zakończone dawniej niż 7 dni temu
+    event_ended_1:
+        name: 'Spring Planning 2026'
+        startDate: '<(new DateTimeImmutable("now - 60 days"))>'
+        endDate: '<(new DateTimeImmutable("now - 59 days"))>'
+        location: 'Kraków'
+
+    event_ended_2:
+        name: 'Winter Tech Meetup'
+        startDate: '<(new DateTimeImmutable("now - 90 days"))>'
+        endDate: '<(new DateTimeImmutable("now - 89 days"))>'
+        location: 'Katowice'
+
+    # soft-deleted — nie powinien być widoczny
+    event_deleted:
+        name: 'Deleted Event'
+        startDate: '<(new DateTimeImmutable("now + 10 days"))>'
+        endDate: '<(new DateTimeImmutable("now + 11 days"))>'
+        location: 'Pojałowice'
+        deletedAt: '<(new DateTimeImmutable("now - 1 day"))>'

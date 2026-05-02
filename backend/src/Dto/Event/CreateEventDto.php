@@ -6,7 +6,7 @@ namespace App\Dto\Event;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-final readonly class CreateEventDto
+final readonly class CreateEventDto implements EventDto
 {
     public function __construct(
         #[Assert\NotBlank]
@@ -14,6 +14,10 @@ final readonly class CreateEventDto
         public string $name,
         #[Assert\NotBlank]
         public \DateTimeImmutable $startDate,
+        #[Assert\NotBlank]
+        public \DateTimeImmutable $endDate,
+        #[Assert\Length(max: 255)]
+        public string $location,
     ) {
     }
 }
