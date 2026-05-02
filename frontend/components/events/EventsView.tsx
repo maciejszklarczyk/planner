@@ -6,25 +6,14 @@ import { Calendar, MapPin, Users, Clock, Plus, CalendarClock, CalendarCheck, Sta
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import type { Event, EventStatus } from '@/types/events'
+import {Event, EventsResponse, EventStatus} from '@/types/events'
+import {useQuery} from "@tanstack/react-query";
+import {api} from "@/lib/api";
 
 type Filter = 'upcoming' | 'past' | 'all'
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with API query when backend is ready
-// ---------------------------------------------------------------------------
-const MOCK_EVENTS: Event[] = [
-    { id: 1, name: 'Konferencja Tech 2025', startDate: '2026-04-19', endDate: '2026-04-21', location: 'Centrum Kongresowe, Warszawa', attendees: 120, category: 'Technologia' },
-    { id: 2, name: 'Warsztaty UX Design', startDate: '2026-04-24', endDate: '2026-04-24', location: 'Studio Kreatywne, Kraków', attendees: 30, category: 'Design' },
-    { id: 3, name: 'Hackathon AI 2025', startDate: '2026-05-22', endDate: '2026-05-23', location: 'Hub Innowacji, Wrocław', attendees: 80, category: 'AI/ML' },
-    { id: 4, name: 'Meetup React Warsaw', startDate: '2026-06-01', endDate: '2026-06-01', location: 'Coworking Space, Warszawa', attendees: 50, category: 'Frontend' },
-    { id: 5, name: 'DevOps Summit', startDate: '2026-06-10', endDate: '2026-06-11', location: 'Hotel Marriott, Gdańsk', attendees: 200, category: 'DevOps' },
-    { id: 6, name: 'Scrum Master Camp', startDate: '2026-06-14', endDate: '2026-06-14', location: 'Centrum Biznesu, Łódź', attendees: 45, category: 'Agile' },
-    { id: 7, name: 'Cloud Native Day', startDate: '2026-06-20', endDate: '2026-06-20', location: 'Centrum Konferencyjne, Poznań', attendees: 150, category: 'Cloud' },
-    { id: 8, name: 'Product Design Sprint', startDate: '2026-06-28', endDate: '2026-07-01', location: 'Startup Hub, Warszawa', attendees: 25, category: 'Product' },
-]
 
 const EVENTS_PER_PAGE = 3
 
@@ -209,7 +198,37 @@ export function EventsView() {
     const [filter, setFilter] = useState<Filter>('upcoming')
     const now = new Date()
 
-    const withStatus = MOCK_EVENTS.map(e => ({ event: e, status: getStatus(e, now) }))
+    const { data: events = [], isLoading } = useQuery<EventsResponse, Error, Event[]>({
+        queryKey: ['events'],
+        queryFn: () => api.get<EventsResponse>('/events'),
+        select: (r) => r.data,
+    });
+
+    if (isLoading) return (
+        <div className="flex flex-col gap-8">
+            <div className="flex items-center justify-between">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-9 w-36" />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-20 flex-1" />
+                ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Skeleton className="h-44" />
+                <Skeleton className="h-44" />
+            </div>
+            <Skeleton className="h-9 w-64" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-28" />
+                ))}
+            </div>
+        </div>
+    );
+
+    const withStatus = events.map(e => ({ event: e, status: getStatus(e, now) }))
 
     const activeEntry = withStatus.find(e => e.status === 'live') ?? withStatus.find(e => e.status === 'recent')
     const nextEntry = withStatus.find(e => e.status === 'upcoming')

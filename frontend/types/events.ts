@@ -8,4 +8,8 @@ export interface Event {
     category: string
 }
 
+export interface EventsResponse {
+    data: Event[];
+}
+
 export type EventStatus = 'live' | 'recent' | 'upcoming' | 'ended'
