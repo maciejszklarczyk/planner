@@ -34,4 +34,22 @@ final class EventTest extends TestCase
 
         self::assertSame($date, $event->getStartDate());
     }
+
+    public function testSetAndGetEndDate(): void
+    {
+        $event = new Event();
+        $date = new \DateTimeImmutable('2025-06-01');
+        $event->setEndDate($date);
+
+        self::assertSame($date, $event->getEndDate());
+    }
+
+    public function testSetAndGetLocation(): void
+    {
+        $event = new Event();
+        $location = 'Krzysztoforzyce';
+        $event->setLocation($location);
+
+        self::assertSame($location, $event->getLocation());
+    }
 }
