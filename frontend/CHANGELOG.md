@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-05-03
+
+- [0ae7716] feat(events): replace mock data with real API query and add skeleton loading
+
 ## 2026-04-29
 
 - [cda5dc8] style(responsive): make settings nav horizontal on mobile, fix card layouts to stack on mobile
