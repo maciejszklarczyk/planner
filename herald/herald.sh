@@ -99,7 +99,23 @@ cleanup() {
   done
 }
 
-case "${1:-}" in
+help() {
+  echo "Usage: $0 <command>"
+  echo ""
+  echo "Commands:"
+  echo "  up        Start backend and frontend containers"
+  echo "  down      Stop and remove containers"
+  echo "  restart   Restart all containers"
+  echo "  db-reset  Reload fixtures into the database"
+  echo "  status    Show running Docker containers"
+  echo "  health    Check backend and frontend reachability"
+  echo "  test      Run backend test suite"
+  echo "  dirty     Show uncommitted/unpushed changes across all repos"
+  echo "  cleanup   Reset all repos to a clean state (destructive)"
+  echo "  help      Show this help message"
+}
+
+case "${1:-help}" in
   up)       up ;;
   down)     down ;;
   restart)  restart ;;
@@ -109,5 +125,6 @@ case "${1:-}" in
   test)     test ;;
   dirty)    dirty ;;
   cleanup)  cleanup ;;
-  *)        echo "Usage: $0 {up|down|restart|db-reset|status|health|test|dirty|cleanup}"; exit 1 ;;
+  help|--help|-h) help ;;
+  *)        echo "Unknown command: $1"; echo ""; help; exit 1 ;;
 esac
