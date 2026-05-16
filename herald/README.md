@@ -13,8 +13,9 @@ Dev CLI for the Plan project. Wraps both Docker Compose stacks (backend + fronte
 | `herald status` | List running containers with status and ports |
 | `herald health` | HTTP check backend (`localhost:8000/api`) and frontend (`localhost:3000`) |
 | `herald test` | Run backend test suite (`composer run-tests` inside Docker with `.env.test`) |
-| `herald dirty` | Show uncommitted changes and unpushed commits across all repos (backend, frontend, bruno) |
+| `herald dirty` | Show uncommitted changes and unpushed commits across all repos (backend, frontend, bruno, herald) |
 | `herald cleanup` | `git reset --hard` in every repo — prompts for confirmation first |
+| `herald help` | Show available commands (also `--help`, `-h`; default when no args given) |
 
 ## Install globally
 

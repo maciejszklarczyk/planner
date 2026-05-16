@@ -3,6 +3,7 @@
 ## 2026-05-16
 
 - [4aaea6d] feat(herald): add help command with --help/-h aliases and default to help when no args
+- [5a291bd] docs(readme): add help command and fix dirty repo list
 
 ## 2026-04-28
 
