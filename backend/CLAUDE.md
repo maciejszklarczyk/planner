@@ -1,87 +1,85 @@
-# Instrukcje projektowe
+# Project Instructions
 
-Wytyczne projektu. Uzupełniaj w punktach.
+Project guidelines. Add to it in bullet points.
 
-## Stack technologiczny
+## Tech stack
 
-- **PHP 8.4** (FrankenPHP jako serwer)
+- **PHP 8.4** (FrankenPHP as server)
 - **Symfony 7.4**
-- **PostgreSQL 16** (ORM: Doctrine 3.6 + migracje)
-- **Redis 7** (cache, sesje, rate limiter, locki)
-- **Mailpit** (SMTP dev)
-- Nelmio API Doc Bundle (OpenAPI/Swagger pod `/api/doc`)
+- **PostgreSQL 16** (ORM: Doctrine 3.6 + migrations)
+- **Redis 7** (cache, sessions, rate limiter, locks)
+- **Mailpit** (SMTP dev, `symfony/mailer`)
+- Nelmio API Doc Bundle (OpenAPI/Swagger at `/api/doc`)
 - Nelmio CORS Bundle
 - Stof Doctrine Extensions (SoftDeleteable, naming strategy)
-- Alice + Fixtures Bundle (dane testowe)
+- Alice + Fixtures Bundle (test data)
 - PHPUnit 12
-- PHP CS Fixer (styl PSR-12 + Symfony)
-- Symfony Maker Bundle (generowanie kodu)
+- PHP CS Fixer (PSR-12 + Symfony style)
+- Symfony Maker Bundle (code generation)
 - Xdebug 3 (dev/test)
 - Docker Compose (dev) + Traefik (prod)
 
-## Konwencje kodu
+## Code conventions
 
-- Routing przez atrybuty PHP `#[Route(...)]` (nie YAML/XML)
-- Kontrolery dziedziczą po `AbstractController` Symfony
-- DTOs walidowane przez `#[Assert\...]` + `$validator->validate()`
-- Encje mapowane przez atrybuty Doctrine (`#[ORM\Entity]`, `#[ORM\Column]`, itp.)
-- Soft delete: Gedmo `SoftDeleteable` — encje mają pole `deletedAt` z datą w typie \DateTime(), nie usuwane fizycznie
-- Enumy PHP 8.1 (np. `UserStatusEnum`, `UserGroupRoleEnum`) z metodą `::from()`
-- Wyjątki domenowe w `src/Exception/` — rzucane z serwisów, łapane w kontrolerach
-- Response DTOs w `src/Dto/Response/` — transformacja encji do JSON
-- Request DTOs w `src/Dto/` — walidacja inputu
-- CS Fixer dla PSR-12 + styl Symfony: `vendor/bin/php-cs-fixer fix`
-- Admin endpointy: `#[IsGranted('ROLE_ADMIN')]`
-- Domena osobna dla frontu i API — brak segmentu `/api/` w URL endpointów
+- Routing via PHP attributes `#[Route(...)]` (not YAML/XML)
+- Controllers extend Symfony's `AbstractController`
+- DTOs validated via `#[Assert\...]` + `$validator->validate()`
+- Entities mapped via Doctrine attributes (`#[ORM\Entity]`, `#[ORM\Column]`, etc.)
+- Soft delete: Gedmo `SoftDeleteable` — entities have a `deletedAt` field of type `\DateTime()`, not physically deleted
+- PHP 8.1 enums (e.g. `UserStatusEnum`, `UserGroupRoleEnum`) with `::from()`
+- Domain exceptions in `src/Exception/` — thrown from services, caught in controllers
+- Response DTOs in `src/Dto/Response/` — entity-to-JSON transformation
+- Request DTOs in `src/Dto/` — input validation
+- CS Fixer for PSR-12 + Symfony style: `vendor/bin/php-cs-fixer fix`
+- Admin endpoints: `#[IsGranted('ROLE_ADMIN')]`
+- Separate domain for frontend and API — no `/api/` segment in endpoint URLs
+- CI has a `composer-audit` job (stage `test`) that fails the pipeline on any advisory from `composer audit`. If an advisory has no upstream fix yet: add an entry to `composer.json` → `config.audit.ignore` with a comment/link to the tracking issue — don't disable the job in `.gitlab-ci.yml`.
 
-## Ważne ścieżki i pliki
+## Important paths and files
 
-- `src/Controller/Admin/GroupMembershipController.php` — zarządzanie członkami grup
-- `src/Service/GroupMembershipService.php` — logika grup (add/remove/update role)
-- `src/Entity/UserHasGroup.php` — encja User ↔ Group z rolą
+- `src/Controller/Admin/GroupMembershipController.php` — group membership management
+- `src/Service/GroupMembershipService.php` — group logic (add/remove/update role)
+- `src/Entity/UserHasGroup.php` — User ↔ Group entity with role
 - `src/Entity/Enum/UserGroupRoleEnum.php` — `owner | member`
-- `src/Exception/CannotRemoveLastOwnerException.php` — rzucana przy próbie usunięcia ostatniego ownera
-- `config/packages/security.yaml` — sesje, json_login, access_control
+- `src/Exception/CannotRemoveLastOwnerException.php` — thrown when trying to remove the last owner
+- `config/packages/security.yaml` — sessions, json_login, access_control
 - `config/packages/nelmio_cors.yaml` — CORS (allowed origins: localhost:3000, planner.msolve.it)
-- `.env.test` — wymagany do testów funkcjonalnych
+- `.env.test` — required for functional tests
 
-## Uruchamianie projektu
+## Running the project
 
-- Serwer deweloperski: `docker compose up`
+- Dev server: `docker compose up`
 
-## Autentykacja w testach i lokalnym dev
+## Authentication in tests and local dev
 
-- W środowiskach `dev` i `test` działa `DevHeaderAuthenticator` — wystarczy wysłać nagłówek `X-Dev-User: email@example.com`, aby uwierzytelnić się jako dowolny użytkownik z fixtures.
-- W testach przekazuj nagłówek przez `HTTP_X_DEV_USER` (Symfony konwertuje automatycznie):
+- `DevHeaderAuthenticator` is active in `dev` and `test` environments — just send the header `X-Dev-User: email@example.com` to authenticate as any user from the fixtures.
+- In tests, pass the header via `HTTP_X_DEV_USER` (Symfony converts it automatically):
   ```php
   $client->request('GET', '/events', [], [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
   ```
-- Nie używaj logowania przez `/auth/login` w nowych testach — `X-Dev-User` jest prostsze i nie wymaga sesji.
-- ModHeader (lub odpowiednik) w przeglądarce: dodaj nagłówek `X-Dev-User: admin@example.com` i przełączaj użytkowników bez wylogowywania.
+- Don't use `/auth/login` in new tests — `X-Dev-User` is simpler and doesn't require a session.
+- ModHeader (or equivalent) in the browser: add header `X-Dev-User: admin@example.com` and switch users without logging out.
 
-## Testy
+## Tests
 
-- Testy funkcjonalne wymagają `.env.test` jako zmiennych środowiskowych — bez tego Symfony nie załaduje `framework.test: true` i `createClient()` rzuci LogicException.
-- Uruchamianie z CLI (poza PhpStorm):
+- Functional tests require `.env.test` as environment variables — without it Symfony won't load `framework.test: true` and `createClient()` will throw `LogicException`.
+- Running from the CLI (outside PhpStorm):
   ```
   docker compose run --rm php env $(cat .env.test | grep -v '^#' | xargs) bin/phpunit
   ```
-- PhpStorm: konfiguracja Docker Compose z polem "Environment variables" = `.env.test`.
-- Plik konfiguracji PHPUnit: `phpunit.dist.xml` (nie `phpunit.xml.dist` — stary plik).
-- Fixtures deterministyczne — bez losowych przypisań. Mapa grup:
+- PhpStorm: Docker Compose configuration with the "Environment variables" field = `.env.test`.
+- PHPUnit config file: `phpunit.dist.xml` (not `phpunit.xml.dist` — old file).
+- Deterministic fixtures — no random assignments. Group map:
   - `group_1`: admin=owner, user_1=member, user_2=member
   - `group_2`: admin=member, user_1=owner, user_3=member
   - `group_3`: user_2=owner, user_3=member, user_4=member
   - `group_4`: user_4=owner, user_5=member
   - `group_5`: user_5=owner
-- Jeśli się da używaj data providerów, żeby zmniejszyć rozmiar testu.
+- Use data providers where possible to keep tests smaller.
 
-## Inne uwagi
+## Other notes
 
-- Rate limiting logowania: 3 próby / 15 min (`symfony/rate-limiter`)
-- Maile przez Mailpit w dev (`symfony/mailer`)
-- Token zaproszenia: `bin2hex(random_bytes(32))`, ważność 1 dzień
-- `UserRepository` obsługuje paginację, wyszukiwanie (parametr `search`) i `excludeGroupId`
-- Swagger/OpenAPI pod `/api/doc` (Nelmio API Doc Bundle)
-- Naming strategy Doctrine: `underscore_number_aware` (snake_case w bazie)
-- CI ma job `composer-audit` (stage `test`), który failuje pipeline przy jakimkolwiek advisory z `composer audit`. Jeśli advisory nie ma jeszcze fixa upstream: dodaj wpis do `composer.json` → `config.audit.ignore` z komentarzem/linkiem do trackującego issue — nie wyłączaj joba w `.gitlab-ci.yml`.
+- Login rate limiting: 3 attempts / 15 min (`symfony/rate-limiter`)
+- Invitation token: `bin2hex(random_bytes(32))`, valid for 1 day
+- `UserRepository` supports pagination, search (`search` parameter), and `excludeGroupId`
+- Doctrine naming strategy: `underscore_number_aware` (snake_case in the database)
