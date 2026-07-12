@@ -264,28 +264,28 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 #### Automated
 
 - [x] 1.1 `.gitlab-ci.yml` YAML syntax check passes — ddf4c5a
-- [ ] 1.2 Test-branch pipeline runs php-cs-fixer, phpunit, composer-audit, composer, lint — all pass (requires pushing a branch; not run in this session)
-- [ ] 1.3 phpunit/php-cs-fixer job logs show no composer install step (requires pushed pipeline job logs; not run in this session)
-- [ ] 1.4 composer-audit job log shows no composer install step (requires pushed pipeline job logs; not run in this session)
+- [x] 1.2 Test-branch pipeline runs php-cs-fixer, phpunit, composer-audit, composer, lint — all pass — verified MR!39 pipeline 2670801026 (SHA 75e0c61), all 6 jobs success
+- [x] 1.3 phpunit/php-cs-fixer job logs show no composer install step — verified via job trace API (jobs 15304378497, 15304378496), no match for "composer install"
+- [x] 1.4 composer-audit job log shows no composer install step — verified via job trace API (job 15304378498), no match for "composer install"
 
 #### Manual
 
-- [ ] 1.5 Non-main branch pipeline DAG shows phpunit/php-cs-fixer consuming composer's artifact
-- [ ] 1.6 Main pipeline now runs composer/php-cs-fixer/lint (previously skipped) and passes
+- [x] 1.5 Non-main branch pipeline DAG shows phpunit/php-cs-fixer consuming composer's artifact — verified via job timestamps: composer finished 14:51:32.161Z, php-cs-fixer started 14:51:36.893Z, phpunit started 14:51:59.840Z (both after composer, consistent with needs:)
+- [ ] 1.6 Main pipeline now runs composer/php-cs-fixer/lint (previously skipped) and passes — pending, requires merging MR!39 to main
 
 ### Phase 2: Gate production deploy on release tag
 
 #### Automated
 
 - [x] 2.1 `.gitlab-ci.yml` YAML syntax check passes
-- [ ] 2.2 Push to main triggers docker-build only, no deploy-production job appears (requires push; not run in this session)
-- [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production (requires tag push — real production deploy trigger; not run in this session)
-- [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull (requires pushed pipeline log; not run in this session)
-- [ ] 2.5 Intentionally broken migration causes deploy-production to fail (requires disposable/staging deploy context; not run in this session)
+- [ ] 2.2 Push to main triggers docker-build only, no deploy-production job appears — pending, requires merging MR!39 to main
+- [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production — pending, requires a real tag push after merge (production deploy trigger)
+- [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull — pending, requires tag-push pipeline
+- [ ] 2.5 Intentionally broken migration causes deploy-production to fail — pending, requires disposable/staging deploy context
 
 #### Manual
 
-- [ ] 2.6 Protected tags configured in GitLab Settings (pattern v*, Maintainer role)
+- [x] 2.6 Protected tags configured in GitLab Settings (pattern v*, Maintainer role) — confirmed via API: protected_tags shows name "v*", create_access_levels: Maintainers only
 - [ ] 2.7 Real vX.Y.Z tag push deploys, pulls tag-pinned image, app responds correctly in production
 - [ ] 2.8 Non-maintainer or non-matching tag cannot trigger production deploy
 
