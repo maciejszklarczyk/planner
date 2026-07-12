@@ -279,15 +279,15 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 
 - [x] 2.1 `.gitlab-ci.yml` YAML syntax check passes
 - [x] 2.2 Push to main triggers docker-build only, no deploy-production job appears — verified pipeline 2670805711 (main, SHA 6bcb959): docker-build ran and succeeded, no deploy-production job present
-- [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production — pending, requires a real tag push after merge (production deploy trigger)
-- [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull — pending, requires tag-push pipeline
-- [ ] 2.5 Intentionally broken migration causes deploy-production to fail — pending, requires disposable/staging deploy context
+- [x] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production — verified pipeline 2670809154 (tag v0.0.1, SHA 8aeeb46): docker-build and deploy-production both ran and succeeded; docker-build trace shows `docker tag ...$CI_COMMIT_TAG && docker push ...$CI_COMMIT_TAG`
+- [x] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull — confirmed via job trace (job 15304425370): `$ export IMAGE_TAG=$CI_COMMIT_TAG` runs immediately before `docker compose ... pull`
+- [ ] 2.5 Intentionally broken migration causes deploy-production to fail — not tested against real production (v0.0.1 deploy ran a clean migration, `[OK] Already at the latest version`); deliberately not simulated on prod, needs a disposable/staging deploy target
 
 #### Manual
 
 - [x] 2.6 Protected tags configured in GitLab Settings (pattern v*, Maintainer role) — confirmed via API: protected_tags shows name "v*", create_access_levels: Maintainers only
-- [ ] 2.7 Real vX.Y.Z tag push deploys, pulls tag-pinned image, app responds correctly in production
-- [ ] 2.8 Non-maintainer or non-matching tag cannot trigger production deploy
+- [x] 2.7 Real vX.Y.Z tag push deploys, pulls tag-pinned image, app responds correctly in production — verified: `docker compose ps` shows planner-php on image `backend:v0.0.1` (not latest), healthy; `curl https://api-planner.msolve.it/api/doc` returns HTTP 200
+- [ ] 2.8 Non-maintainer or non-matching tag cannot trigger production deploy — not tested (would require a non-maintainer account attempting a tag push)
 
 ### Phase 3: Fix .env.example and DOCKER-EXECUTOR-SETUP.md documentation mismatches
 
