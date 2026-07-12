@@ -166,4 +166,4 @@ None — no schema, data, or API contract changes.
 
 #### Manual
 
-- [ ] 2.3 New `composer-audit` job appears and passes in the GitLab pipeline `test` stage
+- [x] 2.3 New `composer-audit` job appears and passes in the GitLab pipeline `test` stage (confirmed by user: CI/CD passed)
