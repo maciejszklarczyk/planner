@@ -1,7 +1,7 @@
 ---
 change_id: cicd-rework
 title: Cicd rework
-status: implemented
+status: impl_reviewed
 created: 2026-07-12
 updated: 2026-07-12
 archived_at: null

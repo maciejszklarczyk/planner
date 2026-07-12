@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-12
+
+- [f4f102c] ci(cicd-rework): fix deploy pinning gap and stale doc from impl review
+
 ## 2026-05-03
 
 - [89b7188] feat(events): add endDate/location fields and extend test fixtures

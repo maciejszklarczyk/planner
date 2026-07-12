@@ -261,14 +261,6 @@ docker compose -f /opt/plan-backend/docker-compose.prod.yaml logs database
 
 ## 11. Opcje optymalizacji
 
-### Wyłącz manual trigger (automatyczny deploy)
-
-W `.gitlab-ci.yml` usuń:
-```yaml
-deploy-production:
-  when: manual  # <- usuń tę linię
-```
-
 ### Dodaj cache dla Docker layers
 
 ```yaml

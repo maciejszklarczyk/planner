@@ -105,6 +105,7 @@ deploy-production:
         - docker compose -f docker-compose.prod.yaml exec -T php php bin/console doctrine:migrations:migrate --no-interaction
         - docker compose -f docker-compose.prod.yaml exec -T php php bin/console cache:clear --env=prod
         - docker compose -f docker-compose.prod.yaml ps
+        - curl -f https://api-planner.msolve.it/health
     environment:
         name: production
         url: https://api-planner.msolve.it
