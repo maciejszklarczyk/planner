@@ -4,6 +4,9 @@
 
 - [f4f102c] ci(cicd-rework): fix deploy pinning gap and stale doc from impl review
 - [efc1fbc] fix(ci): install curl in deploy-production image for health check
+- [1f39e35] chore: gitignore public/uploads runtime content
+- [f0c9d8e] docs: translate CLAUDE.md to English and promote CI rule
+- [feefa4e] docs: add AGENTS.md and 10x context scaffolding
 
 ## 2026-05-03
 
