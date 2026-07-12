@@ -1,7 +1,7 @@
 stages:
+    - build
     - test
     - secret-detection
-    - build
     - lint
     - docker-build
     - deploy
@@ -20,25 +20,19 @@ include:
 php-cs-fixer:
     stage: test
     image: composer:2.9.4
+    needs:
+        - composer
     script:
-        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
-    cache:
-        key:
-            files:
-                - composer.lock
-        paths:
-            - vendor/
-    except:
-        - main
 
 phpunit:
     stage: test
     image: composer:2.9.4
+    needs:
+        - composer
     script:
         - apk add --no-cache $PHPIZE_DEPS linux-headers
         - pecl install pcov && docker-php-ext-enable pcov
-        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/phpunit --coverage-cobertura=coverage.xml --coverage-text
     coverage: '/Lines:\s{3,}(\d+\.\d+)%/'
     artifacts:
@@ -46,25 +40,12 @@ phpunit:
             coverage_report:
                 coverage_format: cobertura
                 path: coverage.xml
-    cache:
-        key:
-            files:
-                - composer.lock
-        paths:
-            - vendor/
 
 composer-audit:
     stage: test
     image: composer:2.9.4
     script:
-        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - composer audit --locked
-    cache:
-        key:
-            files:
-                - composer.lock
-        paths:
-            - vendor/
 
 composer:
     stage: build
@@ -80,8 +61,6 @@ composer:
                 - composer.lock
         paths:
             - vendor/
-    except:
-        - main
 
 lint:
     stage: lint
@@ -92,8 +71,6 @@ lint:
         - composer validate
         - php bin/console lint:yaml config/
         - php bin/console lint:container
-    except:
-        - main
 
 docker-build:
     stage: docker-build
