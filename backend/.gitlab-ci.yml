@@ -24,6 +24,9 @@ php-cs-fixer:
         - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
         - vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
     cache:
+        key:
+            files:
+                - composer.lock
         paths:
             - vendor/
     except:
@@ -44,6 +47,22 @@ phpunit:
                 coverage_format: cobertura
                 path: coverage.xml
     cache:
+        key:
+            files:
+                - composer.lock
+        paths:
+            - vendor/
+
+composer-audit:
+    stage: test
+    image: composer:2.9.4
+    script:
+        - composer install --no-interaction --prefer-dist --ignore-platform-req=ext-gd
+        - composer audit --locked
+    cache:
+        key:
+            files:
+                - composer.lock
         paths:
             - vendor/
 
@@ -56,6 +75,9 @@ composer:
         paths:
             - vendor/
     cache:
+        key:
+            files:
+                - composer.lock
         paths:
             - vendor/
     except:

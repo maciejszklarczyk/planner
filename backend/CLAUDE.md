@@ -84,3 +84,4 @@ Wytyczne projektu. Uzupełniaj w punktach.
 - `UserRepository` obsługuje paginację, wyszukiwanie (parametr `search`) i `excludeGroupId`
 - Swagger/OpenAPI pod `/api/doc` (Nelmio API Doc Bundle)
 - Naming strategy Doctrine: `underscore_number_aware` (snake_case w bazie)
+- CI ma job `composer-audit` (stage `test`), który failuje pipeline przy jakimkolwiek advisory z `composer audit`. Jeśli advisory nie ma jeszcze fixa upstream: dodaj wpis do `composer.json` → `config.audit.ignore` z komentarzem/linkiem do trackującego issue — nie wyłączaj joba w `.gitlab-ci.yml`.
