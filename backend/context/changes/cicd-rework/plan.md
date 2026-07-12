@@ -271,14 +271,14 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 #### Manual
 
 - [x] 1.5 Non-main branch pipeline DAG shows phpunit/php-cs-fixer consuming composer's artifact — verified via job timestamps: composer finished 14:51:32.161Z, php-cs-fixer started 14:51:36.893Z, phpunit started 14:51:59.840Z (both after composer, consistent with needs:)
-- [ ] 1.6 Main pipeline now runs composer/php-cs-fixer/lint (previously skipped) and passes — pending, requires merging MR!39 to main
+- [x] 1.6 Main pipeline now runs composer/php-cs-fixer/lint (previously skipped) and passes — verified pipeline 2670805711 (main, SHA 6bcb959), all jobs success
 
 ### Phase 2: Gate production deploy on release tag
 
 #### Automated
 
 - [x] 2.1 `.gitlab-ci.yml` YAML syntax check passes
-- [ ] 2.2 Push to main triggers docker-build only, no deploy-production job appears — pending, requires merging MR!39 to main
+- [x] 2.2 Push to main triggers docker-build only, no deploy-production job appears — verified pipeline 2670805711 (main, SHA 6bcb959): docker-build ran and succeeded, no deploy-production job present
 - [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production — pending, requires a real tag push after merge (production deploy trigger)
 - [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull — pending, requires tag-push pipeline
 - [ ] 2.5 Intentionally broken migration causes deploy-production to fail — pending, requires disposable/staging deploy context
