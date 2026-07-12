@@ -293,8 +293,8 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 
 #### Automated
 
-- [x] 3.1 `grep -n "env.prod" backend/.env.example` returns no matches
-- [x] 3.2 `grep -n "env.prod" backend/docs/DOCKER-EXECUTOR-SETUP.md` returns no matches
+- [x] 3.1 `grep -n "env.prod" backend/.env.example` returns no matches — 7282248
+- [x] 3.2 `grep -n "env.prod" backend/docs/DOCKER-EXECUTOR-SETUP.md` returns no matches — 7282248
 
 #### Manual
 
