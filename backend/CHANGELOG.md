@@ -3,6 +3,7 @@
 ## 2026-07-12
 
 - [f4f102c] ci(cicd-rework): fix deploy pinning gap and stale doc from impl review
+- [efc1fbc] fix(ci): install curl in deploy-production image for health check
 
 ## 2026-05-03
 
