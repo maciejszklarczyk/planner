@@ -33,3 +33,7 @@ Thumbs.db
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 /coverage/
+
+###> uploads ###
+/public/uploads/
+###< uploads ###
