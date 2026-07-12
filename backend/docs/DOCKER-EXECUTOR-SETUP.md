@@ -1,5 +1,9 @@
 # Setup GitLab Runner (Docker Executor) dla lokalnego deploymentu
 
+> **Uwaga:** Ten dokument używa `/opt/plan-backend` jako przykładowej ścieżki deploymentu.
+> Aktualna wartość `DEPLOY_DIR` w `.gitlab-ci.yml` to `/home/maciej/docker/apps/planner/backend` —
+> dopasuj ścieżki poniżej do tej zmiennej.
+
 ## 1. Konfiguracja Runner Config
 
 Edytuj konfigurację runnera:
@@ -66,12 +70,12 @@ sudo chmod 755 /opt/plan-backend
 
 ### Na serwerze utwórz pliki:
 
-#### .env.prod
+#### .env
 ```bash
-sudo nano /opt/plan-backend/.env.prod
+sudo nano /opt/plan-backend/.env
 ```
 
-Wklej zawartość (z .env.prod.example):
+Wklej zawartość (z .env.example):
 ```env
 APP_ENV=prod
 APP_SECRET=ZMIEN_NA_LOSOWY_SECRET_64_ZNAKI
@@ -168,17 +172,17 @@ docker run --rm \
 
 ### Krok 1: Commit i push
 ```bash
-git add .gitlab-ci.yml docker-compose.prod.yaml .env.prod.example
+git add .gitlab-ci.yml docker-compose.prod.yaml .env.example
 git commit -m "Configure Docker executor deployment"
 git push origin main
 ```
 
 ### Krok 2: Monitoruj pipeline w GitLab
 1. GitLab → CI/CD → Pipelines
-2. Znajdź pipeline dla branch `main`
-3. Stage **docker-build** powinien zbudować i wypushować image
-4. Stage **deploy-production** czeka na manual trigger
-5. Kliknij ▶️ **Play** przy deploy-production
+2. Push na `main` buduje i wypycha image (stage **docker-build**), ale **nie** deployuje
+3. Deploy odpala się automatycznie tylko po pushu tagu pasującego do `vX.Y.Z`
+   (`git tag vX.Y.Z && git push origin vX.Y.Z`) — stage **deploy-production**
+   uruchamia się wtedy sam, bez manualnego triggera
 
 ### Krok 3: Sprawdź logi
 
@@ -251,7 +255,7 @@ docker compose -f /opt/plan-backend/docker-compose.prod.yaml logs database
 ```
 
 **Typowe problemy:**
-- Zły `.env.prod` (hasło do bazy, APP_SECRET)
+- Zły `.env` (hasło do bazy, APP_SECRET)
 - Brak sieci Traefik: `docker network create traefik`
 - Konflikt portów: sprawdź `docker ps`
 

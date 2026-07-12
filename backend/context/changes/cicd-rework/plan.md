@@ -293,10 +293,10 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 
 #### Automated
 
-- [ ] 3.1 `grep -n "env.prod" backend/.env.example` returns no matches
-- [ ] 3.2 `grep -n "env.prod" backend/docs/DOCKER-EXECUTOR-SETUP.md` returns no matches
+- [x] 3.1 `grep -n "env.prod" backend/.env.example` returns no matches
+- [x] 3.2 `grep -n "env.prod" backend/docs/DOCKER-EXECUTOR-SETUP.md` returns no matches
 
 #### Manual
 
-- [ ] 3.3 .env.example comment matches what docker-compose.prod.yaml's env_file actually loads
-- [ ] 3.4 DOCKER-EXECUTOR-SETUP.md's deploy-directory path and deploy-trigger description match the current .gitlab-ci.yml
+- [x] 3.3 .env.example comment matches what docker-compose.prod.yaml's env_file actually loads — comment now reads "Skopiuj do .env na serwerze (docker-compose.prod.yaml wczytuje .env)", matches `env_file: - .env`
+- [x] 3.4 DOCKER-EXECUTOR-SETUP.md's deploy-directory path and deploy-trigger description match the current .gitlab-ci.yml — added placeholder note pointing to actual DEPLOY_DIR value; deploy-trigger description corrected from manual Play button to automatic tag-push trigger
