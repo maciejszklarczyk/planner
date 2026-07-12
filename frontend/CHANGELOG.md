@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-12
+
+- [1440ee1] feat(settings): redesign settings page as unified card layout, add IDE gitignore entries
+- [cdb7d4c] chore: bump displayed version to v0.0.4
+
 ## 2026-05-03
 
 - [0ae7716] feat(events): replace mock data with real API query and add skeleton loading

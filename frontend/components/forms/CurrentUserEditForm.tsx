@@ -5,13 +5,13 @@ import {Controller, useForm} from "react-hook-form"
 import * as z from "zod"
 import {useEffect, useRef, useState} from "react";
 import {Input} from "@/components/ui/input";
-import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
+import {FieldError} from "@/components/ui/field";
 import {useAuth} from "@/hooks/useAuth";
 import {Button} from "@/components/ui/button";
 import {useUpdateUser} from "@/hooks/useUpdateUser";
-import {Separator} from "@/components/ui/separator";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useDeleteAvatar, useUploadAvatar} from "@/hooks/useUploadAvatar";
+import {SettingCard, SettingRow} from "@/components/settings/SettingsPrimitives";
 
 const formSchema = z.object({
     id: z
@@ -90,114 +90,111 @@ export default function CurrentUserEditForm() {
     return (
         <div className="flex flex-col gap-8">
             <section>
-                <h2 className="text-lg font-semibold mb-4">Profil</h2>
-                <div className="flex items-center gap-4 mb-6">
-                    <Avatar className="size-16 text-lg">
-                        <AvatarImage src={avatarSrc}/>
-                        <AvatarFallback>{initials}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex gap-2">
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="hidden"
-                            onChange={e => {
-                                const file = e.target.files?.[0];
-                                if (file) uploadAvatar(file);
-                                e.target.value = '';
-                            }}
-                        />
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={isUploading}
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            {isUploading ? 'Przesyłanie...' : 'Zmień avatar'}
-                        </Button>
-                        {user.avatar && (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                disabled={isDeleting}
-                                onClick={() => deleteAvatar()}
-                            >
-                                {isDeleting ? 'Usuwanie...' : 'Usuń'}
-                            </Button>
-                        )}
-                    </div>
-                </div>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.06em] mb-3">
+                    Profil
+                </p>
                 <form id="current-user-edit-form" onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="flex flex-col gap-4 md:max-w-sm">
+                    <SettingCard>
+                        <SettingRow label="Avatar" hint="Twoje zdjęcie profilowe">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="size-9 text-sm">
+                                    <AvatarImage src={avatarSrc}/>
+                                    <AvatarFallback>{initials}</AvatarFallback>
+                                </Avatar>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    className="hidden"
+                                    onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) uploadAvatar(file);
+                                        e.target.value = '';
+                                    }}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={isUploading}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {isUploading ? 'Przesyłanie...' : 'Zmień'}
+                                </Button>
+                                {user.avatar && (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={isDeleting}
+                                        onClick={() => deleteAvatar()}
+                                    >
+                                        {isDeleting ? 'Usuwanie...' : 'Usuń'}
+                                    </Button>
+                                )}
+                            </div>
+                        </SettingRow>
                         <Controller
                             name="name"
                             control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="current-user-edit-form-name">
-                                        Name
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="current-user-edit-form-name"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="John Doe"
-                                        autoComplete="off"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
+                            render={({field, fieldState}) => (
+                                <SettingRow label="Imię" hint="Wyświetlana nazwa">
+                                    <div className="flex flex-col items-end gap-1">
+                                        <Input
+                                            {...field}
+                                            id="current-user-edit-form-name"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="Jan Kowalski"
+                                            autoComplete="off"
+                                            className="w-52"
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]}/>
+                                        )}
+                                    </div>
+                                </SettingRow>
                             )}
                         />
                         <Controller
                             name="email"
                             control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="current-user-edit-form-email">
-                                        E-Mail
-                                    </FieldLabel>
+                            render={({field, fieldState}) => (
+                                <SettingRow label="E-mail" hint="Adres email (niezmienialny)">
                                     <Input
                                         {...field}
                                         id="current-user-edit-form-email"
                                         aria-invalid={fieldState.invalid}
                                         placeholder="test@example.com"
                                         autoComplete="off"
-                                        disabled={true}
+                                        disabled
+                                        className="w-52"
                                     />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
+                                </SettingRow>
                             )}
                         />
-                        <Button
-                            type="submit"
-                            form="current-user-edit-form"
-                            disabled={isPending}
-                            className="w-fit"
-                        >
-                            {isPending ? 'Zapisywanie...' : 'Zapisz'}
-                        </Button>
-                    </div>
+                    </SettingCard>
                 </form>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        type="submit"
+                        form="current-user-edit-form"
+                        disabled={isPending}
+                        size="sm"
+                    >
+                        {isPending ? 'Zapisywanie...' : 'Zapisz profil'}
+                    </Button>
+                </div>
             </section>
 
-            <Separator/>
-
             <section>
-                <h2 className="text-lg font-semibold mb-1">Zmiana hasła</h2>
-                <p className="text-sm text-muted-foreground mb-4">Funkcja w przygotowaniu.</p>
-                <div className="flex flex-col gap-4 md:max-w-sm">
-                    <Input placeholder="Aktualne hasło" type="password" disabled/>
-                    <Input placeholder="Nowe hasło" type="password" disabled/>
-                    <Input placeholder="Powtórz nowe hasło" type="password" disabled/>
-                    <Button disabled className="w-fit">Zmień hasło</Button>
-                </div>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.06em] mb-3">
+                    Bezpieczeństwo
+                </p>
+                <SettingCard>
+                    <SettingRow label="Zmiana hasła" hint="Funkcja w przygotowaniu">
+                        <Button variant="outline" size="sm" disabled>Zmień hasło</Button>
+                    </SettingRow>
+                </SettingCard>
             </section>
         </div>
     )
