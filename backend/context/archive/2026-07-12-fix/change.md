@@ -1,10 +1,10 @@
 ---
 change_id: fix
 title: Fix Twig and Symfony security vulnerabilities
-status: impl_reviewed
+status: archived
 created: 2026-07-12
 updated: 2026-07-12
-archived_at: null
+archived_at: 2026-07-12T14:03:26Z
 ---
 
 ## Notes
