@@ -1,6 +1,6 @@
 services:
   php:
-    image: registry.gitlab.com/planner6551704/backend:latest
+    image: ${CI_REGISTRY_IMAGE:-registry.gitlab.com/planner6551704/backend}:${IMAGE_TAG:-latest}
     container_name: ${PROJECT_NAME:-plan}-php
     working_dir: /app
     env_file:

@@ -263,7 +263,7 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 
 #### Automated
 
-- [x] 1.1 `.gitlab-ci.yml` YAML syntax check passes
+- [x] 1.1 `.gitlab-ci.yml` YAML syntax check passes — ddf4c5a
 - [ ] 1.2 Test-branch pipeline runs php-cs-fixer, phpunit, composer-audit, composer, lint — all pass (requires pushing a branch; not run in this session)
 - [ ] 1.3 phpunit/php-cs-fixer job logs show no composer install step (requires pushed pipeline job logs; not run in this session)
 - [ ] 1.4 composer-audit job log shows no composer install step (requires pushed pipeline job logs; not run in this session)
@@ -277,11 +277,11 @@ No data migration. Operationally, once this lands, deploys require an explicit `
 
 #### Automated
 
-- [ ] 2.1 `.gitlab-ci.yml` YAML syntax check passes
-- [ ] 2.2 Push to main triggers docker-build only, no deploy-production job appears
-- [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production
-- [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull
-- [ ] 2.5 Intentionally broken migration causes deploy-production to fail (verified in disposable/staging context)
+- [x] 2.1 `.gitlab-ci.yml` YAML syntax check passes
+- [ ] 2.2 Push to main triggers docker-build only, no deploy-production job appears (requires push; not run in this session)
+- [ ] 2.3 Push of v1.2.3-style tag triggers docker-build (with tag-push step) and deploy-production (requires tag push — real production deploy trigger; not run in this session)
+- [ ] 2.4 deploy-production log shows `export IMAGE_TAG=` before docker compose pull (requires pushed pipeline log; not run in this session)
+- [ ] 2.5 Intentionally broken migration causes deploy-production to fail (requires disposable/staging deploy context; not run in this session)
 
 #### Manual
 
