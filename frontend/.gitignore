@@ -24,6 +24,12 @@
 .DS_Store
 *.pem
 
+###> IDE ###
+/.idea/
+/.vscode/
+*.iml
+###< IDE ###
+
 # tooling
 .superpowers/
 

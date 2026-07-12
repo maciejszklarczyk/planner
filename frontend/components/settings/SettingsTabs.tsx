@@ -7,72 +7,18 @@ import {columns} from "@/components/users/UsersTableColumn";
 import {GroupsTable} from "@/components/users/GroupsTable";
 import {groupColumns} from "@/components/users/GroupsTableColumn";
 import {InviteUserDialog} from "@/components/users/InviteUserDialog";
-import {useState} from "react";
-import {useSearchParams} from "next/navigation";
-import {Button} from "@/components/ui/button";
-import {cn} from "@/lib/utils";
-import {Separator} from "@/components/ui/separator";
+import {SectionHeader, SettingCard, SettingRow} from "@/components/settings/SettingsPrimitives";
 
-type Tab = 'profile' | 'notifications' | 'users' | 'groups' | 'logs';
-
-export function SettingsTabs() {
-    const {user, isLoading} = useAuth();
-    const searchParams = useSearchParams();
-    const initialTab = (searchParams.get('tab') as Tab) ?? 'profile';
-    const [activeTab, setActiveTab] = useState<Tab>(initialTab);
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center py-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-orange-600"/>
-            </div>
-        );
-    }
-
-    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
-
-    const navItems: { value: Tab; label: string; adminOnly?: boolean }[] = [
-        {value: 'profile', label: 'Profil'},
-        {value: 'notifications', label: 'Powiadomienia'},
-        {value: 'users', label: 'Użytkownicy', adminOnly: true},
-        {value: 'groups', label: 'Grupy', adminOnly: true},
-        {value: 'logs', label: 'Logi'},
-    ];
-
+function Toggle({disabled}: {disabled?: boolean}) {
     return (
-        <div className="md:flex gap-8">
-            <nav className="md:w-44 shrink-0 flex md:flex-col gap-1 overflow-x-auto mb-4 md:mb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {navItems
-                    .filter(item => !item.adminOnly || isAdmin)
-                    .map(item => (
-                        <Button
-                            key={item.value}
-                            variant="ghost"
-                            className={cn(
-                                'justify-start',
-                                activeTab === item.value && 'bg-muted font-medium'
-                            )}
-                            onClick={() => setActiveTab(item.value)}
-                        >
-                            {item.label}
-                        </Button>
-                    ))}
-            </nav>
-            <div className="flex-1 min-w-0">
-                {activeTab === 'profile' && <CurrentUserEditForm/>}
-                {isAdmin && activeTab === 'users' && (
-                    <div className="flex flex-col gap-4">
-                        <div className="flex justify-end">
-                            <InviteUserDialog/>
-                        </div>
-                        <UsersTable columns={columns}/>
-                    </div>
-                )}
-                {isAdmin && activeTab === 'groups' && <GroupsTable columns={groupColumns}/>}
-                {activeTab === 'notifications' && <NotificationsPlaceholder/>}
-                {activeTab === 'logs' && <LogsPlaceholder/>}
-            </div>
-        </div>
+        <button
+            role="switch"
+            aria-checked={false}
+            disabled={disabled}
+            className="relative inline-flex h-5 w-9 items-center rounded-full bg-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+        >
+            <span className="translate-x-1 inline-block h-3.5 w-3.5 rounded-full bg-background shadow-sm transition-transform"/>
+        </button>
     );
 }
 
@@ -84,64 +30,69 @@ const SAMPLE_LOGS = [
     {date: '2026-03-20 08:00', event: 'Rejestracja konta'},
 ];
 
-function LogsPlaceholder() {
-    return (
-        <div>
-            <h2 className="text-lg font-semibold mb-4">Historia aktywności</h2>
-            <p className="text-sm text-muted-foreground mb-6">Funkcja w przygotowaniu — poniżej przykładowe dane.</p>
-            <ul className="flex flex-col divide-y divide-border opacity-50">
-                {SAMPLE_LOGS.map((log, i) => (
-                    <li key={i} className="flex items-center gap-6 py-3 text-sm">
-                        <span className="w-36 shrink-0 text-muted-foreground tabular-nums">{log.date}</span>
-                        <span>{log.event}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-}
+export function SettingsTabs() {
+    const {user, isLoading} = useAuth();
 
-function NotificationsPlaceholder() {
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-10">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary"/>
+            </div>
+        );
+    }
+
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
     return (
-        <div className="flex flex-col gap-8">
+        <div className="max-w-2xl flex flex-col gap-8">
+            <div>
+                <h1 className="text-lg font-semibold">Ustawienia</h1>
+                <p className="text-xs text-muted-foreground mt-1">Zarządzaj kontem i preferencjami</p>
+            </div>
+
+            <CurrentUserEditForm/>
+
             <section>
-                <h2 className="text-lg font-semibold mb-1">Powiadomienia push</h2>
-                <p className="text-sm text-muted-foreground mb-4">Funkcja w przygotowaniu.</p>
-                <div className="flex flex-col gap-3 md:w-1/2 opacity-50 pointer-events-none">
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Nowe wydarzenie</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Przypomnienie o wydarzeniu</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Dodanie do grupy</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                </div>
+                <SectionHeader>Powiadomienia</SectionHeader>
+                <SettingCard>
+                    <SettingRow label="Powiadomienia push" hint="Funkcja w przygotowaniu">
+                        <Toggle disabled/>
+                    </SettingRow>
+                    <SettingRow label="Powiadomienia e-mail" hint="Funkcja w przygotowaniu">
+                        <Toggle disabled/>
+                    </SettingRow>
+                </SettingCard>
             </section>
 
-            <Separator/>
+            {isAdmin && (
+                <section>
+                    <SectionHeader>Użytkownicy</SectionHeader>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex justify-end">
+                            <InviteUserDialog/>
+                        </div>
+                        <UsersTable columns={columns}/>
+                    </div>
+                </section>
+            )}
+
+            {isAdmin && (
+                <section>
+                    <SectionHeader>Grupy</SectionHeader>
+                    <GroupsTable columns={groupColumns}/>
+                </section>
+            )}
 
             <section>
-                <h2 className="text-lg font-semibold mb-1">Powiadomienia e-mail</h2>
-                <p className="text-sm text-muted-foreground mb-4">Funkcja w przygotowaniu.</p>
-                <div className="flex flex-col gap-3 md:w-1/2 opacity-50 pointer-events-none">
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Nowe wydarzenie</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Przypomnienie o wydarzeniu</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                    <label className="flex items-center justify-between">
-                        <span className="text-sm">Dodanie do grupy</span>
-                        <input type="checkbox" disabled/>
-                    </label>
-                </div>
+                <SectionHeader>Historia aktywności</SectionHeader>
+                <p className="text-sm text-muted-foreground mb-3">
+                    Funkcja w przygotowaniu — poniżej przykładowe dane.
+                </p>
+                <SettingCard>
+                    {SAMPLE_LOGS.map((log, i) => (
+                        <SettingRow key={i} label={log.event} hint={log.date}/>
+                    ))}
+                </SettingCard>
             </section>
         </div>
     );
