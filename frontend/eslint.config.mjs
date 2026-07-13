@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // shadcn/ui primitives — do not modify (CLAUDE.md). Only silence the
+    // rule that flags generated code we're not allowed to touch; keep
+    // other rules active so real bugs in this directory still get caught.
+    files: ["components/ui/**"],
+    rules: { "react-hooks/purity": "off" },
+  },
 ]);
 
 export default eslintConfig;

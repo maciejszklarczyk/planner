@@ -5,8 +5,24 @@ variables:
   NEXT_PUBLIC_API_URL: 'https://api-planner.msolve.it'
 
 stages:
+  - quality
   - docker-build
   - deploy
+
+# Lint, typecheck, test and format-check before building the image
+quality-checks:
+  stage: quality
+  image: node:20-alpine
+  tags:
+    - docker
+  script:
+    - npm ci
+    - npm run lint
+    - npx tsc --noEmit
+    - npm run test
+    - npm run format:check
+  only:
+    - main
 
 # Build and push Docker image to GitLab Container Registry
 docker-build:

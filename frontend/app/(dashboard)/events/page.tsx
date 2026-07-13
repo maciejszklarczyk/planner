@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
-import { EventsView } from '@/components/events/EventsView'
+import type { Metadata } from "next";
+import { EventsView } from "@/components/events/EventsView";
 
 export const metadata: Metadata = {
-    title: 'Wydarzenia',
-}
+  title: "Wydarzenia",
+};
 
 export default function EventsPage() {
-    return <EventsView />
+  return <EventsView />;
 }

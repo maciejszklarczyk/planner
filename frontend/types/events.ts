@@ -1,15 +1,15 @@
 export interface Event {
-    id: number
-    name: string
-    startDate: string // 'YYYY-MM-DD'
-    endDate: string   // 'YYYY-MM-DD'
-    location: string
-    attendees: number
-    category: string
+  id: number;
+  name: string;
+  startDate: string; // 'YYYY-MM-DD'
+  endDate: string; // 'YYYY-MM-DD'
+  location: string;
+  attendees: number;
+  category: string;
 }
 
 export interface EventsResponse {
-    data: Event[];
+  data: Event[];
 }
 
-export type EventStatus = 'live' | 'recent' | 'upcoming' | 'ended'
+export type EventStatus = "live" | "recent" | "upcoming" | "ended";
