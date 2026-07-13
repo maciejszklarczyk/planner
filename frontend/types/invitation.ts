@@ -1,3 +1,3 @@
 export interface InvitationRequest {
-    email: string;
+  email: string;
 }

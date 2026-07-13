@@ -1,0 +1,10 @@
+.next/
+node_modules/
+components/ui/
+.agents/
+.claude/
+docs/
+*.md
+*.css
+*.yml
+*.yaml

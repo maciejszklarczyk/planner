@@ -81,6 +81,13 @@ interface GroupMembership {
 - Używaj skilla `shadcn` do weryfikacji zmian na stronach
 - Używaj skilla `tailwind-design-system` przy zmianach w layoucie
 
+## Testing
+
+- Test runner: Vitest + React Testing Library (`npm install -D vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom jsdom`)
+- Test files: colocate as `*.test.tsx` next to the component/hook under test (e.g. `hooks/useUpdateUser.test.ts`)
+- Hooks using `useMutation`/`useQuery`: wrap in `QueryClientProvider` with a fresh `QueryClient` per test; mock `lib/api.ts` at the module boundary, not individual fetch calls
+- Run tests: `npm run test` (`"test": "vitest run"`, `"test:watch": "vitest"`)
+
 ## Hooki mutacji
 
 | Hook | Endpoint | Invaliduje |

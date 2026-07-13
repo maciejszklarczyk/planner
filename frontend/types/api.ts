@@ -1,9 +1,9 @@
-import { User } from './auth';
+import { User } from "./auth";
 
 export interface ApiResponse<T> {
-    data: T;
+  data: T;
 }
 
 export interface UsersResponse {
-    data: User[];
+  data: User[];
 }
