@@ -231,9 +231,9 @@ Purely additive/refactoring — no database schema changes, no data migration. T
 
 #### Automated
 
-- [x] 1.1 GroupMembershipControllerTest's existing 8 error-code assertions still pass unchanged
-- [x] 1.2 New assertions confirming timestamp/path keys are present on at least one error response
-- [x] 1.3 New assertion hitting a #[MapRequestPayload] endpoint with an invalid payload, confirming 422 + VALIDATION_ERROR + non-empty violations array
+- [x] 1.1 GroupMembershipControllerTest's existing 8 error-code assertions still pass unchanged — 1d02374
+- [x] 1.2 New assertions confirming timestamp/path keys are present on at least one error response — 1d02374
+- [x] 1.3 New assertion hitting a #[MapRequestPayload] endpoint with an invalid payload, confirming 422 + VALIDATION_ERROR + non-empty violations array — 1d02374
 
 #### Manual
 
@@ -243,8 +243,8 @@ Purely additive/refactoring — no database schema changes, no data migration. T
 
 #### Automated
 
-- [x] 2.1 Full test suite passes
-- [x] 2.2 No remaining manual {'status'|'valid': ...} error arrays in any controller
+- [x] 2.1 Full test suite passes — bc25799
+- [x] 2.2 No remaining manual {'status'|'valid': ...} error arrays in any controller — bc25799
 
 #### Manual
 
