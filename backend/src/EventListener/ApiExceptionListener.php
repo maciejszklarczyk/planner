@@ -72,6 +72,8 @@ class ApiExceptionListener
         }
 
         if ($exception instanceof HttpExceptionInterface) {
+            // getMessage() is passed through verbatim here — only throw HttpExceptionInterface
+            // with messages safe to expose to the client.
             $statusCode = $exception->getStatusCode();
             $errorCode = self::STATUS_CODE_MAP[$statusCode] ?? 'HTTP_ERROR';
 

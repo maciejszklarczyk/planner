@@ -1,7 +1,7 @@
 ---
 change_id: api-exception-handling
 title: Global API exception-handling infrastructure
-status: implemented
+status: impl_reviewed
 created: 2026-07-22
 updated: 2026-07-23
 archived_at: null
@@ -24,3 +24,10 @@ session).
 `friendship-requests` now depends on this change landing first — its plan
 assumes `ApiExceptionInterface` and the `kernel.exception` listener already
 exist.
+
+Note: commit `1d02374` (Phase 1) also carries the deletion of
+`context/changes/trip-domain-model/{change.md,frame.md}` — leftover staged
+state from the `/10x-plan` session that produced this split, picked up
+incidentally when Phase 1 was committed. The deletion itself is correct
+(superseded by this change and `friendship-requests`), just bundled into
+the wrong commit boundary.

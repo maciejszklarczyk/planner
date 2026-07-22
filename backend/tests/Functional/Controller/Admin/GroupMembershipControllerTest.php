@@ -21,7 +21,7 @@ class GroupMembershipControllerTest extends DatabaseTestCase
     // Fixture data (deterministic):
     // group_1: admin=owner, user_1=member, user_2=member
     // group_2: admin=member, user_1=owner, user_3=member
-    // group_3: user_2=owner, user_3=owner, user_4=member
+    // group_3: user_2=owner, user_3=member, user_4=member
     // group_4: user_4=owner, user_5=member
     // group_5: user_5=owner
 

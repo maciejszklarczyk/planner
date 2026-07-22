@@ -6,11 +6,6 @@ namespace App\Exception;
 
 class CannotRemoveLastOwnerException extends \RuntimeException implements ApiExceptionInterface
 {
-    public function __construct(int $groupId)
-    {
-        parent::__construct("Cannot remove the last owner from group {$groupId}");
-    }
-
     public function getErrorCode(): string
     {
         return 'CANNOT_REMOVE_LAST_OWNER';

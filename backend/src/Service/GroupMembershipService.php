@@ -51,11 +51,11 @@ class GroupMembershipService
         }
 
         if ($this->userHasGroupRepository->isUserInGroup($userId, $groupId)) {
-            throw new UserAlreadyInGroupException($userId, $groupId);
+            throw new UserAlreadyInGroupException("User with ID {$userId} is already a member of group {$groupId}");
         }
 
         if (UserGroupRoleEnum::OWNER === $role && $this->userHasGroupRepository->countOwnersByGroup($groupId) > 0) {
-            throw new GroupAlreadyHasOwnerException($groupId);
+            throw new GroupAlreadyHasOwnerException("Group {$groupId} already has an owner. Remove or change the current owner's role first.");
         }
 
         $membership = new UserHasGroup();
@@ -91,7 +91,7 @@ class GroupMembershipService
         if (UserGroupRoleEnum::OWNER === $membership->getRole()) {
             $ownerCount = $this->userHasGroupRepository->countOwnersByGroup($groupId);
             if ($ownerCount <= 1) {
-                throw new CannotRemoveLastOwnerException($groupId);
+                throw new CannotRemoveLastOwnerException("Cannot remove the last owner from group {$groupId}");
             }
         }
 
@@ -122,13 +122,13 @@ class GroupMembershipService
 
         if (UserGroupRoleEnum::OWNER === $currentRole && UserGroupRoleEnum::OWNER !== $newRole) {
             if ($this->userHasGroupRepository->countOwnersByGroup($groupId) <= 1) {
-                throw new CannotRemoveLastOwnerException($groupId);
+                throw new CannotRemoveLastOwnerException("Cannot remove the last owner from group {$groupId}");
             }
         }
 
         if (UserGroupRoleEnum::OWNER !== $currentRole && UserGroupRoleEnum::OWNER === $newRole) {
             if ($this->userHasGroupRepository->countOwnersByGroup($groupId) > 0) {
-                throw new GroupAlreadyHasOwnerException($groupId);
+                throw new GroupAlreadyHasOwnerException("Group {$groupId} already has an owner. Remove or change the current owner's role first.");
             }
         }
 
