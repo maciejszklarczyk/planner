@@ -3,6 +3,7 @@
 ## 2026-07-22
 
 - [5d1332d] build(quality): wire PHPStan into CI and patch guzzle advisories
+- [c0c59d0] docs(trip-domain-model): frame and shape event participants + friendship change
 
 ## 2026-07-12
 
