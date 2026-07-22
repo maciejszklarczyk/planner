@@ -28,7 +28,7 @@
 - **Location**: src/Service/ApiErrorEnvelopeFactory.php:11
 - **Detail**: Verified by running `vendor/bin/phpstan analyse` (level 6, per `phpstan.dist.neon`) against the changed files: `build(string $errorCode, string $message, Request $request, ?array $violations = null): array` reports 2 `missingType.iterableValue` errors — the `$violations` param and the `array` return type both need value-type PHPDoc. This repo's CI has a dedicated PHPStan job (added in commit `949c0f8`, "wire PHPStan into CI"), so this is a genuine CI-breaker, not a hypothetical.
 - **Fix**: Add PHPDoc to the method: `@param list<array{field: string, message: string}>|null $violations` and `@return array{error: string, message: string, timestamp: string, path: string, violations?: list<array{field: string, message: string}>}`.
-- **Decision**: PENDING
+- **Decision**: FIXED — 3aa35a6
 
 ### F2 — Pre-existing staged deletion of trip-domain-model files swept into Phase 1 commit
 
@@ -38,7 +38,7 @@
 - **Location**: commit 1d02374 (context/changes/trip-domain-model/{change.md,frame.md})
 - **Detail**: Before this autonomous run started, `context/changes/trip-domain-model/change.md` and `frame.md` were already staged for deletion (visible in the session's initial `git status`) — leftover from the prior `/10x-plan` session that split `trip-domain-model` into `friendship-requests` + `api-exception-handling` (per this change's own `change.md` notes). The Phase 1 commit's `git commit` picked up everything staged, not just the phase's touched-file set, so this unrelated deletion landed inside `feat(...): global API exception infrastructure (p1)` instead of its own commit. The content itself is correct and intentional — it just landed in the wrong commit boundary.
 - **Fix**: No code change needed. Optionally note in `context/changes/api-exception-handling/change.md` that commit 1d02374 also carries the trip-domain-model→friendship-requests split cleanup, for anyone reading `git log` later.
-- **Decision**: PENDING
+- **Decision**: FIXED — 3aa35a6 (documented in change.md)
 
 ### F3 — Two coexisting conventions for exception message ownership
 
@@ -48,7 +48,7 @@
 - **Location**: src/Exception/UserAlreadyExistsException.php (and 9 other Phase 2 exception classes) vs. src/Exception/CannotRemoveLastOwnerException.php
 - **Detail**: The three Phase-1-migrated exceptions (`CannotRemoveLastOwnerException`, `GroupAlreadyHasOwnerException`, `UserAlreadyInGroupException`) own their message via a custom constructor that interpolates arguments. The ten Phase-2 exceptions have no constructor at all — they rely on `\RuntimeException`'s default constructor, so the message is whatever the call site happens to pass positionally (e.g. `new UserAlreadyExistsException('User already exists.')`). Every call site today passes a correct message, so there's no functional bug, but the plan's own Phase 2 contract ("following the exact pattern from Phase 1's migrated exceptions") is satisfied for the interface/status-code parts but not for message ownership, and there's no documented rule for which convention new exceptions should follow going forward.
 - **Fix**: No code change required now (all call sites are correct). If this bothers you, document the convention (e.g. "message is caller-supplied unless the exception needs to format an ID into it") as a short comment on `ApiExceptionInterface` or in `backend/CLAUDE.md`.
-- **Decision**: PENDING
+- **Decision**: FIXED — 3aa35a6 (unified on caller-supplied message; dropped the 3 custom constructors, updated 5 call sites in GroupMembershipService.php)
 
 ### F4 — Generic HttpExceptionInterface branch has no message-sanitization boundary
 
@@ -58,7 +58,7 @@
 - **Location**: src/EventListener/ApiExceptionListener.php:74-87
 - **Detail**: This branch calls `$exception->getMessage()` verbatim for any `HttpExceptionInterface` not already handled by the two branches above it (framework 404s, 405s, and any future `throw new BadRequestHttpException($rawInput)` elsewhere in the codebase). Today every message reaching this branch is safe and intentional — confirmed by the plan-drift agent's full-repo scan — so this is not a current leak, just a boundary worth remembering if a future contributor throws a built-in `HttpExceptionInterface` with user-controlled content.
 - **Fix**: No action needed now. Worth a one-line comment on that branch if you want future contributors to notice the implicit trust boundary.
-- **Decision**: PENDING
+- **Decision**: FIXED — 3aa35a6
 
 ### F5 — Stale fixture comment in GroupMembershipControllerTest.php
 
@@ -68,7 +68,7 @@
 - **Location**: tests/Functional/Controller/Admin/GroupMembershipControllerTest.php:24
 - **Detail**: Comment says `group_3: user_2=owner, user_3=owner, user_4=member`, but the authoritative fixture map in `backend/CLAUDE.md` (and `/backend` project instructions) says `group_3: user_2=owner, user_3=member, user_4=member`. Not functionally used by this test file (pre-existing, not introduced by this change), purely a stale comment.
 - **Fix**: Correct the comment to `user_3=member`.
-- **Decision**: PENDING
+- **Decision**: FIXED — 3aa35a6
 
 ## Success Criteria Verification
 
