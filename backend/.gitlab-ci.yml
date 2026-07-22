@@ -25,6 +25,14 @@ php-cs-fixer:
     script:
         - vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
 
+phpstan:
+    stage: test
+    image: composer:2.9.4
+    needs:
+        - composer
+    script:
+        - vendor/bin/phpstan analyse --memory-limit 1G
+
 phpunit:
     stage: test
     image: composer:2.9.4

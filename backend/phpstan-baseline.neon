@@ -1,0 +1,145 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Dto/Response/EventItemDto.php
+
+		-
+			message: '#^Method App\\Dto\\Response\\UserListItemDto\:\:__construct\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Response/UserListItemDto.php
+
+		-
+			message: '#^Property App\\Entity\\Event\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Event.php
+
+		-
+			message: '#^Property App\\Entity\\Group\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$status \(App\\Entity\\Enum\\UserStatusEnum\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\UserActivityLog\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/UserActivityLog.php
+
+		-
+			message: '#^Property App\\Entity\\UserHasGroup\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/UserHasGroup.php
+
+		-
+			message: '#^Property App\\Entity\\UserInvitationToken\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/UserInvitationToken.php
+
+		-
+			message: '#^Method App\\Security\\DevHeaderAuthenticator\:\:onAuthenticationFailure\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Security/DevHeaderAuthenticator.php
+
+		-
+			message: '#^Method App\\Security\\DevHeaderAuthenticator\:\:supports\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Security/DevHeaderAuthenticator.php
+
+		-
+			message: '#^Class App\\Security\\GroupVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Security/GroupVoter.php
+
+		-
+			message: '#^Access to an undefined property App\\Dto\\Event\\EventDto\:\:\$endDate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/EventMapper.php
+
+		-
+			message: '#^Access to an undefined property App\\Dto\\Event\\EventDto\:\:\$location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/EventMapper.php
+
+		-
+			message: '#^Access to an undefined property App\\Dto\\Event\\EventDto\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/EventMapper.php
+
+		-
+			message: '#^Access to an undefined property App\\Dto\\Event\\EventDto\:\:\$startDate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/EventMapper.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Controller\\Admin\\GroupMembershipControllerTest\:\:nonAdminRequestsProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Controller/Admin/GroupMembershipControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Controller\\Admin\\GroupMembershipControllerTest\:\:promoteToOwnerWithExistingOwnerProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Controller/Admin/GroupMembershipControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Controller\\Admin\\GroupMembershipControllerTest\:\:unauthenticatedRequestsProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Controller/Admin/GroupMembershipControllerTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''App\\\\Entity\\\\User'' and array\<App\\Entity\\User\> will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: tests/Functional/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Dto\\InvitationCompleteDtoTest\:\:invalidDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Dto/InvitationCompleteDtoTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Dto\\UserInviteDtoTest\:\:invalidEmailProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Dto/UserInviteDtoTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Security\\GroupVoterTest\:\:voteDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Security/GroupVoterTest.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php

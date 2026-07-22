@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-22
+
+- [5d1332d] build(quality): wire PHPStan into CI and patch guzzle advisories
+
 ## 2026-07-12
 
 - [f4f102c] ci(cicd-rework): fix deploy pinning gap and stale doc from impl review
