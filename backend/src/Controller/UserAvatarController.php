@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Exception\AuthenticationRequiredException;
+use App\Exception\AvatarFileMissingException;
+use App\Exception\AvatarFileTooLargeException;
+use App\Exception\AvatarFileTypeInvalidException;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -35,21 +38,21 @@ class UserAvatarController extends AbstractController
     public function upload(Request $request, #[CurrentUser] ?User $user): JsonResponse
     {
         if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Missing credentials');
         }
 
         $file = $request->files->get('avatar');
 
         if (!$file) {
-            return $this->json(['message' => 'No file uploaded'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            throw new AvatarFileMissingException('No file uploaded');
         }
 
         if ($file->getSize() > self::MAX_FILE_SIZE) {
-            return $this->json(['message' => 'File too large (max 2 MB)'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            throw new AvatarFileTooLargeException('File too large (max 2 MB)');
         }
 
         if (!in_array($file->getMimeType(), self::ALLOWED_MIME_TYPES, true)) {
-            return $this->json(['message' => 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            throw new AvatarFileTypeInvalidException('Invalid file type. Allowed: JPEG, PNG, WebP, GIF');
         }
 
         $userId = $user->getId() ?? throw new \LogicException('User must have an ID to upload avatar.');
@@ -69,7 +72,7 @@ class UserAvatarController extends AbstractController
     public function delete(#[CurrentUser] ?User $user): JsonResponse
     {
         if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Missing credentials');
         }
 
         $currentAvatar = $user->getAvatar();

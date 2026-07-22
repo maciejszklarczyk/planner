@@ -243,8 +243,8 @@ Purely additive/refactoring — no database schema changes, no data migration. T
 
 #### Automated
 
-- [ ] 2.1 Full test suite passes
-- [ ] 2.2 No remaining manual {'status'|'valid': ...} error arrays in any controller
+- [x] 2.1 Full test suite passes
+- [x] 2.2 No remaining manual {'status'|'valid': ...} error arrays in any controller
 
 #### Manual
 

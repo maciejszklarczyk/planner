@@ -6,12 +6,14 @@ namespace App\Controller;
 
 use App\Dto\User\EditUserDto;
 use App\Entity\User;
+use App\Exception\AuthenticationRequiredException;
+use App\Exception\InsufficientPermissionException;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -26,14 +28,14 @@ class UserController extends AbstractController
     public function editUser(#[MapRequestPayload] EditUserDto $dto, #[CurrentUser] ?User $user): JsonResponse
     {
         if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Missing credentials');
         }
 
         if ($user->hasRole('ROLE_ADMIN') || $user->getId() === $dto->id) {
             $userToEdit = $this->entityManager->find(User::class, $dto->id);
 
             if (!$userToEdit) {
-                return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+                throw new NotFoundHttpException('User not found');
             }
 
             $userToEdit->updateFromDto($dto);
@@ -44,21 +46,21 @@ class UserController extends AbstractController
             ]);
         }
 
-        return $this->json(['message' => 'Missing permission to update user entity.'], Response::HTTP_FORBIDDEN);
+        throw new InsufficientPermissionException('Missing permission to update user entity.');
     }
 
     #[Route('/user/{userId}', name: 'delete_user', methods: ['DELETE'])]
     public function deleteUser(int $userId, #[CurrentUser] ?User $user): JsonResponse
     {
         if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Missing credentials');
         }
 
         if ($user->hasRole('ROLE_ADMIN')) {
             $userToRemove = $this->entityManager->find(User::class, $userId);
 
             if (!$userToRemove) {
-                return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+                throw new NotFoundHttpException('User not found');
             }
 
             $userToRemove->setDeletedAt(new \DateTime());
@@ -67,6 +69,6 @@ class UserController extends AbstractController
             return $this->json([]);
         }
 
-        return $this->json(['message' => 'Missing permission to remove user entity.'], Response::HTTP_FORBIDDEN);
+        throw new InsufficientPermissionException('Missing permission to remove user entity.');
     }
 }

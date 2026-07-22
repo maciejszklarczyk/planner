@@ -6,10 +6,10 @@ namespace App\Controller;
 
 use App\Dto\Response\UserListItemDto;
 use App\Entity\User;
+use App\Exception\AuthenticationRequiredException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -25,7 +25,7 @@ class AuthController extends AbstractController
         // This endpoint is intercepted by json_login authenticator
         // If we reach here, authentication was successful
         if (!$user) {
-            return $this->json(['message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Missing credentials');
         }
 
         return $this->json([
@@ -49,9 +49,7 @@ class AuthController extends AbstractController
     public function me(#[CurrentUser] ?User $user): JsonResponse
     {
         if (!$user) {
-            return $this->json([
-                'error' => 'Not authenticated',
-            ], Response::HTTP_UNAUTHORIZED);
+            throw new AuthenticationRequiredException('Not authenticated');
         }
 
         return $this->json(UserListItemDto::fromEntity($user));

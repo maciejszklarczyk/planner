@@ -7,6 +7,9 @@ namespace App\Controller;
 use App\Dto\User\InvitationCompleteDto;
 use App\Entity\Enum\UserStatusEnum;
 use App\Entity\UserInvitationToken;
+use App\Exception\InvitationTokenAlreadyUsedException;
+use App\Exception\InvitationTokenExpiredException;
+use App\Exception\InvitationTokenInvalidException;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
@@ -14,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -32,15 +36,15 @@ class InvitationController extends AbstractController
     {
         $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $token)]);
         if (!$invitationToken) {
-            return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
+            throw new InvitationTokenInvalidException('Invalid token.');
         }
 
         if ($invitationToken->getUsedAt()) {
-            return $this->json(['valid' => false, 'message' => 'Token already used.'], 400);
+            throw new InvitationTokenAlreadyUsedException('Token already used.');
         }
 
         if ($invitationToken->getExpiresAt() < new \DateTimeImmutable()) {
-            return $this->json(['valid' => false, 'message' => 'Token expired.'], 400);
+            throw new InvitationTokenExpiredException('Token expired.');
         }
 
         return $this->json(['valid' => true]);
@@ -51,20 +55,20 @@ class InvitationController extends AbstractController
     {
         $invitationToken = $this->entityManager->getRepository(UserInvitationToken::class)->findOneBy(['token' => hash('sha256', $dto->token)]);
         if (!$invitationToken) {
-            return $this->json(['valid' => false, 'message' => 'Invalid token.'], 400);
+            throw new InvitationTokenInvalidException('Invalid token.');
         }
 
         if ($invitationToken->getUsedAt()) {
-            return $this->json(['valid' => false, 'message' => 'Token already used.'], 400);
+            throw new InvitationTokenAlreadyUsedException('Token already used.');
         }
 
         if ($invitationToken->getExpiresAt() < new \DateTimeImmutable()) {
-            return $this->json(['valid' => false, 'message' => 'Token expired.'], 400);
+            throw new InvitationTokenExpiredException('Token expired.');
         }
 
         $user = $this->userRepository->findOneBy(['email' => $invitationToken->getEmail()]);
         if (!$user) {
-            return $this->json(['valid' => false, 'message' => 'User not found.'], 404);
+            throw new NotFoundHttpException('User not found.');
         }
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $dto->password));
