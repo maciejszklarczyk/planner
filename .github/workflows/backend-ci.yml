@@ -1,0 +1,113 @@
+name: Backend CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          extensions: ctype, iconv, gd
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose
+
+  phpstan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          extensions: ctype, iconv, gd
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpstan analyse --memory-limit 1G
+
+  phpunit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          extensions: ctype, iconv, gd, pcov
+          coverage: pcov
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpunit --coverage-cobertura=coverage.xml --coverage-text
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
+
+  composer-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+      - run: composer audit --locked
+
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          extensions: ctype, iconv, gd
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer validate
+      - run: php bin/console lint:yaml config/
+      - run: php bin/console lint:container
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /repo --no-git -v
