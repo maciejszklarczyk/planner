@@ -220,9 +220,9 @@ This is a CI-configuration-only migration — no application code, database sche
 
 #### Automated
 
-- [x] 2.1 Workflow YAML is valid
-- [x] 2.2 quality-checks completes and reports status on a test PR
-- [x] 2.3 Deliberate failures (ESLint violation, TS error, failing test, Prettier violation) each independently fail the job
+- [x] 2.1 Workflow YAML is valid — 26f1781
+- [x] 2.2 quality-checks completes and reports status on a test PR — 26f1781
+- [x] 2.3 Deliberate failures (ESLint violation, TS error, failing test, Prettier violation) each independently fail the job — 26f1781
 
 #### Manual
 
@@ -233,9 +233,9 @@ This is a CI-configuration-only migration — no application code, database sche
 
 #### Automated
 
-- [ ] 3.1 No .gitlab-ci.yml file exists anywhere in the repo
-- [ ] 3.2 backend/CLAUDE.md no longer references gitlab-ci
-- [ ] 3.3 Both workflow files still validate as YAML after deletion
+- [x] 3.1 No .gitlab-ci.yml file exists anywhere in the repo
+- [x] 3.2 backend/CLAUDE.md no longer references gitlab-ci
+- [x] 3.3 Both workflow files still validate as YAML after deletion
 
 #### Manual
 

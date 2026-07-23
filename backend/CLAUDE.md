@@ -33,7 +33,7 @@ Project guidelines. Add to it in bullet points.
 - CS Fixer for PSR-12 + Symfony style: `vendor/bin/php-cs-fixer fix`
 - Admin endpoints: `#[IsGranted('ROLE_ADMIN')]`
 - Separate domain for frontend and API — no `/api/` segment in endpoint URLs
-- CI has a `composer-audit` job (stage `test`) that fails the pipeline on any advisory from `composer audit`. If an advisory has no upstream fix yet: add an entry to `composer.json` → `config.audit.ignore` with a comment/link to the tracking issue — don't disable the job in `.gitlab-ci.yml`.
+- CI has a `composer-audit` job that fails the pipeline on any advisory from `composer audit`. If an advisory has no upstream fix yet: add an entry to `composer.json` → `config.audit.ignore` with a comment/link to the tracking issue — don't disable the job in `.github/workflows/backend-ci.yml`.
 
 ## Important paths and files
 
