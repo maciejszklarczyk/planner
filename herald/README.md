@@ -29,7 +29,7 @@ chmod +x /usr/local/bin/herald
 Example for this repo:
 
 ```bash
-ln -s ~/htdocs/plan/herald/herald.sh /usr/local/bin/herald
+ln -s ~/Projects/plan/herald/herald.sh /usr/local/bin/herald
 ```
 
 The script resolves symlinks itself (`readlink` loop at the top), so it always finds the project root relative to the real file location — not the symlink location.
