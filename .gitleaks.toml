@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-safe placeholder/example values, not real secrets"
+regexes = [
+  '''ZMIEN_NA_LOSOWY_SECRET_64_ZNAKI''',
+  '''742f0e1c7f8e0764de5f7468e3e9d614''',
+]
