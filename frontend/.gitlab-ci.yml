@@ -9,36 +9,31 @@ stages:
   - docker-build
   - deploy
 
-# Lint, typecheck, test and format-check before building the image
 quality-checks:
   stage: quality
   image: node:20-alpine
   tags:
     - docker
   script:
+    - cd frontend
     - npm ci
     - npm run lint
     - npx tsc --noEmit
     - npm run test
     - npm run format:check
-  only:
-    - main
 
-# Build and push Docker image to GitLab Container Registry
 docker-build:
   stage: docker-build
   image: docker:latest
   tags:
     - docker
   script:
+    - cd frontend
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
     - docker push $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  only:
-    - main
 
-# Deploy to production (manual trigger like backend)
 deploy-production:
   stage: deploy
   image: docker:latest
@@ -48,8 +43,9 @@ deploy-production:
     - apk add --no-cache docker-compose
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - cd frontend
     - cd $DEPLOY_DIR
-    - cp $CI_PROJECT_DIR/docker-compose.prod.yaml $DEPLOY_DIR/
+    - cp $CI_PROJECT_DIR/frontend/docker-compose.prod.yaml $DEPLOY_DIR/
     - docker compose -f docker-compose.prod.yaml pull
     - docker compose -f docker-compose.prod.yaml down
     - docker compose -f docker-compose.prod.yaml up -d
@@ -58,5 +54,5 @@ deploy-production:
   environment:
     name: production
     url: https://planner.msolve.it
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
