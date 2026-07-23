@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-23
+
+- [10c3e04] docs(context): add cicd-rework plan and foundation notes; refresh package-lock.json
+
 ## 2026-07-12
 
 - [1440ee1] feat(settings): redesign settings page as unified card layout, add IDE gitignore entries
