@@ -1,0 +1,25 @@
+info:
+  name: Edycja grupy
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{url}}/groups/:groupId"
+  params:
+    - name: groupId
+      value: "1"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Nowa nazwa grupy"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

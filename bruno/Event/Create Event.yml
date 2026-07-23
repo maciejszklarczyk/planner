@@ -1,0 +1,22 @@
+info:
+  name: Create Event
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{url}}/events"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "test name from bruno",
+        "startDate": "2026-07-11 11:50:00"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

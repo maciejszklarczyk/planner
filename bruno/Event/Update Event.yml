@@ -1,0 +1,26 @@
+info:
+  name: Update Event
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{url}}/events/:id"
+  params:
+    - name: id
+      value: "4"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "test name from bruno updated",
+        "startDate": "2026-07-11 11:50:00"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

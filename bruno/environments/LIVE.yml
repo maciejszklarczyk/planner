@@ -1,0 +1,4 @@
+name: LIVE
+variables:
+  - name: url
+    value: https://api-planner.msolve.it

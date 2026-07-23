@@ -1,0 +1,22 @@
+info:
+  name: Complete
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{url}}/invitation/complete"
+  body:
+    type: json
+    data: |-
+      {
+        "token": "your-raw-token-here",
+        "password": "newpassword123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
