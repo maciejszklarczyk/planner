@@ -233,9 +233,9 @@ This is a CI-configuration-only migration — no application code, database sche
 
 #### Automated
 
-- [x] 3.1 No .gitlab-ci.yml file exists anywhere in the repo
-- [x] 3.2 backend/CLAUDE.md no longer references gitlab-ci
-- [x] 3.3 Both workflow files still validate as YAML after deletion
+- [x] 3.1 No .gitlab-ci.yml file exists anywhere in the repo — 651060d
+- [x] 3.2 backend/CLAUDE.md no longer references gitlab-ci — 651060d
+- [x] 3.3 Both workflow files still validate as YAML after deletion — 651060d
 
 #### Manual
 
