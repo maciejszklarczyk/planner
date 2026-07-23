@@ -1,3 +1,16 @@
-include:
-  - local: 'backend/.gitlab-ci.yml'
-  - local: 'frontend/.gitlab-ci.yml'
+stages:
+  - trigger
+
+backend:
+  stage: trigger
+  trigger:
+    include:
+      - local: 'backend/.gitlab-ci.yml'
+    strategy: depend
+
+frontend:
+  stage: trigger
+  trigger:
+    include:
+      - local: 'frontend/.gitlab-ci.yml'
+    strategy: depend
