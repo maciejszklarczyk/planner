@@ -4,8 +4,8 @@
 - **Plan**: context/changes/cicd-migration/plan.md
 - **Scope**: Phase 1-3 of 3 (full plan)
 - **Date**: 2026-07-23
-- **Verdict**: NEEDS ATTENTION
-- **Findings**: 0 critical, 4 warnings, 1 observation
+- **Verdict**: NEEDS ATTENTION → all findings resolved during triage (see Decisions below); PR #1 confirms all 7 backend-ci + frontend-ci jobs pass on GitHub
+- **Findings**: 0 critical, 5 warnings (F1, F2, F3, F4, F6 — F6 discovered mid-triage), 1 observation (F5) — all FIXED
 
 ## Verdicts
 
@@ -57,7 +57,17 @@
   - Tradeoff: The Automated rows overstate what's actually verified until someone does open a PR — a future reader of plan.md could mistake "1.2 [x]" for "confirmed on GitHub."
   - Confidence: MED — relies on the Manual checklist actually being worked through.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED (Fix A) — pushed branch `ci-migration-verify`, opened https://github.com/maciejszklarczyk/planner/pull/1. First run surfaced a real, previously-unverifiable issue (see F6 below); after fixing it, all 7 jobs pass on both `push` and `pull_request` events.
+
+### F6 — (discovered via live PR run) secret-scan failed on pre-existing false positives
+
+- **Severity**: ⚠️ WARNING
+- **Impact**: 🔎 MEDIUM — real tradeoff; pause to reason through it
+- **Dimension**: Safety & Quality / Success Criteria
+- **Location**: .github/workflows/backend-ci.yml (secret-scan job); backend/.env.example:6, backend/docs/DOCKER-EXECUTOR-SETUP.md:81, backend/requests/users.http:60,68, backend/docs/codebase/.codebase-scan.txt:386
+- **Detail**: The real GitHub Actions run of PR #1 (https://github.com/maciejszklarczyk/planner/pull/1) found 5 gitleaks matches on a fresh 11.37MB checkout — the `.env.example` placeholder `APP_SECRET=ZMIEN_NA_LOSOWY_SECRET_64_ZNAKI` (also echoed in a doc and a stale codebase-scan artifact), and two example invitation-token strings in a manual-testing `.http` request file. None are real secrets, but as configured the job would fail on every run. This was only discoverable by actually running gitleaks against the real repo content on GitHub — exactly the gap F3 was about.
+- **Fix**: Add `.gitleaks.toml` with `[extend] useDefault = true` plus a regex allowlist for the two specific known-safe strings, and point `secret-scan`'s `docker run` at it via `--config /repo/.gitleaks.toml`.
+- **Decision**: FIXED — added `.gitleaks.toml`, verified 0 leaks against a clean archive of `main` (matching CI's fresh-checkout scan exactly), then confirmed green on the live PR (all 7 jobs pass on both push and pull_request events).
 
 ### F4 — `composer-audit` job omits the extensions/vendor setup the plan's "every job" wording implies
 
