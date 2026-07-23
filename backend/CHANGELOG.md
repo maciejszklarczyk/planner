@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-23
+
+- [dd6407f] docs(context): add friendship-requests plan and roadmap
+
 ## 2026-07-22
 
 - [5d1332d] build(quality): wire PHPStan into CI and patch guzzle advisories
