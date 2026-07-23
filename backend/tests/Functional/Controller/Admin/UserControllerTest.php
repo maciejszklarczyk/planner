@@ -145,7 +145,7 @@ final class UserControllerTest extends DatabaseTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $data = json_decode($client->getResponse()->getContent(), true);
-        self::assertSame('error', $data['status']);
+        self::assertSame('USER_ALREADY_EXISTS', $data['error']);
     }
 
     public function testSendUserInviteRequiresAdmin(): void
@@ -194,7 +194,7 @@ final class UserControllerTest extends DatabaseTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $data = json_decode($client->getResponse()->getContent(), true);
-        self::assertSame('error', $data['status']);
+        self::assertSame('NOT_FOUND', $data['error']);
     }
 
     public function testResendUserInviteFailsForAlreadyActiveUser(): void
@@ -212,7 +212,7 @@ final class UserControllerTest extends DatabaseTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $data = json_decode($client->getResponse()->getContent(), true);
-        self::assertSame('error', $data['status']);
+        self::assertSame('USER_ALREADY_COMPLETED_REGISTRATION', $data['error']);
     }
 
     public function testResendUserInviteRequiresAdmin(): void

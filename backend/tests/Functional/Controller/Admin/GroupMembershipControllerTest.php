@@ -21,7 +21,7 @@ class GroupMembershipControllerTest extends DatabaseTestCase
     // Fixture data (deterministic):
     // group_1: admin=owner, user_1=member, user_2=member
     // group_2: admin=member, user_1=owner, user_3=member
-    // group_3: user_2=owner, user_3=owner, user_4=member
+    // group_3: user_2=owner, user_3=member, user_4=member
     // group_4: user_4=owner, user_5=member
     // group_5: user_5=owner
 
@@ -346,5 +346,42 @@ class GroupMembershipControllerTest extends DatabaseTestCase
             'group_1 promote user_1' => ['Group 1', 'user1@example.com'],
             'group_4 promote user_5' => ['Group 4', 'user5@example.com'],
         ];
+    }
+
+    // -------------------------------------------------------------------------
+    // New envelope shape: timestamp/path, validation violations
+    // -------------------------------------------------------------------------
+
+    public function testErrorResponseIncludesTimestampAndPath(): void
+    {
+        $client = $this->loginAsAdmin();
+        $groupId = $this->getGroupIdByName($client, 'Group 1');
+
+        $client->request('DELETE', "/admin/groups/{$groupId}/users/99999");
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $body = json_decode($client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('timestamp', $body);
+        $this->assertArrayHasKey('path', $body);
+        $this->assertEquals("/admin/groups/{$groupId}/users/99999", $body['path']);
+    }
+
+    public function testInvalidPayloadReturnsValidationErrorWithViolations(): void
+    {
+        $client = $this->loginAsAdmin();
+        $groupId = $this->getGroupIdByName($client, 'Group 1');
+
+        $client->jsonRequest('POST', "/admin/groups/{$groupId}/users", [
+            'userId' => -1,
+            'role' => 'member',
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $body = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals('VALIDATION_ERROR', $body['error']);
+        $this->assertArrayHasKey('violations', $body);
+        $this->assertNotEmpty($body['violations']);
+        $this->assertArrayHasKey('field', $body['violations'][0]);
+        $this->assertArrayHasKey('message', $body['violations'][0]);
     }
 }

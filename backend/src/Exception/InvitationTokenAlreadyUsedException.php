@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-class UserAlreadyInGroupException extends \RuntimeException implements ApiExceptionInterface
+class InvitationTokenAlreadyUsedException extends \RuntimeException implements ApiExceptionInterface
 {
     public function getErrorCode(): string
     {
-        return 'USER_ALREADY_IN_GROUP';
+        return 'INVITATION_TOKEN_ALREADY_USED';
     }
 
     public function getStatusCode(): int

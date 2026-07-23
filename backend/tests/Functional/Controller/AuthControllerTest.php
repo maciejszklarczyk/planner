@@ -118,11 +118,7 @@ class AuthControllerTest extends DatabaseTestCase
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $responseData);
-        // Check for either error message format
-        $this->assertContains(
-            $responseData['error'],
-            ['Not authenticated', 'AUTHENTICATION_REQUIRED']
-        );
+        $this->assertSame('AUTHENTICATION_REQUIRED', $responseData['error']);
     }
 
     public function testMeEndpointWithAuthentication(): void

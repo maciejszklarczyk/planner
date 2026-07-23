@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-class UserAlreadyInGroupException extends \RuntimeException implements ApiExceptionInterface
+class AvatarFileMissingException extends \RuntimeException implements ApiExceptionInterface
 {
     public function getErrorCode(): string
     {
-        return 'USER_ALREADY_IN_GROUP';
+        return 'AVATAR_FILE_MISSING';
     }
 
     public function getStatusCode(): int
     {
-        return 400;
+        return 422;
     }
 }

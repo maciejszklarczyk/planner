@@ -9,6 +9,8 @@ use App\Dto\User\UserInviteDto;
 use App\Entity\Enum\UserStatusEnum;
 use App\Entity\User;
 use App\Entity\UserInvitationToken;
+use App\Exception\UserAlreadyCompletedRegistrationException;
+use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserInvitationTokenRepository;
 use App\Repository\UserRepository;
 use App\Service\InvitationMailer;
@@ -19,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -76,7 +79,7 @@ class UserController extends AbstractController
     {
         $existingUser = $this->userRepository->findOneBy(['email' => $dto->email]);
         if ($existingUser) {
-            return $this->json(['status' => 'error', 'message' => 'User already exists.'], 400);
+            throw new UserAlreadyExistsException('User already exists.');
         }
 
         $newUser = new User();
@@ -101,11 +104,11 @@ class UserController extends AbstractController
     {
         $user = $this->userRepository->findOneBy(['email' => $dto->email]);
         if (!$user) {
-            return $this->json(['status' => 'error', 'message' => 'User not found.'], 404);
+            throw new NotFoundHttpException('User not found.');
         }
 
         if (UserStatusEnum::NEW !== $user->getStatus()) {
-            return $this->json(['status' => 'error', 'message' => 'User already completed registration.'], 400);
+            throw new UserAlreadyCompletedRegistrationException('User already completed registration.');
         }
 
         foreach ($this->invitationTokenRepository->findActiveByEmail($dto->email) as $oldToken) {
