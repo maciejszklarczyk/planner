@@ -1,10 +1,10 @@
 ---
 change_id: cicd-migration
 title: Migrate CI/CD from GitLab to GitHub Actions (backend + frontend, no deployment)
-status: impl_reviewed
+status: archived
 created: 2026-07-23
 updated: 2026-07-23
-archived_at: null
+archived_at: 2026-07-23T21:12:01Z
 ---
 
 ## Notes
