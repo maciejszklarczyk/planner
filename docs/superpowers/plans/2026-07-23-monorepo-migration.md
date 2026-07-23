@@ -8,6 +8,10 @@
 
 **Tech Stack:** git, git-filter-repo, bash, GitLab CI YAML.
 
+> **Post-execution note (2026-07-23):** two things below shipped differently than this plan describes, per whole-branch review findings:
+> - Root `.gitlab-ci.yml` does **not** use flat `include: local:` as Task 3 describes — that design was found to collide backend's and frontend's job/stage/variable names into one namespace (frontend would silently overwrite backend's `docker-build`/`deploy-production`/`stages`/`variables`). It was replaced with **parent-child pipelines**: two `trigger: include: local:` jobs (`backend`, `frontend`) with `strategy: depend`, each giving its subproject a fully separate namespace. `backend/.gitlab-ci.yml` and `frontend/.gitlab-ci.yml` needed no further changes beyond what Task 3 already describes.
+> - Both projects' `docker-build` job ended up gated on `if: main` OR `if: tag` (not tag-only for backend, not unconditional for frontend as Task 3 Step 2/3 originally specified) — matching a pattern already established and documented in backend's own prior CI rework (`backend/context/archive/2026-07-12-cicd-rework/`). `deploy-production` stays tag-only in both, as originally planned.
+
 ## Global Constraints
 
 - Preserve full commit history (git log / blame) for every file from its original repo — spec section "Decyzje" #1.
