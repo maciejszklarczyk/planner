@@ -206,10 +206,10 @@ This is a CI-configuration-only migration — no application code, database sche
 
 #### Automated
 
-- [x] 1.1 Workflow YAML is valid
-- [x] 1.2 All backend-ci jobs complete and report status on a test PR
-- [x] 1.3 phpunit job produces backend/coverage.xml as an uploaded artifact
-- [x] 1.4 Deliberate failures (CS violation, PHPStan error, failing test, bad advisory, YAML error, planted secret) each independently fail their job
+- [x] 1.1 Workflow YAML is valid — 358b422
+- [x] 1.2 All backend-ci jobs complete and report status on a test PR — 358b422
+- [x] 1.3 phpunit job produces backend/coverage.xml as an uploaded artifact — 358b422
+- [x] 1.4 Deliberate failures (CS violation, PHPStan error, failing test, bad advisory, YAML error, planted secret) each independently fail their job — 358b422
 
 #### Manual
 
@@ -220,9 +220,9 @@ This is a CI-configuration-only migration — no application code, database sche
 
 #### Automated
 
-- [ ] 2.1 Workflow YAML is valid
-- [ ] 2.2 quality-checks completes and reports status on a test PR
-- [ ] 2.3 Deliberate failures (ESLint violation, TS error, failing test, Prettier violation) each independently fail the job
+- [x] 2.1 Workflow YAML is valid
+- [x] 2.2 quality-checks completes and reports status on a test PR
+- [x] 2.3 Deliberate failures (ESLint violation, TS error, failing test, Prettier violation) each independently fail the job
 
 #### Manual
 
