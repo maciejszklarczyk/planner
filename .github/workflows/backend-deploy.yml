@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: backend
-          file: backend/Dockerfile.prod
+          file: backend/docker/php/Dockerfile.prod
           push: true
           tags: ghcr.io/maciejszklarczyk/planner-backend:${{ github.event.release.tag_name || inputs.tag }}
 
