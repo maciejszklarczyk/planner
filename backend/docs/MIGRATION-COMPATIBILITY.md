@@ -14,3 +14,14 @@ reading/writing it.
   in a later release, drop the old column only once nothing reads it.
 - Bad: rename a column in one migration — the still-running old code breaks
   the moment the migration applies, before cutover even happens.
+
+## Rollback
+
+Neither `backend-deploy.yml` nor `frontend-deploy.yml` auto-rolls-back. If
+`up -d` succeeds but the post-cutover healthcheck fails, the new containers
+are left running and the job just reports red. Recover manually:
+
+```
+docker compose -f docker-compose.prod.yaml down
+IMAGE_TAG=<previous-good-tag> docker compose -f docker-compose.prod.yaml up -d
+```

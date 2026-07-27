@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +19,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     defaults:
       run:
         working-directory: backend
@@ -60,8 +62,8 @@ jobs:
         run: |
           docker compose -f docker-compose.prod.yaml pull
           docker compose -f docker-compose.prod.yaml run --rm php php bin/console doctrine:migrations:migrate --no-interaction
-          docker compose -f docker-compose.prod.yaml down
-          docker compose -f docker-compose.prod.yaml up -d
+          docker compose -f docker-compose.prod.yaml stop php
+          docker compose -f docker-compose.prod.yaml up -d --no-deps php
           docker compose -f docker-compose.prod.yaml exec -T php php bin/console cache:clear --env=prod
           docker compose -f docker-compose.prod.yaml ps
           curl -f https://api-planner.msolve.it/health

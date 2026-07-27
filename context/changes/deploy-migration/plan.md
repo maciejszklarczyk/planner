@@ -52,12 +52,14 @@ The pre-cutover migration step must run against the **new** image while the **ol
 ```
 docker compose -f docker-compose.prod.yaml pull
 docker compose -f docker-compose.prod.yaml run --rm php php bin/console doctrine:migrations:migrate --no-interaction
-docker compose -f docker-compose.prod.yaml down
-docker compose -f docker-compose.prod.yaml up -d
+docker compose -f docker-compose.prod.yaml stop php
+docker compose -f docker-compose.prod.yaml up -d --no-deps php
 docker compose -f docker-compose.prod.yaml exec -T php php bin/console cache:clear --env=prod
 docker compose -f docker-compose.prod.yaml ps
 curl -f https://api-planner.msolve.it/health
 ```
+
+> **Addendum (impl-review F1)**: cutover uses `stop php` / `up -d --no-deps php` instead of a full `down`/`up -d`, so `database`/`redis` stay running throughout the deploy — avoids an unnecessary restart of those services (and Redis cache drop) on every release.
 
 This means every migration must be additive/backward-compatible with the currently-running (old) code for the duration of this window — see the compatibility checklist added in Phase 1.
 
