@@ -1,6 +1,6 @@
 services:
   php:
-    image: ${CI_REGISTRY_IMAGE:-registry.gitlab.com/planner6551704/backend}:${IMAGE_TAG:?IMAGE_TAG must be set}
+    image: ghcr.io/maciejszklarczyk/planner-backend:${IMAGE_TAG:?IMAGE_TAG must be set}
     container_name: ${PROJECT_NAME:-plan}-php
     working_dir: /app
     env_file:
