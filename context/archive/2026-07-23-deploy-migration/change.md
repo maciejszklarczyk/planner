@@ -1,10 +1,10 @@
 ---
 change_id: deploy-migration
 title: Migrate deployment (docker-build + deploy-production) from GitLab CI to GitHub Actions
-status: impl_reviewed
+status: archived
 created: 2026-07-23
 updated: 2026-07-27
-archived_at: null
+archived_at: 2026-07-27T20:11:50Z
 ---
 
 ## Notes
