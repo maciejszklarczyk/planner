@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: registry.gitlab.com/planner6551704/frontend:latest
+    image: ghcr.io/maciejszklarczyk/planner-frontend:${IMAGE_TAG:?IMAGE_TAG must be set}
     container_name: ${PROJECT_NAME:-plan}-frontend
     working_dir: /app
     env_file:
