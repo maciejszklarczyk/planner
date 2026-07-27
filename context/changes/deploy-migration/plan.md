@@ -277,8 +277,8 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Automated
 
-- [x] 3.1 Workflow YAML is valid: `actionlint .github/workflows/frontend-deploy.yml`
-- [x] 3.2 Frontend CI still passes
+- [x] 3.1 Workflow YAML is valid: `actionlint .github/workflows/frontend-deploy.yml` — adc2b7b
+- [x] 3.2 Frontend CI still passes — adc2b7b
 
 #### Manual
 
