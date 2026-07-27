@@ -81,6 +81,11 @@ interface GroupMembership {
 - Używaj skilla `shadcn` do weryfikacji zmian na stronach
 - Używaj skilla `tailwind-design-system` przy zmianach w layoucie
 
+## Security
+
+- CI runs `npm audit --omit=dev --audit-level=critical` (fails only on CRITICAL, not HIGH) because `next`'s own vendored `sharp`/`postcss` (used only by `next/image`, which this app doesn't use anywhere) currently show as HIGH with no non-breaking upstream fix. Re-tighten to `--audit-level=high` once Next.js ships a patched vendor bundle or this app starts using `next/image`.
+- Full `npm audit` output should still be reviewed manually on dependency bumps — the CI gate intentionally only blocks CRITICAL.
+
 ## Testing
 
 - Test runner: Vitest + React Testing Library (`npm install -D vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom jsdom`)
