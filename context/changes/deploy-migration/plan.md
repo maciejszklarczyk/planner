@@ -259,11 +259,11 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Manual
 
-- [ ] 1.3 `workflow_dispatch` build job pushes image visible in GHCR
-- [ ] 1.4 Deploy job runs on correct self-hosted runner and completes
-- [ ] 1.5 `docker compose ps` shows healthy php/database/redis containers
-- [ ] 1.6 `curl -f https://api-planner.msolve.it/health` succeeds post-deploy
-- [ ] 1.7 Migration ran before old containers went down
+- [x] 1.3 `workflow_dispatch` build job pushes image visible in GHCR — verified via run 30298706850 (`planner-backend:v0.0.4`)
+- [x] 1.4 Deploy job runs on correct self-hosted runner and completes — run 30298706850 succeeded
+- [x] 1.5 `docker compose ps` shows healthy php/database/redis containers — confirmed in job log
+- [x] 1.6 `curl -f https://api-planner.msolve.it/health` succeeds post-deploy — confirmed in job log and live
+- [x] 1.7 Migration ran before old containers went down — confirmed in job log (migrate step precedes `stop`/`up` php)
 
 ### Phase 2: Frontend Real Healthcheck
 
@@ -275,8 +275,8 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Manual
 
-- [ ] 2.4 `docker inspect` reports `healthy` after startup
-- [ ] 2.5 `/api/health` returns `200 {"status":"ok"}`
+- [x] 2.4 `docker inspect` reports `healthy` after startup — confirmed via frontend deploy job log (`Container planner-frontend Healthy`)
+- [x] 2.5 `/api/health` returns `200 {"status":"ok"}` — verified live
 
 ### Phase 3: Frontend Deploy Workflow + Image Tag Alignment
 
@@ -287,7 +287,7 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Manual
 
-- [ ] 3.3 Image pushes to GHCR with release tag (not `:latest`)
-- [ ] 3.4 Compose-version branch takes correct path on runner
-- [ ] 3.5 `https://planner.msolve.it` serves correctly, `/api/health` returns 200
-- [ ] 3.6 No longer outage than backend's deploy
+- [x] 3.3 Image pushes to GHCR with release tag (not `:latest`) — verified via run 30298295192 (`planner-frontend:v0.0.4`)
+- [x] 3.4 Compose-version branch takes correct path on runner — confirmed `--wait` branch taken, `Container planner-frontend Healthy`
+- [x] 3.5 `https://planner.msolve.it` serves correctly, `/api/health` returns 200 — verified live
+- [x] 3.6 No longer outage than backend's deploy — accepted; frontend has no `down` step (in-place recreate only)
