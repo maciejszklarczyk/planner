@@ -3,8 +3,14 @@ name: Frontend CI
 on:
   push:
     branches:
-      - '**'
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
   pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
 
 permissions:
   contents: read
@@ -31,3 +37,6 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run test -- --reporter=default --reporter=github-actions
       - run: npm run format:check
+      - run: npm run build
+      - name: Dependency audit
+        run: npm audit --omit=dev --audit-level=critical
