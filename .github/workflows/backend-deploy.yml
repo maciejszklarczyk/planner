@@ -75,4 +75,4 @@ jobs:
           docker compose -f docker-compose.prod.yaml up -d --no-deps php
           docker compose -f docker-compose.prod.yaml exec -T php php bin/console cache:clear --env=prod
           docker compose -f docker-compose.prod.yaml ps
-          curl -f https://api-planner.msolve.it/health
+          timeout 30 sh -c 'until curl -sf https://api-planner.msolve.it/health; do sleep 2; done'

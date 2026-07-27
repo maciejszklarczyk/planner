@@ -57,10 +57,12 @@ docker compose -f docker-compose.prod.yaml stop php
 docker compose -f docker-compose.prod.yaml up -d --no-deps php
 docker compose -f docker-compose.prod.yaml exec -T php php bin/console cache:clear --env=prod
 docker compose -f docker-compose.prod.yaml ps
-curl -f https://api-planner.msolve.it/health
+timeout 30 sh -c 'until curl -sf https://api-planner.msolve.it/health; do sleep 2; done'
 ```
 
 > **Addendum (impl-review F1)**: cutover uses `stop php` / `up -d --no-deps php` instead of a full `down`/`up -d`, so `database`/`redis` stay running throughout the deploy — avoids an unnecessary restart of those services (and Redis cache drop) on every release.
+>
+> **Addendum (first live run)**: final healthcheck is a retry loop, not a single `curl -f`. First live deploy hit a real race — the `php` container was ~1.5s into starting when curl fired and got a 404 before Traefik/FrankenPHP were ready to serve. Matches the retry pattern frontend's curl-fallback branch already used.
 
 This means every migration must be additive/backward-compatible with the currently-running (old) code for the duration of this window — see the compatibility checklist added in Phase 1.
 
