@@ -14,9 +14,10 @@ Both prod compose files route through Traefik on the external `zbyszek-network`:
 - `backend/docker-compose.prod.yaml` (85 lines) — services `php`, `database` (postgres:16-alpine), `redis` (redis:7-alpine); image ref already fail-fast (`${IMAGE_TAG:?IMAGE_TAG must be set}`); fake healthcheck (`["CMD", "php", "-v"]`).
 - `frontend/docker-compose.prod.yaml` (29 lines) — single `frontend` service; image ref **hardcoded `:latest`**, no `IMAGE_TAG` var; fake healthcheck (`["CMD", "node", "-v"]`).
 
-Real `DEPLOY_DIR` paths (confirmed, not the stale placeholders in `DOCKER-EXECUTOR-SETUP.md`):
-- Backend: `/home/maciej/docker/apps/planner/backend`
-- Frontend: `/home/maciej/docker/apps/planner/frontend`
+Real `DEPLOY_DIR` paths, corrected after the first live `workflow_dispatch` run failed
+(`docs/apps/planner/...` was itself a stale placeholder, same as `DOCKER-EXECUTOR-SETUP.md`'s):
+- Backend: `/home/maciej/docker/stacks/planner/backend`
+- Frontend: `/home/maciej/docker/stacks/planner/frontend`
 
 ## Desired End State
 
@@ -90,7 +91,7 @@ New GitHub Actions workflow builds + pushes the backend image to GHCR and deploy
 
 **Intent**: Build backend's `Dockerfile.prod` image, push to GHCR, then deploy on the self-hosted runner with migrate-before-cutover ordering.
 
-**Contract**: Two jobs — `build` (GHCR push, `permissions: contents: read, packages: write`) and `deploy` (`needs: build`, `runs-on: self-hosted, linux`, `environment: { name: production, url: https://api-planner.msolve.it }`). Trigger: `on: workflow_dispatch` + `release: types: [published]`. Image: `ghcr.io/maciejszklarczyk/planner-backend:${{ github.event.release.tag_name }}` (fall back to a manual input for `workflow_dispatch` re-runs). Deploy job body follows the sequencing in "Critical Implementation Details" above, using `DEPLOY_DIR=/home/maciej/docker/apps/planner/backend` and copying `backend/docker-compose.prod.yaml` into it first (matching the old GitLab job's `cp` step).
+**Contract**: Two jobs — `build` (GHCR push, `permissions: contents: read, packages: write`) and `deploy` (`needs: build`, `runs-on: self-hosted, linux`, `environment: { name: production, url: https://api-planner.msolve.it }`). Trigger: `on: workflow_dispatch` + `release: types: [published]`. Image: `ghcr.io/maciejszklarczyk/planner-backend:${{ github.event.release.tag_name }}` (fall back to a manual input for `workflow_dispatch` re-runs). Deploy job body follows the sequencing in "Critical Implementation Details" above, using `DEPLOY_DIR=/home/maciej/docker/stacks/planner/backend` and copying `backend/docker-compose.prod.yaml` into it first (matching the old GitLab job's `cp` step).
 
 #### 2. Migration compatibility checklist
 
@@ -190,7 +191,7 @@ Align frontend's compose image ref to an immutable `IMAGE_TAG` (matching backend
 
 **Intent**: Build + push frontend's image to GHCR, then deploy on the self-hosted runner without a `down` step, gated by the Compose-version check from "Critical Implementation Details."
 
-**Contract**: Same two-job shape as backend's workflow (`build` → `deploy`, `runs-on: self-hosted, linux`, same trigger), but deploy job has no migration step and uses the `--wait`/curl-fallback branch instead of `down`/`up -d`/`sleep`. `environment: { name: production, url: https://planner.msolve.it }`, `DEPLOY_DIR=/home/maciej/docker/apps/planner/frontend`.
+**Contract**: Same two-job shape as backend's workflow (`build` → `deploy`, `runs-on: self-hosted, linux`, same trigger), but deploy job has no migration step and uses the `--wait`/curl-fallback branch instead of `down`/`up -d`/`sleep`. `environment: { name: production, url: https://planner.msolve.it }`, `DEPLOY_DIR=/home/maciej/docker/stacks/planner/frontend`.
 
 ### Success Criteria:
 

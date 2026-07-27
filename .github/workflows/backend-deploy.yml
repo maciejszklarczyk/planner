@@ -49,7 +49,7 @@ jobs:
       url: https://api-planner.msolve.it
     env:
       IMAGE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
-      DEPLOY_DIR: /home/maciej/docker/apps/planner/backend
+      DEPLOY_DIR: /home/maciej/docker/stacks/planner/backend
     defaults:
       run:
         working-directory: backend
@@ -58,7 +58,7 @@ jobs:
       - name: Sync compose file
         run: cp docker-compose.prod.yaml "$DEPLOY_DIR/docker-compose.prod.yaml"
       - name: Deploy (migrate-before-cutover)
-        working-directory: /home/maciej/docker/apps/planner/backend
+        working-directory: /home/maciej/docker/stacks/planner/backend
         run: |
           docker compose -f docker-compose.prod.yaml pull
           docker compose -f docker-compose.prod.yaml run --rm php php bin/console doctrine:migrations:migrate --no-interaction
