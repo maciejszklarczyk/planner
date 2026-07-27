@@ -249,8 +249,8 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Automated
 
-- [x] 1.1 Workflow YAML is valid: `actionlint .github/workflows/backend-deploy.yml`
-- [x] 1.2 Existing backend CI still passes
+- [x] 1.1 Workflow YAML is valid: `actionlint .github/workflows/backend-deploy.yml` — 379ca66
+- [x] 1.2 Existing backend CI still passes — 379ca66
 
 #### Manual
 
@@ -264,9 +264,9 @@ No data migration needed — this only changes CI/deploy tooling. Existing produ
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run typecheck`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Frontend CI still passes
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` (adapted — no `typecheck` script exists; matches `frontend-ci.yml`'s own check)
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Frontend CI still passes
 
 #### Manual
 
