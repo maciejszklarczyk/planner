@@ -169,9 +169,9 @@ Purely additive — no schema or migration changes. `UserInvitationToken` and `U
 
 #### Automated
 
-- [x] 2.1 Full test suite passes
-- [x] 2.2 New AdminBootstrapCommandTest assertions pass (success path + duplicate-email failure)
-- [x] 2.3 Only one place in src/ constructs a raw invitation token (grep check)
+- [x] 2.1 Full test suite passes — d4b675f
+- [x] 2.2 New AdminBootstrapCommandTest assertions pass (success path + duplicate-email failure) — d4b675f
+- [x] 2.3 Only one place in src/ constructs a raw invitation token (grep check) — d4b675f
 
 #### Manual
 
