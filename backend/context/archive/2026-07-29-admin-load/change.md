@@ -1,10 +1,10 @@
 ---
 change_id: admin-load
 title: Bootstrap an admin account after a live-server database wipe
-status: impl_reviewed
+status: archived
 created: 2026-07-29
 updated: 2026-07-29
-archived_at: null
+archived_at: 2026-07-29T18:20:05Z
 ---
 
 ## Notes
