@@ -162,16 +162,16 @@ Purely additive — no schema or migration changes. `UserInvitationToken` and `U
 
 #### Automated
 
-- [x] 1.1 Full test suite passes unchanged
-- [x] 1.2 Admin\UserControllerTest's existing sendUserInvite/resendUserInvite assertions pass with no changes to the test file itself
+- [x] 1.1 Full test suite passes unchanged — 32e6c46
+- [x] 1.2 Admin\UserControllerTest's existing sendUserInvite/resendUserInvite assertions pass with no changes to the test file itself — 32e6c46
 
 ### Phase 2: Add app:admin:bootstrap console command
 
 #### Automated
 
-- [ ] 2.1 Full test suite passes
-- [ ] 2.2 New AdminBootstrapCommandTest assertions pass (success path + duplicate-email failure)
-- [ ] 2.3 Only one place in src/ constructs a raw invitation token (grep check)
+- [x] 2.1 Full test suite passes
+- [x] 2.2 New AdminBootstrapCommandTest assertions pass (success path + duplicate-email failure)
+- [x] 2.3 Only one place in src/ constructs a raw invitation token (grep check)
 
 #### Manual
 
