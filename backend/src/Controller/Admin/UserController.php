@@ -8,12 +8,12 @@ use App\Dto\Response\UserListItemDto;
 use App\Dto\User\UserInviteDto;
 use App\Entity\Enum\UserStatusEnum;
 use App\Entity\User;
-use App\Entity\UserInvitationToken;
 use App\Exception\UserAlreadyCompletedRegistrationException;
 use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserInvitationTokenRepository;
 use App\Repository\UserRepository;
 use App\Service\InvitationMailer;
+use App\Service\InvitationTokenService;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Random\RandomException;
@@ -35,6 +35,7 @@ class UserController extends AbstractController
         private readonly UserInvitationTokenRepository $invitationTokenRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly InvitationMailer $invitationMailer,
+        private readonly InvitationTokenService $invitationTokenService,
     ) {
     }
 
@@ -88,7 +89,7 @@ class UserController extends AbstractController
         $newUser->setAddedBy($currentUser);
         $this->entityManager->persist($newUser);
 
-        [$rawToken] = $this->createToken($dto->email);
+        [$rawToken] = $this->invitationTokenService->createToken($dto->email);
         $this->entityManager->flush();
 
         $this->invitationMailer->sendInvitation($dto->email, $rawToken);
@@ -115,28 +116,11 @@ class UserController extends AbstractController
             $oldToken->setUsedAt(new \DateTimeImmutable());
         }
 
-        [$rawToken] = $this->createToken($dto->email);
+        [$rawToken] = $this->invitationTokenService->createToken($dto->email);
         $this->entityManager->flush();
 
         $this->invitationMailer->sendInvitation($dto->email, $rawToken);
 
         return $this->json(['status' => 'ok', 'email' => $dto->email]);
-    }
-
-    /**
-     * @return array{string, UserInvitationToken} [rawToken, persistedEntity]
-     *
-     * @throws RandomException
-     */
-    private function createToken(string $email): array
-    {
-        $rawToken = bin2hex(random_bytes(32));
-        $token = new UserInvitationToken(
-            token: hash('sha256', $rawToken),
-            email: $email,
-        );
-        $this->entityManager->persist($token);
-
-        return [$rawToken, $token];
     }
 }
