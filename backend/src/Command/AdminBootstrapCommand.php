@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserRepository;
 use App\Service\InvitationTokenService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -35,6 +36,9 @@ class AdminBootstrapCommand extends Command
         $this->addArgument('email', InputArgument::REQUIRED, 'Email address for the new ROLE_ADMIN user');
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -59,8 +63,8 @@ class AdminBootstrapCommand extends Command
 
             [$rawToken] = $this->invitationTokenService->createToken($email);
             $this->entityManager->flush();
-        } catch (UserAlreadyExistsException $e) {
-            $io->error($e->getMessage());
+        } catch (UserAlreadyExistsException|UniqueConstraintViolationException) {
+            $io->error('User already exists.');
 
             return Command::FAILURE;
         }
