@@ -175,4 +175,4 @@ Purely additive — no schema or migration changes. `UserInvitationToken` and `U
 
 #### Manual
 
-- [ ] 2.4 Run app:admin:bootstrap against a freshly migrated local database, follow the printed link, set a password, log in, and confirm admin access
+- [x] 2.4 Run app:admin:bootstrap against a freshly migrated local database, follow the printed link, set a password, log in, and confirm admin access
