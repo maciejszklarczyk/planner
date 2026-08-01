@@ -5,7 +5,6 @@ import {
   UserPlus,
   Search,
   Users,
-  CalendarDays,
   Clock,
   MoreHorizontal,
   UserCheck,
@@ -19,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,126 +32,18 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
+import { useFriends } from "@/hooks/useFriends";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { useAcceptFriendRequest } from "@/hooks/useAcceptFriendRequest";
+import { useDeclineFriendRequest } from "@/hooks/useDeclineFriendRequest";
+import { useCancelFriendRequest } from "@/hooks/useCancelFriendRequest";
+import { FriendRequestDto, FriendRequestOtherUser } from "@/types/friends";
+import { SendFriendRequestDialog } from "@/components/friends/SendFriendRequestDialog";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-type FriendStatus = "active" | "pending-sent" | "pending-received";
-type Tab = "friends" | "invitations" | "suggestions";
-
-interface Friend {
-  id: number;
-  name: string;
-  email: string;
-  mutualEvents: number;
-  status: FriendStatus;
-  joinedAt?: string;
-}
-
-interface Suggestion {
-  id: number;
-  name: string;
-  email: string;
-  mutualFriends: number;
-  mutualEvents: number;
-}
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with API when backend ready
-// ---------------------------------------------------------------------------
-const MOCK_FRIENDS: Friend[] = [
-  {
-    id: 1,
-    name: "Anna Kowalska",
-    email: "anna.k@example.com",
-    mutualEvents: 4,
-    status: "active",
-    joinedAt: "2025-11",
-  },
-  {
-    id: 2,
-    name: "Piotr Wiśniewski",
-    email: "p.wisniewski@example.com",
-    mutualEvents: 2,
-    status: "active",
-    joinedAt: "2026-01",
-  },
-  {
-    id: 3,
-    name: "Karolina Nowak",
-    email: "karolina@example.com",
-    mutualEvents: 7,
-    status: "active",
-    joinedAt: "2025-09",
-  },
-  {
-    id: 4,
-    name: "Tomasz Lewandowski",
-    email: "tomek.lew@example.com",
-    mutualEvents: 1,
-    status: "active",
-    joinedAt: "2026-03",
-  },
-  {
-    id: 5,
-    name: "Marta Zielińska",
-    email: "marta.z@example.com",
-    mutualEvents: 3,
-    status: "active",
-    joinedAt: "2026-02",
-  },
-];
-
-const MOCK_PENDING_SENT: Friend[] = [
-  {
-    id: 10,
-    name: "Bartosz Szymański",
-    email: "bartek@example.com",
-    mutualEvents: 0,
-    status: "pending-sent",
-  },
-];
-
-const MOCK_PENDING_RECEIVED: Friend[] = [
-  {
-    id: 11,
-    name: "Ola Dąbrowska",
-    email: "ola.d@example.com",
-    mutualEvents: 2,
-    status: "pending-received",
-  },
-  {
-    id: 12,
-    name: "Rafał Jankowski",
-    email: "rafal.j@example.com",
-    mutualEvents: 0,
-    status: "pending-received",
-  },
-];
-
-const MOCK_SUGGESTIONS: Suggestion[] = [
-  {
-    id: 20,
-    name: "Natalia Wójcik",
-    email: "natalia.w@example.com",
-    mutualFriends: 3,
-    mutualEvents: 2,
-  },
-  {
-    id: 21,
-    name: "Kamil Kowalczyk",
-    email: "kamil.k@example.com",
-    mutualFriends: 1,
-    mutualEvents: 5,
-  },
-  {
-    id: 22,
-    name: "Agnieszka Pawlak",
-    email: "agnieszka.p@example.com",
-    mutualFriends: 2,
-    mutualEvents: 0,
-  },
-];
+type Tab = "friends" | "invitations";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -191,7 +83,6 @@ function StatsRow({
   const stats = [
     { label: "Znajomi", value: friendsCount, icon: Users },
     { label: "Oczekujące", value: pendingCount || "—", icon: Clock },
-    { label: "Wspólne eventy", value: "—", icon: CalendarDays },
   ];
 
   return (
@@ -214,7 +105,7 @@ function StatsRow({
 // ---------------------------------------------------------------------------
 // FriendCard
 // ---------------------------------------------------------------------------
-function FriendCard({ friend }: { friend: Friend }) {
+function FriendCard({ friend }: { friend: FriendRequestOtherUser }) {
   return (
     <Card className="p-4 gap-0">
       <div className="flex items-start gap-3">
@@ -233,12 +124,6 @@ function FriendCard({ friend }: { friend: Friend }) {
           <p className="text-xs text-muted-foreground truncate">
             {friend.email}
           </p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <CalendarDays className="size-3 opacity-60 shrink-0" />
-            <span className="text-xs text-muted-foreground">
-              {friend.mutualEvents} wspólnych wydarzeń
-            </span>
-          </div>
         </div>
 
         <DropdownMenu>
@@ -253,11 +138,21 @@ function FriendCard({ friend }: { friend: Friend }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              {/* Not implemented — no messaging feature exists in this app. */}
+              <DropdownMenuItem
+                className="opacity-50 cursor-not-allowed"
+                title="Wkrótce dostępne"
+                onSelect={(e) => e.preventDefault()}
+              >
                 <Mail />
                 Wyślij wiadomość
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              {/* Not implemented — unfriending is explicitly parked, see roadmap. */}
+              <DropdownMenuItem
+                className="opacity-50 cursor-not-allowed text-destructive focus:text-destructive"
+                title="Wkrótce dostępne"
+                onSelect={(e) => e.preventDefault()}
+              >
                 <UserX />
                 Usuń ze znajomych
               </DropdownMenuItem>
@@ -272,22 +167,31 @@ function FriendCard({ friend }: { friend: Friend }) {
 // ---------------------------------------------------------------------------
 // PendingReceivedCard
 // ---------------------------------------------------------------------------
-function PendingReceivedCard({ friend }: { friend: Friend }) {
+function PendingReceivedCard({ request }: { request: FriendRequestDto }) {
+  const { mutate: accept, isPending: isAccepting } = useAcceptFriendRequest();
+  const { mutate: decline, isPending: isDeclining } = useDeclineFriendRequest();
+  const isBusy = isAccepting || isDeclining;
+
   return (
     <Card className="p-4 gap-0">
       <div className="flex items-center gap-3">
         <Avatar className="size-10 shrink-0">
           <AvatarFallback
-            className={cn("text-sm font-semibold", avatarColor(friend.id))}
+            className={cn(
+              "text-sm font-semibold",
+              avatarColor(request.otherUser.id),
+            )}
           >
-            {initials(friend.name)}
+            {initials(request.otherUser.name)}
           </AvatarFallback>
         </Avatar>
 
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-sm truncate">{friend.name}</p>
+          <p className="font-semibold text-sm truncate">
+            {request.otherUser.name}
+          </p>
           <p className="text-xs text-muted-foreground truncate">
-            {friend.email}
+            {request.otherUser.email}
           </p>
         </div>
       </div>
@@ -295,11 +199,22 @@ function PendingReceivedCard({ friend }: { friend: Friend }) {
       <Separator className="my-3" />
 
       <div className="flex gap-2">
-        <Button size="sm" className="flex-1">
+        <Button
+          size="sm"
+          className="flex-1"
+          disabled={isBusy}
+          onClick={() => accept(request.id)}
+        >
           <UserCheck data-icon="inline-start" />
           Akceptuj
         </Button>
-        <Button size="sm" variant="outline" className="flex-1">
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1"
+          disabled={isBusy}
+          onClick={() => decline(request.id)}
+        >
           <UserX data-icon="inline-start" />
           Odrzuć
         </Button>
@@ -311,22 +226,29 @@ function PendingReceivedCard({ friend }: { friend: Friend }) {
 // ---------------------------------------------------------------------------
 // PendingSentCard
 // ---------------------------------------------------------------------------
-function PendingSentCard({ friend }: { friend: Friend }) {
+function PendingSentCard({ request }: { request: FriendRequestDto }) {
+  const { mutate: cancel, isPending: isCancelling } = useCancelFriendRequest();
+
   return (
     <Card className="p-4 gap-0">
       <div className="flex items-center gap-3">
         <Avatar className="size-10 shrink-0">
           <AvatarFallback
-            className={cn("text-sm font-semibold", avatarColor(friend.id))}
+            className={cn(
+              "text-sm font-semibold",
+              avatarColor(request.otherUser.id),
+            )}
           >
-            {initials(friend.name)}
+            {initials(request.otherUser.name)}
           </AvatarFallback>
         </Avatar>
 
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-sm truncate">{friend.name}</p>
+          <p className="font-semibold text-sm truncate">
+            {request.otherUser.name}
+          </p>
           <p className="text-xs text-muted-foreground truncate">
-            {friend.email}
+            {request.otherUser.email}
           </p>
           <Badge variant="outline" className="mt-1.5 gap-1">
             <Clock />
@@ -334,49 +256,14 @@ function PendingSentCard({ friend }: { friend: Friend }) {
           </Badge>
         </div>
 
-        <Button size="sm" variant="outline" className="shrink-0 text-xs">
+        <Button
+          size="sm"
+          variant="outline"
+          className="shrink-0 text-xs"
+          disabled={isCancelling}
+          onClick={() => cancel(request.id)}
+        >
           Cofnij
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// SuggestionCard
-// ---------------------------------------------------------------------------
-function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
-  return (
-    <Card className="p-4 gap-0">
-      <div className="flex items-start gap-3">
-        <Avatar className="size-10 shrink-0">
-          <AvatarFallback
-            className={cn("text-sm font-semibold", avatarColor(suggestion.id))}
-          >
-            {initials(suggestion.name)}
-          </AvatarFallback>
-        </Avatar>
-
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold text-sm truncate">{suggestion.name}</p>
-          <p className="text-xs text-muted-foreground truncate">
-            {suggestion.email}
-          </p>
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Users className="size-3 opacity-60 shrink-0" />
-              {suggestion.mutualFriends} wspólnych
-            </span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <CalendarDays className="size-3 opacity-60 shrink-0" />
-              {suggestion.mutualEvents} eventów
-            </span>
-          </div>
-        </div>
-
-        <Button size="sm" variant="outline" className="shrink-0">
-          <UserPlus data-icon="inline-start" />
-          Dodaj
         </Button>
       </div>
     </Card>
@@ -401,11 +288,6 @@ function EmptyState({ tab }: { tab: Tab }) {
       title: "Brak zaproszeń",
       description: "Nie masz żadnych oczekujących zaproszeń.",
     },
-    suggestions: {
-      icon: UserPlus,
-      title: "Brak sugestii",
-      description: "Dodaj więcej znajomych, by zobaczyć sugestie.",
-    },
   };
 
   const { icon: Icon, title, description } = configs[tab];
@@ -422,15 +304,51 @@ function EmptyState({ tab }: { tab: Tab }) {
 }
 
 // ---------------------------------------------------------------------------
+// LoadingSkeleton
+// ---------------------------------------------------------------------------
+function LoadingSkeleton() {
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-9 w-40" />
+      </div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Skeleton className="h-20 flex-1" />
+        <Skeleton className="h-20 flex-1" />
+      </div>
+      <Skeleton className="h-9 w-64" />
+      <Skeleton className="h-9 w-72" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <Skeleton className="h-24" />
+        <Skeleton className="h-24" />
+        <Skeleton className="h-24" />
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // FriendsView
 // ---------------------------------------------------------------------------
 export function FriendsView() {
   const [tab, setTab] = useState<Tab>("friends");
   const [search, setSearch] = useState("");
 
-  const pendingTotal = MOCK_PENDING_RECEIVED.length + MOCK_PENDING_SENT.length;
+  const { data: friendsData, isLoading: isFriendsLoading } = useFriends();
+  const { data: requestsData, isLoading: isRequestsLoading } =
+    useFriendRequests();
 
-  const filteredFriends = MOCK_FRIENDS.filter(
+  if (isFriendsLoading || isRequestsLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  const friends = friendsData?.data ?? [];
+  const incoming = requestsData?.incoming ?? [];
+  const outgoing = requestsData?.outgoing ?? [];
+  const pendingTotal = incoming.length + outgoing.length;
+
+  const filteredFriends = friends.filter(
     (f) =>
       search === "" ||
       f.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -442,17 +360,18 @@ export function FriendsView() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold tracking-tight">Znajomi</h1>
-        <Button>
-          <UserPlus data-icon="inline-start" />
-          Zaproś znajomego
-        </Button>
+        <SendFriendRequestDialog
+          trigger={
+            <Button>
+              <UserPlus data-icon="inline-start" />
+              Zaproś znajomego
+            </Button>
+          }
+        />
       </div>
 
       {/* Stats */}
-      <StatsRow
-        friendsCount={MOCK_FRIENDS.length}
-        pendingCount={pendingTotal}
-      />
+      <StatsRow friendsCount={friends.length} pendingCount={pendingTotal} />
 
       {/* Search */}
       <InputGroup>
@@ -487,7 +406,6 @@ export function FriendsView() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="suggestions">Sugestie</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -510,50 +428,35 @@ export function FriendsView() {
 
       {tab === "invitations" && (
         <div className="flex flex-col gap-6">
-          {MOCK_PENDING_RECEIVED.length > 0 && (
+          {incoming.length > 0 && (
             <div className="flex flex-col gap-3">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Otrzymane ({MOCK_PENDING_RECEIVED.length})
+                Otrzymane ({incoming.length})
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {MOCK_PENDING_RECEIVED.map((f) => (
-                  <PendingReceivedCard key={f.id} friend={f} />
+                {incoming.map((r) => (
+                  <PendingReceivedCard key={r.id} request={r} />
                 ))}
               </div>
             </div>
           )}
-          {MOCK_PENDING_SENT.length > 0 && (
+          {outgoing.length > 0 && (
             <div className="flex flex-col gap-3">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Wysłane ({MOCK_PENDING_SENT.length})
+                Wysłane ({outgoing.length})
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {MOCK_PENDING_SENT.map((f) => (
-                  <PendingSentCard key={f.id} friend={f} />
+                {outgoing.map((r) => (
+                  <PendingSentCard key={r.id} request={r} />
                 ))}
               </div>
             </div>
           )}
-          {MOCK_PENDING_RECEIVED.length === 0 &&
-            MOCK_PENDING_SENT.length === 0 && <EmptyState tab="invitations" />}
+          {incoming.length === 0 && outgoing.length === 0 && (
+            <EmptyState tab="invitations" />
+          )}
         </div>
       )}
-
-      {tab === "suggestions" &&
-        (MOCK_SUGGESTIONS.length > 0 ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Może ich znasz ({MOCK_SUGGESTIONS.length})
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {MOCK_SUGGESTIONS.map((s) => (
-                <SuggestionCard key={s.id} suggestion={s} />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <EmptyState tab="suggestions" />
-        ))}
     </div>
   );
 }

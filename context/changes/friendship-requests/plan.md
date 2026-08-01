@@ -565,17 +565,17 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 5.1 New hook tests pass (npm run test)
-- [x] 5.2 Typecheck passes (npx tsc --noEmit)
+- [x] 5.1 New hook tests pass (npm run test) — 5591f86
+- [x] 5.2 Typecheck passes (npx tsc --noEmit) — 5591f86
 
 ### Phase 6: Friendship UI Wiring
 
 #### Automated
 
-- [ ] 6.1 Frontend build succeeds (npm run build)
-- [ ] 6.2 Typecheck passes (npx tsc --noEmit)
-- [ ] 6.3 Lint passes (npm run lint)
-- [ ] 6.4 Full frontend test suite passes (npm run test)
+- [x] 6.1 Frontend build succeeds (npm run build)
+- [x] 6.2 Typecheck passes (npx tsc --noEmit)
+- [x] 6.3 Lint passes (npm run lint)
+- [x] 6.4 Full frontend test suite passes (npm run test)
 
 #### Manual
 
