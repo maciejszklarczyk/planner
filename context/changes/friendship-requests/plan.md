@@ -554,8 +554,8 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 4.1 New UserControllerTest passes (search match, self-excluded, 401 unauthenticated, blank search returns empty list)
-- [x] 4.2 Existing admin user-list test coverage still passes unchanged
+- [x] 4.1 New UserControllerTest passes (search match, self-excluded, 401 unauthenticated, blank search returns empty list) — 9bd1b16
+- [x] 4.2 Existing admin user-list test coverage still passes unchanged — 9bd1b16
 
 #### Manual
 
@@ -565,8 +565,8 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [ ] 5.1 New hook tests pass (npm run test)
-- [ ] 5.2 Typecheck passes (npx tsc --noEmit)
+- [x] 5.1 New hook tests pass (npm run test)
+- [x] 5.2 Typecheck passes (npx tsc --noEmit)
 
 ### Phase 6: Friendship UI Wiring
 
