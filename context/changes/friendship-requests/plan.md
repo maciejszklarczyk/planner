@@ -572,10 +572,10 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 6.1 Frontend build succeeds (npm run build)
-- [x] 6.2 Typecheck passes (npx tsc --noEmit)
-- [x] 6.3 Lint passes (npm run lint)
-- [x] 6.4 Full frontend test suite passes (npm run test)
+- [x] 6.1 Frontend build succeeds (npm run build) — 9d2cdd5
+- [x] 6.2 Typecheck passes (npx tsc --noEmit) — 9d2cdd5
+- [x] 6.3 Lint passes (npm run lint) — 9d2cdd5
+- [x] 6.4 Full frontend test suite passes (npm run test) — 9d2cdd5
 
 #### Manual
 
