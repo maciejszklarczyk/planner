@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-01
+
+- [e86b995] fix(friendship): harden concurrent send race and fix request-id IDOR leak
+
 ## 2026-07-23
 
 - [dd6407f] docs(context): add friendship-requests plan and roadmap

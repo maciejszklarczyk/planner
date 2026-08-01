@@ -54,7 +54,7 @@ class FriendshipController extends AbstractController
     #[Route('/friend-requests/{id}/accept', name: 'accept_friend_request', methods: ['POST'])]
     public function accept(int $id, #[CurrentUser] User $user): JsonResponse
     {
-        $request = $this->resolveFriendRequest($id);
+        $request = $this->resolveFriendRequest($id, $user);
         $this->denyAccessUnlessGranted(FriendshipVoter::ACCEPT, $request);
 
         $accepted = $this->friendshipService->acceptRequest($request);
@@ -65,7 +65,7 @@ class FriendshipController extends AbstractController
     #[Route('/friend-requests/{id}/decline', name: 'decline_friend_request', methods: ['POST'])]
     public function decline(int $id, #[CurrentUser] User $user): JsonResponse
     {
-        $request = $this->resolveFriendRequest($id);
+        $request = $this->resolveFriendRequest($id, $user);
         $this->denyAccessUnlessGranted(FriendshipVoter::DECLINE, $request);
 
         $declined = $this->friendshipService->declineRequest($request);
@@ -76,7 +76,7 @@ class FriendshipController extends AbstractController
     #[Route('/friend-requests/{id}/cancel', name: 'cancel_friend_request', methods: ['POST'])]
     public function cancel(int $id, #[CurrentUser] User $user): JsonResponse
     {
-        $request = $this->resolveFriendRequest($id);
+        $request = $this->resolveFriendRequest($id, $user);
         $this->denyAccessUnlessGranted(FriendshipVoter::CANCEL, $request);
 
         $cancelled = $this->friendshipService->cancelRequest($request);
@@ -92,10 +92,14 @@ class FriendshipController extends AbstractController
         return $this->json(['data' => UserListItemDto::fromEntities($friends)]);
     }
 
-    private function resolveFriendRequest(int $id): FriendRequest
+    /**
+     * A request id that exists but belongs to neither side of the current user is treated the same
+     * as one that doesn't exist at all, so a non-participant can't distinguish the two via 404 vs 403.
+     */
+    private function resolveFriendRequest(int $id, User $user): FriendRequest
     {
         $request = $this->friendRequestRepository->find($id);
-        if (!$request) {
+        if (!$request || ($request->getRequester() !== $user && $request->getAddressee() !== $user)) {
             throw new FriendRequestNotFoundException("Friend request {$id} not found.");
         }
 

@@ -15,6 +15,7 @@ use App\Exception\FriendRequestNotPendingException;
 use App\Exception\UserNotFoundByEmailException;
 use App\Repository\FriendRequestRepository;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -86,7 +87,14 @@ class FriendshipService
         $friendRequest->setStatus(FriendshipStatusEnum::PENDING);
 
         $this->em->persist($friendRequest);
-        $this->em->flush();
+
+        try {
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException) {
+            // A concurrent request won the race against our findActiveBetween() check above;
+            // the DB-level partial unique index is the real guard here.
+            throw new DuplicateFriendRequestException("A pending friend request already exists between {$requesterId} and {$addresseeId}.");
+        }
 
         return $friendRequest;
     }
