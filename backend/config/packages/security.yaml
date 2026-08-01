@@ -25,6 +25,7 @@ security:
                 check_path: /auth/login
                 username_path: email
                 password_path: password
+                failure_handler: App\Security\JsonAuthenticationFailureHandler
             logout:
                 path: /auth/logout
             access_denied_handler: App\Security\JsonAccessDeniedHandler
