@@ -5,10 +5,11 @@ git_commit: 7e3a4e187c67702bcd43b763a7517193304bbbc3
 branch: main
 repository: backend
 topic: "Friendship domain (send/accept/decline friend requests, friend list) — implementation patterns to reuse"
-tags: [research, codebase, friendship, user, group, invitation-token, voter, testing]
+tags: [research, codebase, friendship, user, group, invitation-token, voter, testing, frontend, nextjs, react-query, shadcn]
 status: complete
-last_updated: 2026-07-22
+last_updated: 2026-08-01
 last_updated_by: Maciej Szklarczyk
+last_updated_note: "Added follow-up research on frontend implementation patterns — friendship-requests promoted to a full-stack change"
 ---
 
 # Research: Friendship domain — patterns to reuse for FR-005/FR-006/FR-007
@@ -184,3 +185,88 @@ The codebase has one directly analogous relation (`Group`↔`User` via `UserHasG
 ## Open Questions
 
 - None blocking for this research. The roadmap has already resolved the two items that were open in the PRD (cooldown length = 3 days, configurable; no rate limit on sending requests in MVP). Any remaining design decisions (e.g., exact enum values, exact env var name, exact HTTP status codes per error case) are solution-design choices for `/10x-plan`, not research gaps.
+
+---
+
+## Follow-up Research 2026-08-01T14:00:52Z — Frontend implementation patterns
+
+**Context**: `friendship-requests` was promoted from a backend-only change to a full-stack one (see `context/foundation/roadmap.md`'s Baseline note and the `chore(context): promote friendship-requests...` commit). This follow-up researches the `frontend/` (Next.js 16 App Router) side, since the original research above and `plan.md`'s three phases cover backend only.
+
+**Git commit**: c6c8fceac69f20d3db1658aaa707b552017b3104
+**Branch**: chore/promote-friendship-requests-fullstack
+**Repository**: planner (monorepo — `frontend/`)
+
+### Research Question
+
+What existing frontend patterns (routing, auth, components, data-fetching, API client, error handling, testing) should a Friendship UI (send/accept/decline requests, friend list) follow?
+
+### Summary — the headline finding
+
+**The frontend already has a fully-built Friends UI, wired to nothing.** `app/(dashboard)/friends/page.tsx` + `components/friends/FriendsView.tsx` (560 lines) render tabs for Friends / Invitations (received+sent) / Suggestions, with Accept/Decline/Cancel/Add buttons already in place — but every list is backed by hardcoded `MOCK_*` arrays (`FriendsView.tsx:62-154`, explicitly commented `// Mock data — replace with API when backend ready`) and the action buttons have **no onClick handlers**. The sidebar nav item "Friends" → `/friends` also already exists (`components/sidebar/NavPages.tsx:43-47`) with a hardcoded `badge: 0`. This changes the shape of Phase-4-equivalent work from "build a UI" to "wire an existing UI to real data" — plus reconcile scope gaps (see below).
+
+### Detailed Findings
+
+#### Routing & auth (all free — no new work needed)
+
+- Route groups: `(auth)` public (`/login`, `/set-password`, no auth check) vs `(dashboard)` protected (`app/(dashboard)/layout.tsx:14-43` does a client-side `useAuth()` gate + `router.push("/login")` redirect). Any new route under `(dashboard)/` inherits this for free.
+- `/friends` already exists as a protected route at `app/(dashboard)/friends/page.tsx:1-10`; no new routing work needed, only wiring.
+- Auth/session: `hooks/useAuth.ts:10-59` — a `useQuery(["auth","me"], ...)` hook (not a Context/Zustand store), treats HTTP 401 as `user: null` rather than throwing, `refetchInterval: 10min`. `User.roles` (`types/auth.ts:3-10`) drives admin-only UI gating elsewhere (`isAdmin = user?.roles?.includes("ROLE_ADMIN")`).
+- Nav: `components/sidebar/NavPages.tsx:43-47` — Friends item has a `badge?: number` field, currently hardcoded `0`; wiring it to a live pending-count is a natural follow-up once the query hooks exist.
+
+#### API client & error handling (`lib/api.ts`, full file, 78 lines)
+
+- `api.get/post/put/postFormData/delete` — thin fetch wrapper, always `credentials: "include"`, base URL from `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`). **No `api.patch` method exists** despite `frontend/CLAUDE.md` documenting one — stale doc, not a real gap for Friendship (no PATCH endpoints planned).
+- On non-2xx, throws `ApiError extends Error` with `{status, statusText, body}` (`lib/api.ts:3-11`) — `body` is the full parsed backend JSON, i.e. the unified `{error, message, timestamp, path}` envelope from `api-exception-handling`. **`ApiError.body` is populated everywhere but consumed nowhere** — every existing `onError` handler in this codebase shows a hardcoded generic toast string (e.g. `hooks/useAddGroupMember.ts:25`: `toast.error("Błąd", { description: "Nie udało się dodać użytkownika do grupy" })`), never `error.body.message` or a switch on `error.body.error`. A Friendship feature that wants to show e.g. "Already friends" vs "Cooldown active" as distinct messages (its error taxonomy has 7 distinct codes per `plan.md` Phase 2 — `CANNOT_FRIEND_SELF`, `ALREADY_FRIENDS`, `DUPLICATE_FRIEND_REQUEST`, `FRIEND_REQUEST_COOLDOWN_ACTIVE`, etc.) would be the **first** feature in this codebase to actually branch on the backend's `error` code — no existing convention to copy, only the `ApiError` class to build on.
+- One risk noted: if a non-OK response body isn't valid JSON, the `await res.json()` inside `throw new ApiError(...)` itself throws and masks the real error (no try/catch around that parse) — pre-existing client bug, not introduced by Friendship, but worth being aware of if the backend ever returns a non-JSON 5xx for a friend-request call.
+- Global 401 handling lives in `lib/queryClient.ts:14-24` (mutation-level `onError`, redirects to `/login` after a toast) — applies automatically to any new Friendship mutation hook, no extra wiring needed.
+
+#### Data fetching / mutations (TanStack Query v5, no server actions, no SWR)
+
+- Query key convention: array namespaced by domain, e.g. `["admin","groups", groupId, "members"]`, `["auth","me"]` → Friendship should use `["friends"]`, `["friends","requests"]` (or split `["friends","requests","incoming"|"outgoing"]` to match the backend's `{incoming, outgoing}` response shape from `plan.md`).
+- **Direct copy-paste templates already exist** for every operation Friendship needs:
+  - List query → `hooks/useGroupMembers.ts` (7 lines, `useQuery` + `api.get`)
+  - Create mutation w/ toast + invalidate → `hooks/useAddGroupMember.ts` (21 lines)
+  - Delete/remove mutation → `hooks/useRemoveGroupMember.ts` / `hooks/useDeleteGroup.ts` (ID-in-URL action, closest template for accept/decline-by-id)
+  - Debounced search → `hooks/useSearchUsers.ts` (`enabled: enabled && search.length >= 2` gate) — useful if "send request" becomes a user-search autocomplete rather than a raw email field (backend's `POST /friend-requests` per `plan.md` takes `{email}` directly, so this may not be needed for MVP, but the frontend mock (`Suggestion` tab) implies a richer UX was originally envisioned)
+- Response envelope convention: every existing list type is `{ data: T[] }` (`types/groups.ts`, `types/api.ts`). **Mismatch to resolve during planning**: backend's planned `GET /friend-requests` returns `{incoming: [...], outgoing: [...]}` (no `data` wrapper) per `plan.md` Phase 3 — a new `types/friends.ts` will need to deliberately break from the `{data: T[]}` convention for that one endpoint, or the backend plan should be revisited to match the frontend convention. Flagging as an open question below.
+- No generated types — no OpenAPI/Swagger codegen despite Swagger existing at `/api/doc`. Types are hand-written per domain (`types/groups.ts`, `types/events.ts`, etc.) — a new `types/friends.ts` follows this convention.
+
+#### UI components (shadcn/ui on Radix, `components/ui/`)
+
+- Everything Friendship needs already exists as a primitive: `Badge` (status pills — pattern: `<Badge variant={...} className="capitalize">{status}</Badge>`, see `components/users/GroupsTableColumn.tsx:166-173`), `Avatar`, `Card`, `Dialog`/`AlertDialog` (confirm flows), `Tabs` (already used by `FriendsView` for the incoming/outgoing split), `Skeleton` (loading state), `sonner`-backed `Toast`.
+- `FriendsView.tsx:331-334` already has a "pending" badge with a `Clock` icon — the exact idiom (`variant="outline" + icon + PL label`) to extend for `accepted`/`declined` states.
+- Icons: both `lucide-react` (used inside `FriendsView.tsx`/`EventsView.tsx`) and `@tabler/icons-react` (used in nav/dialogs) coexist — `FriendsView` already uses lucide, so continue with that inside it.
+- Forms: react-hook-form + zod + shadcn `Field`/`FieldError`, e.g. `components/users/InviteUserDialog.tsx` (101 lines) — near-exact template for a "send friend request" dialog (single validated email field, dialog trigger, mutation on submit, success/error toast).
+
+#### Testing
+
+- Vitest + Testing Library + jsdom, **no Playwright/E2E config in `frontend/`** (the Playwright MCP tool available in this environment isn't wired into the project's own test suite — confirms `/10x-e2e` isn't applicable here unless E2E tooling is added first).
+- Exactly one existing test in the whole frontend, and it's a hook test: `hooks/useDeleteGroup.test.ts` — mocks `@/lib/api` and `sonner`, wraps in a fresh `QueryClientProvider`, asserts `mutate()` calls the right endpoint and shows a toast. Direct template for testing `useAcceptFriendRequest`/`useDeclineFriendRequest`/etc. No component-level (`render()`) test exists yet anywhere in the repo — a `FriendsView` test would be the first of its kind.
+
+### Code References (frontend)
+
+- `frontend/components/friends/FriendsView.tsx:1-559` — existing mock UI to wire up (MOCK_* arrays lines 62-154; unwired Accept/Decline/Cancel/Add buttons at lines 298-305, 337-339, 377-380)
+- `frontend/app/(dashboard)/friends/page.tsx:1-10` — existing route, already protected, no changes needed beyond whatever FriendsView needs
+- `frontend/components/sidebar/NavPages.tsx:43-47` — existing "Friends" nav item, `badge: 0` hardcoded, wire to live pending-count later
+- `frontend/lib/api.ts:1-78` — fetch client + `ApiError` (full file)
+- `frontend/lib/queryClient.ts:1-28` — global QueryClient config incl. 401 handling
+- `frontend/hooks/useAuth.ts:10-59` — session/auth hook
+- `frontend/hooks/useGroupMembers.ts`, `useAddGroupMember.ts`, `useRemoveGroupMember.ts`, `useDeleteGroup.ts`, `useSearchUsers.ts`, `useInvite.ts` — direct hook templates for list/create/remove/search/invite-by-email
+- `frontend/hooks/useDeleteGroup.test.ts` — hook test template
+- `frontend/components/users/InviteUserDialog.tsx` — react-hook-form + zod dialog-form template (closest to "send friend request")
+- `frontend/components/users/GroupsTableColumn.tsx:166-173`, `UsersTableColumn.tsx:208-220` — status Badge rendering pattern
+- `frontend/types/groups.ts`, `types/auth.ts`, `types/api.ts` — response-type conventions (`{data: T[]}` envelope) to follow/reconcile for `types/friends.ts`
+- `frontend/components/events/EventsView.tsx` — alternate list-view reference (client-side pagination + skeleton loading), less directly relevant than FriendsView/GroupMembers since FriendsView already exists
+
+### Architecture Insights (frontend)
+
+- **No server actions, no middleware.ts, no SSR-fetched auth** — this app is a client-rendered SPA-over-App-Router: every data fetch and the auth check itself happen in `"use client"` components via React Query. A Friendship implementation should follow this same client-only pattern, not introduce server components/actions as a new pattern.
+- **No client-side global store (Zustand/Redux/Context)** for domain or auth state — React Query's cache *is* the app's state layer. Friendship state (friends list, pending requests) should live purely in query cache, invalidated on mutation success, exactly like Group membership.
+- **Error-code branching is an unestablished pattern** — this is the one genuine gap. Every existing mutation hook shows a static toast string regardless of what the backend actually said. Since Friendship's backend plan defines 7 distinct domain error codes (vs. Group's ~2), this feature will likely be the one to establish "read `error.body.error`, map to a friendly message" as a reusable pattern (e.g. a small `getErrorMessage(error: unknown, fallback: string): string` helper) — worth deciding explicitly during `/10x-plan`, not left implicit.
+- **A UI/backend contract mismatch exists today** (`{data: T[]}` envelope convention vs. planned `{incoming, outgoing}` shape for `GET /friend-requests`) — worth resolving explicitly in planning: either the frontend type breaks convention for this one endpoint, or the backend plan's response shape is revisited before Phase 3 implementation. Flagged, not resolved, here.
+
+### Open Questions (frontend)
+
+1. **Should `/10x-frame` or `/10x-plan` treat "wire the existing FriendsView mock" as the frontend phase(s), or should the existing mock UI be reconsidered/rebuilt?** The "Suggestions" tab (`SuggestionCard`, mutual-friends/mutual-events fields) has **no corresponding backend endpoint** in `plan.md`'s Phase 3 — it needs to be either deferred/removed from the UI or added as new backend scope. This is a scope decision, not a research gap.
+2. **Response-shape mismatch** (`{data: T[]}` vs `{incoming, outgoing}`) — resolve during planning, see Architecture Insights above.
+3. **Error-code-to-message mapping convention** — no existing pattern; needs an explicit design decision in `/10x-plan` rather than each hook inventing its own.

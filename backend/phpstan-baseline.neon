@@ -19,6 +19,12 @@ parameters:
 			path: src/Entity/Event.php
 
 		-
+			message: '#^Property App\\Entity\\FriendRequest\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/FriendRequest.php
+
+		-
 			message: '#^Property App\\Entity\\Group\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1

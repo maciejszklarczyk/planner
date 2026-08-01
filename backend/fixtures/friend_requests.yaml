@@ -1,0 +1,32 @@
+App\Entity\FriendRequest:
+    # admin <-> user_1: accepted friendship
+    friend_request_admin_u1_accepted:
+        requester: '@user_admin'
+        addressee: '@user_1'
+        status: accepted
+        createdAt: '<(new DateTimeImmutable("now - 10 days"))>'
+        respondedAt: '<(new DateTimeImmutable("now - 9 days"))>'
+
+    # user_1 -> user_5: still pending
+    friend_request_u1_u5_pending:
+        requester: '@user_1'
+        addressee: '@user_5'
+        status: pending
+        createdAt: '<(new DateTimeImmutable("now - 1 day"))>'
+        respondedAt: null
+
+    # user_5 -> user_2: declined recently, cooldown (3 days) still active
+    friend_request_u5_u2_declined_recent:
+        requester: '@user_5'
+        addressee: '@user_2'
+        status: declined
+        createdAt: '<(new DateTimeImmutable("now - 2 days"))>'
+        respondedAt: '<(new DateTimeImmutable("now - 1 day"))>'
+
+    # admin -> user_3: declined long ago, cooldown (3 days) has expired
+    friend_request_admin_u3_declined_old:
+        requester: '@user_admin'
+        addressee: '@user_3'
+        status: declined
+        createdAt: '<(new DateTimeImmutable("now - 10 days"))>'
+        respondedAt: '<(new DateTimeImmutable("now - 10 days"))>'
