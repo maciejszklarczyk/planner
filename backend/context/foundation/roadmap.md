@@ -3,7 +3,7 @@ project: Plan
 version: 1
 status: draft
 created: 2026-07-22
-updated: 2026-07-22
+updated: 2026-08-01
 prd_version: 1
 main_goal: low-complexity
 top_blocker: decisions
@@ -41,7 +41,7 @@ cały model relacji działa.
 
 | ID   | Change ID                  | Outcome (user can …)                                              | Prerequisites | PRD refs                    | Status  |
 | ---- | --------------------------- | ------------------------------------------------------------------ | -------------- | ---------------------------- | ------- |
-| F-01 | api-exception-handling       | (enabler, not user-facing) Consistent error envelope across the whole API | —      | —                             | planned |
+| F-01 | api-exception-handling       | (enabler, not user-facing) Consistent error envelope across the whole API | —      | —                             | done |
 | S-01 | friendship-requests          | User wysyła/akceptuje/odrzuca zaproszenie do znajomych, widzi listę | F-01           | US-02, FR-005, FR-006, FR-007 | planned |
 | S-02 | event-owner-and-invites      | User tworzy event, zaprasza znajomego, ten widzi się jako uczestnik | S-01           | US-01, FR-001, FR-002, FR-003, FR-004 | blocked |
 
@@ -85,7 +85,7 @@ przez usera). Poniższe slice'y NIE odtwarzają tych warstw od zera.
   Invitation/Avatar endpoints. Mitigated by keeping existing HTTP status
   codes unchanged and existing test assertions passing (see
   `context/changes/api-exception-handling/plan.md`).
-- **Status:** planned — split out of `friendship-requests` during planning
+- **Status:** done — split out of `friendship-requests` during planning
   once its scope grew beyond that slice; see
   `context/changes/api-exception-handling/`.
 
@@ -174,4 +174,4 @@ Resolved: 3 dni, konfigurowalne przez env, nie hardcoded. Odblokowuje S-01.
 
 ## Done
 
-(Puste przy pierwszej generacji.)
+- **F-01: (enabler, not user-facing) Consistent error envelope across the whole API** — Archived 2026-08-01 → `context/archive/2026-07-22-api-exception-handling/`. Lesson: —.
