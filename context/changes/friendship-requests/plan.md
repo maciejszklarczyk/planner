@@ -523,9 +523,9 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against the test DB
-- [x] 1.2 Fixtures load without error
-- [x] 1.3 doctrine:schema:validate reports no mapping errors
+- [x] 1.1 Migration applies cleanly against the test DB — 540a842
+- [x] 1.2 Fixtures load without error — 540a842
+- [x] 1.3 doctrine:schema:validate reports no mapping errors — 540a842
 
 #### Manual
 
@@ -535,8 +535,8 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [ ] 2.1 composer show symfony/clock confirms the package is resolvable
-- [ ] 2.2 Service tests (self-request, duplicate, crossed-request auto-accept, already-friends, cooldown-active, cooldown-expired, cancel-does-not-trigger-cooldown, cancel-on-non-pending-rejected, successful send/accept/decline/cancel) pass
+- [x] 2.1 composer show symfony/clock confirms the package is resolvable
+- [x] 2.2 Service tests (self-request, duplicate, crossed-request auto-accept, already-friends, cooldown-active, cooldown-expired, cancel-does-not-trigger-cooldown, cancel-on-non-pending-rejected, successful send/accept/decline/cancel) pass
 
 ### Phase 3: Friendship HTTP Layer & Tests
 
