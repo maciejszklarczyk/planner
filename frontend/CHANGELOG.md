@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-01
+
+- [e23a36f] fix(sidebar): guard NavUser initials against null user.name
+
 ## 2026-07-23
 
 - [10c3e04] docs(context): add cicd-rework plan and foundation notes; refresh package-lock.json
