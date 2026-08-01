@@ -3,7 +3,7 @@ change_id: api-exception-handling
 title: Global API exception-handling infrastructure
 status: impl_reviewed
 created: 2026-07-22
-updated: 2026-07-23
+updated: 2026-08-01
 archived_at: null
 ---
 
