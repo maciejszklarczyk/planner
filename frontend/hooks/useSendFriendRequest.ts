@@ -18,7 +18,10 @@ export function useSendFriendRequest() {
     },
     onError: (error) => {
       toast.error("Błąd", {
-        description: getApiErrorMessage(error, "Nie udało się wysłać zaproszenia."),
+        description: getApiErrorMessage(
+          error,
+          "Nie udało się wysłać zaproszenia.",
+        ),
       });
     },
   });

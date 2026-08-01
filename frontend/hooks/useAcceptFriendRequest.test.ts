@@ -20,7 +20,11 @@ function createWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return createElement(QueryClientProvider, { client: queryClient }, children);
+    return createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children,
+    );
   };
 }
 
@@ -46,7 +50,10 @@ describe("useAcceptFriendRequest", () => {
 
   it("shows the mapped message for FRIEND_REQUEST_NOT_PENDING instead of the generic fallback", async () => {
     vi.mocked(api.post).mockRejectedValueOnce(
-      new ApiError(409, "Conflict", { error: "FRIEND_REQUEST_NOT_PENDING", message: "..." }),
+      new ApiError(409, "Conflict", {
+        error: "FRIEND_REQUEST_NOT_PENDING",
+        message: "...",
+      }),
     );
 
     const { result } = renderHook(() => useAcceptFriendRequest(), {
@@ -59,7 +66,9 @@ describe("useAcceptFriendRequest", () => {
 
     expect(toast.error).toHaveBeenCalledWith(
       "Błąd",
-      expect.objectContaining({ description: "To zaproszenie zostało już rozpatrzone." }),
+      expect.objectContaining({
+        description: "To zaproszenie zostało już rozpatrzone.",
+      }),
     );
   });
 });

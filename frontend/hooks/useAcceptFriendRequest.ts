@@ -19,7 +19,10 @@ export function useAcceptFriendRequest() {
     },
     onError: (error) => {
       toast.error("Błąd", {
-        description: getApiErrorMessage(error, "Nie udało się zaakceptować zaproszenia."),
+        description: getApiErrorMessage(
+          error,
+          "Nie udało się zaakceptować zaproszenia.",
+        ),
       });
     },
   });

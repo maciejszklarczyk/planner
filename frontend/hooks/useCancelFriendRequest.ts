@@ -17,7 +17,10 @@ export function useCancelFriendRequest() {
     },
     onError: (error) => {
       toast.error("Błąd", {
-        description: getApiErrorMessage(error, "Nie udało się cofnąć zaproszenia."),
+        description: getApiErrorMessage(
+          error,
+          "Nie udało się cofnąć zaproszenia.",
+        ),
       });
     },
   });

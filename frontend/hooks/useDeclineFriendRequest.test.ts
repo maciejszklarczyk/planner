@@ -20,7 +20,11 @@ function createWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return createElement(QueryClientProvider, { client: queryClient }, children);
+    return createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children,
+    );
   };
 }
 
@@ -46,7 +50,10 @@ describe("useDeclineFriendRequest", () => {
 
   it("shows the mapped message for FRIEND_REQUEST_NOT_FOUND instead of the generic fallback", async () => {
     vi.mocked(api.post).mockRejectedValueOnce(
-      new ApiError(404, "Not Found", { error: "FRIEND_REQUEST_NOT_FOUND", message: "..." }),
+      new ApiError(404, "Not Found", {
+        error: "FRIEND_REQUEST_NOT_FOUND",
+        message: "...",
+      }),
     );
 
     const { result } = renderHook(() => useDeclineFriendRequest(), {

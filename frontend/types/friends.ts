@@ -1,4 +1,5 @@
-export type FriendRequestStatus = "pending" | "accepted" | "declined" | "cancelled";
+export type FriendRequestStatus =
+  "pending" | "accepted" | "declined" | "cancelled";
 
 export interface FriendRequestOtherUser {
   id: number;

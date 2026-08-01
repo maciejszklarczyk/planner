@@ -20,7 +20,11 @@ function createWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return createElement(QueryClientProvider, { client: queryClient }, children);
+    return createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children,
+    );
   };
 }
 
@@ -40,13 +44,18 @@ describe("useSendFriendRequest", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(api.post).toHaveBeenCalledWith("/friend-requests", { email: "friend@example.com" });
+    expect(api.post).toHaveBeenCalledWith("/friend-requests", {
+      email: "friend@example.com",
+    });
     expect(toast.success).toHaveBeenCalled();
   });
 
   it("shows the mapped message for ALREADY_FRIENDS instead of the generic fallback", async () => {
     vi.mocked(api.post).mockRejectedValueOnce(
-      new ApiError(409, "Conflict", { error: "ALREADY_FRIENDS", message: "..." }),
+      new ApiError(409, "Conflict", {
+        error: "ALREADY_FRIENDS",
+        message: "...",
+      }),
     );
 
     const { result } = renderHook(() => useSendFriendRequest(), {

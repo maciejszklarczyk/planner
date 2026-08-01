@@ -134,9 +134,7 @@ export function SendFriendRequestDialog({
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium truncate">
-                  {candidate.name}
-                </p>
+                <p className="text-sm font-medium truncate">{candidate.name}</p>
                 <p className="text-xs text-muted-foreground truncate">
                   {candidate.email}
                 </p>
