@@ -87,8 +87,7 @@ export function SetPasswordForm() {
         toast.success("Zarejestrowano", {
           description: "Witaj w systemie! Możesz się teraz zalogować",
         });
-        const redirect = searchParams.get("redirect") || "/events";
-        router.push(redirect);
+        router.push("/login");
       },
       onError: (e) => {
         toast.error("Błąd rejestracji", {
