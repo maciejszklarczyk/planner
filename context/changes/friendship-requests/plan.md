@@ -542,8 +542,8 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 3.1 Full test suite passes
-- [x] 3.2 doctrine:schema:validate still reports no errors after the full migration
+- [x] 3.1 Full test suite passes — 023026d
+- [x] 3.2 doctrine:schema:validate still reports no errors after the full migration — 023026d
 
 #### Manual
 
@@ -554,8 +554,8 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [ ] 4.1 New UserControllerTest passes (search match, self-excluded, 401 unauthenticated, blank search returns empty list)
-- [ ] 4.2 Existing admin user-list test coverage still passes unchanged
+- [x] 4.1 New UserControllerTest passes (search match, self-excluded, 401 unauthenticated, blank search returns empty list)
+- [x] 4.2 Existing admin user-list test coverage still passes unchanged
 
 #### Manual
 
