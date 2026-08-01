@@ -49,6 +49,12 @@ class AuthControllerTest extends DatabaseTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertSame('AUTHENTICATION_FAILED', $responseData['error']);
+        $this->assertArrayHasKey('message', $responseData);
+        $this->assertArrayHasKey('timestamp', $responseData);
+        $this->assertArrayHasKey('path', $responseData);
     }
 
     public function testLoginWithInvalidEmail(): void

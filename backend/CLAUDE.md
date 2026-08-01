@@ -34,6 +34,7 @@ Project guidelines. Add to it in bullet points.
 - Admin endpoints: `#[IsGranted('ROLE_ADMIN')]`
 - Separate domain for frontend and API — no `/api/` segment in endpoint URLs
 - CI has a `composer-audit` job that fails the pipeline on any advisory from `composer audit`. If an advisory has no upstream fix yet: add an entry to `composer.json` → `config.audit.ignore` with a comment/link to the tracking issue — don't disable the job in `.github/workflows/backend-ci.yml`.
+- API error envelope: two distinct 401 codes on purpose — `AUTHENTICATION_REQUIRED` (no session / not logged in, via `JsonAuthenticationEntryPoint`) vs. `AUTHENTICATION_FAILED` (wrong credentials on `/auth/login`, via `JsonAuthenticationFailureHandler`). Both use `ApiErrorEnvelopeFactory`.
 
 ## Important paths and files
 

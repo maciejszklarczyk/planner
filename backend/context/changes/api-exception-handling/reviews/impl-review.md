@@ -82,3 +82,45 @@
 - `2.3` (Bruno spot-check on /auth/login, /invitation/verify, /admin/user-invite) — `[ ]` pending, correctly left unchecked
 
 No rubber-stamping detected — both Manual items are honestly marked pending.
+
+---
+
+## Addendum: 2026-08-01 — Manual verification + json_login failure fix
+
+- **Scope**: Manual Progress items 1.4/2.3 confirmed (via curl in lieu of Bruno) + new `JsonAuthenticationFailureHandler` fix discovered during 2.3
+- **Verdict**: APPROVED (after triage fixes below)
+- **Findings**: 0 critical, 1 warning, 1 observation
+
+### Addendum Findings
+
+#### F1 — No automated regression test for JsonAuthenticationFailureHandler
+
+- **Severity**: ⚠️ WARNING
+- **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
+- **Dimension**: Success Criteria
+- **Location**: tests/Functional/Controller/AuthControllerTest.php:42-52
+- **Detail**: `testLoginWithInvalidPassword()` asserted only HTTP 401, not the new envelope shape (`error`/`message`/`timestamp`/`path`). Coverage existed only via manual curl this session.
+- **Fix**: Extend the test to assert `error === 'AUTHENTICATION_FAILED'` and presence of `message`/`timestamp`/`path`.
+- **Decision**: FIXED
+
+#### F2 — New error code AUTHENTICATION_FAILED not in plan's status→code map
+
+- **Severity**: ⚪ OBSERVATION
+- **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
+- **Dimension**: Scope Discipline
+- **Location**: src/Security/JsonAuthenticationFailureHandler.php:24
+- **Detail**: Introduces a third 401 code (`AUTHENTICATION_FAILED`) distinct from `AUTHENTICATION_REQUIRED`, distinguishing "wrong password" from "not logged in" — deliberate and reasonable, but undocumented as a convention.
+- **Fix**: Documented in `backend/CLAUDE.md`.
+- **Decision**: FIXED
+
+### Addendum Success Criteria Verification
+
+**Automated:**
+- `docker compose run --rm php env $(cat .env.test | grep -v '^#' | xargs) bin/phpunit --filter=AuthControllerTest` → **PASS** (10 tests, 35 assertions)
+- `docker compose run --rm php env $(cat .env.test | grep -v '^#' | xargs) bin/phpunit` (full suite) → **PASS** (156 tests, 320 assertions)
+- `vendor/bin/phpstan analyse src/Security/JsonAuthenticationFailureHandler.php` → **PASS** (no errors)
+- `vendor/bin/php-cs-fixer fix --dry-run --diff src/Security/JsonAuthenticationFailureHandler.php` → **PASS** (0 files need fixing)
+
+**Manual** (Progress section):
+- `1.4` (Bruno spot-check on GroupMembershipController) — confirmed via curl: 404/403/422 all return correct envelope
+- `2.3` (Bruno spot-check on /auth/login, /invitation/verify, /admin/user-invite) — confirmed via curl: all three return consistent envelope; surfaced and fixed the `/auth/login` gap (see F1/F2 above)
