@@ -2,7 +2,7 @@
 
 > Full plan: `context/changes/friendship-requests/plan.md`
 > Research: `context/changes/friendship-requests/research.md`
-> Depends on: `context/changes/api-exception-handling/` (must land first)
+> Depends on: `backend/context/archive/2026-07-22-api-exception-handling/` (must land first)
 
 ## What & Why
 
@@ -10,7 +10,7 @@ Roadmap slice S-01: users can send a friend request by email, accept/decline it,
 
 ## Starting Point
 
-No Friendship domain exists today — no entity, controller, or tests. The Group↔User relation (`UserHasGroup`) and the invitation-token flow (`UserInvitationToken`) are the closest existing analogues. This plan assumes `context/changes/api-exception-handling/` has already landed, providing `ApiExceptionInterface` and the project-wide `kernel.exception` listener that every exception here plugs into.
+No Friendship domain exists today — no entity, controller, or tests. The Group↔User relation (`UserHasGroup`) and the invitation-token flow (`UserInvitationToken`) are the closest existing analogues. This plan assumes `backend/context/archive/2026-07-22-api-exception-handling/` has already landed, providing `ApiExceptionInterface` and the project-wide `kernel.exception` listener that every exception here plugs into.
 
 ## Desired End State
 
@@ -53,7 +53,7 @@ Friendship mirrors the existing `UserHasGroup`/`GroupMembershipService`/`GroupVo
 | 2. Friendship Service Layer | Business rules (self/duplicate/crossed/cooldown), Clock-injected | Check-ordering bug (e.g. cooldown checked before active-row check) would misfire |
 | 3. Friendship HTTP Layer & Tests | Controller, voter, DTOs, full functional coverage | `MockClock` container override must be wired correctly for the cooldown-expiry test |
 
-**Prerequisites:** `context/changes/api-exception-handling/` must be implemented and its tests green first — this plan's Phase 2 exceptions implement `ApiExceptionInterface` from that change.
+**Prerequisites:** `backend/context/archive/2026-07-22-api-exception-handling/` must be implemented and its tests green first — this plan's Phase 2 exceptions implement `ApiExceptionInterface` from that change.
 **Estimated effort:** ~3 sessions across 3 phases, fits within the PRD's 3-week after-hours budget (alongside `api-exception-handling`'s own ~2 sessions).
 
 ## Open Risks & Assumptions

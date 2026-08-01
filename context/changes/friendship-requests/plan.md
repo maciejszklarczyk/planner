@@ -4,7 +4,7 @@
 
 We're building the Friendship domain (roadmap slice S-01, PRD refs US-02/FR-005/FR-006/FR-007): a user can send a friend request by email, the recipient can accept or decline it, both parties then see each other on a friends list, and a decline starts a 3-day (env-configurable) cooldown before the same sender can re-request the same recipient. This is the prerequisite for S-02 (event ownership + friend-gated invites).
 
-**Depends on**: `context/changes/api-exception-handling/` (roadmap Foundation `F-01`) must land first. That change introduces `ApiExceptionInterface` and the project-wide `kernel.exception` listener that every Friendship domain exception (Phase 2 below) is built on. This plan was originally scoped together with that infrastructure work, then split once the exception-handling migration turned out to be a genuine cross-cutting concern unrelated to Friendship — see `context/foundation/roadmap.md`'s Foundations section for the rationale.
+**Depends on**: `backend/context/archive/2026-07-22-api-exception-handling/` (roadmap Foundation `F-01`) must land first. That change introduces `ApiExceptionInterface` and the project-wide `kernel.exception` listener that every Friendship domain exception (Phase 2 below) is built on. This plan was originally scoped together with that infrastructure work, then split once the exception-handling migration turned out to be a genuine cross-cutting concern unrelated to Friendship — see `context/foundation/roadmap.md`'s Foundations section for the rationale.
 
 ## Current State Analysis
 
@@ -40,7 +40,7 @@ Every Friendship error response uses the project-wide envelope established by `a
 - **Rate-limiting how many friend requests a user can send** — PRD Open Question #2, resolved as "no limit in MVP."
 - **Group self-service** — PRD Non-Goal, unrelated to this slice.
 - **Event ownership/invites (S-02)** — the next roadmap slice, blocked on this one; not started here.
-- **Building or modifying the project-wide exception-handling infrastructure** — that's `context/changes/api-exception-handling/`, a prerequisite this plan depends on but does not itself implement.
+- **Building or modifying the project-wide exception-handling infrastructure** — that's `backend/context/archive/2026-07-22-api-exception-handling/`, a prerequisite this plan depends on but does not itself implement.
 
 ## Implementation Approach
 
@@ -131,7 +131,7 @@ The partial unique index allows unlimited *declined* history rows for a pair whi
 
 The business rules: self-request rejection, duplicate/already-friends rejection, crossed-request auto-accept, and the cooldown check — all the decisions made during planning, now implemented behind a `ClockInterface`-driven service so the cooldown is testable without waiting 3 real days.
 
-**Prerequisite**: `ApiExceptionInterface` (from `context/changes/api-exception-handling/`) must already exist in `src/Exception/` before this phase's exception classes can implement it.
+**Prerequisite**: `ApiExceptionInterface` (from `backend/context/archive/2026-07-22-api-exception-handling/`) must already exist in `src/Exception/` before this phase's exception classes can implement it.
 
 ### Changes Required:
 
@@ -273,7 +273,7 @@ Covers: send success, self-request rejection (422), duplicate same-direction (40
 
 ### Manual Testing Steps:
 
-1. Before starting: confirm `context/changes/api-exception-handling/` has landed (its own plan's success criteria are green) — this plan assumes `ApiExceptionInterface` already exists.
+1. Before starting: confirm `backend/context/archive/2026-07-22-api-exception-handling/` has landed (its own plan's success criteria are green) — this plan assumes `ApiExceptionInterface` already exists.
 2. After Phase 3: run the full send → accept → friends-list flow via Bruno for two fresh users, then the send → decline → cooldown-blocked-resend → (with real time or a temporary short cooldown) resend-succeeds flow
 
 ## Performance Considerations
@@ -288,7 +288,7 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 - Related research: `context/changes/friendship-requests/research.md`
 - Similar implementation: `src/Service/GroupMembershipService.php`, `src/Security/GroupVoter.php`, `src/Repository/UserHasGroupRepository.php:24-41`
-- Depends on: `context/changes/api-exception-handling/plan.md` (must land first)
+- Depends on: `backend/context/archive/2026-07-22-api-exception-handling/plan.md` (must land first)
 - Follow-up backlog item (per user decision, out of scope for this plan but tracked for this MVP): unfriending / removing an accepted friendship — see `context/foundation/roadmap.md` → `## Parked`.
 
 ## Progress

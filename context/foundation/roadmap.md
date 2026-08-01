@@ -50,8 +50,11 @@ cały model relacji działa.
 Co już istnieje w kodzie na dzień `2026-07-22` (auto-zbadane + potwierdzone
 przez usera). Poniższe slice'y NIE odtwarzają tych warstw od zera.
 
-- **Frontend:** nie dotyczy — osobne repo (Next.js), konsumuje API, poza
-  zakresem tej zmiany.
+- **Frontend:** present — Next.js 16 App Router w tym samym monorepo
+  (`frontend/`), konsumuje API. Wcześniej traktowany jako osobne repo poza
+  zakresem tej rundy; od promocji `friendship-requests` do zmian
+  full-stack (`context/changes/friendship-requests/`) frontendowe fazy
+  mogą wchodzić w skład slice'ów w tym roadmapie.
 - **Backend / API:** present — Symfony 7.4 + FrankenPHP, `EventController`,
   `Admin\GroupMembershipController`, pełny CRUD dla `Event` (`src/Entity/Event.php` —
   pola `name`, `startDate`, `endDate`, `location`, brak `owner`).
@@ -84,10 +87,10 @@ przez usera). Poniższe slice'y NIE odtwarzają tych warstw od zera.
   domain exceptions — regression risk on already-shipped Event/Group/Auth/
   Invitation/Avatar endpoints. Mitigated by keeping existing HTTP status
   codes unchanged and existing test assertions passing (see
-  `context/changes/api-exception-handling/plan.md`).
+  `backend/context/archive/2026-07-22-api-exception-handling/plan.md`).
 - **Status:** done — split out of `friendship-requests` during planning
   once its scope grew beyond that slice; see
-  `context/changes/api-exception-handling/`.
+  `backend/context/archive/2026-07-22-api-exception-handling/`.
 
 Was: "Brak Foundations w tej rundzie" at initial roadmap generation. Revised
 during `/10x-plan friendship-requests`: the exception-handling work turned
@@ -138,7 +141,7 @@ promoted to a Foundation and split into its own change.
 
 | Roadmap ID | Change ID              | Suggested issue title                                    | Ready for `/10x-plan` | Notes                                                   |
 | ---------- | ----------------------- | ---------------------------------------------------------- | ---------------------- | -------------------------------------------------------- |
-| F-01       | api-exception-handling   | Global API exception-handling infrastructure                | done                    | Already planned — `context/changes/api-exception-handling/plan.md`. Implement before S-01. |
+| F-01       | api-exception-handling   | Global API exception-handling infrastructure                | done                    | Already planned — `backend/context/archive/2026-07-22-api-exception-handling/plan.md`. Implement before S-01. |
 | S-01       | friendship-requests      | Friendship: send/accept/decline requests + friend list      | done                    | Already planned — `context/changes/friendship-requests/plan.md`. Depends on F-01. |
 | S-02       | event-owner-and-invites  | Event ownership + friend-gated invitations                   | no                      | Blocked on backfill-owner decision (Open Q1) and on S-01  |
 | (unfriend) | *(not yet named)*        | Friendship: remove/end an accepted friendship                | no                      | Parked during S-01 planning — needs a `/10x-new` + `/10x-plan` pass of its own before this MVP round closes |
@@ -174,4 +177,4 @@ Resolved: 3 dni, konfigurowalne przez env, nie hardcoded. Odblokowuje S-01.
 
 ## Done
 
-- **F-01: (enabler, not user-facing) Consistent error envelope across the whole API** — Archived 2026-08-01 → `context/archive/2026-07-22-api-exception-handling/`. Lesson: —.
+- **F-01: (enabler, not user-facing) Consistent error envelope across the whole API** — Archived 2026-08-01 → `backend/context/archive/2026-07-22-api-exception-handling/`. Lesson: —.
