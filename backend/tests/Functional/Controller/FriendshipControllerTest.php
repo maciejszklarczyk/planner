@@ -7,6 +7,8 @@ namespace App\Tests\Functional\Controller;
 use App\Controller\FriendshipController;
 use App\Tests\DatabaseTestCase;
 use PHPUnit\Framework\Attributes\UsesClass;
+use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -129,8 +131,9 @@ final class FriendshipControllerTest extends DatabaseTestCase
         self::assertSame('accepted', $data['status']);
     }
 
-    public function testAcceptFriendRequestAsNonAddresseeIsForbidden(): void
+    public function testAcceptFriendRequestAsRequesterIsForbidden(): void
     {
+        // The requester is a participant, just not the one allowed to accept — 403, not 404.
         self::ensureKernelShutdown();
         $client = self::createClient();
         $client->jsonRequest('POST', '/friend-requests', ['email' => 'user2@example.com'], $this->devUser('admin@example.com'));
@@ -138,9 +141,25 @@ final class FriendshipControllerTest extends DatabaseTestCase
 
         self::ensureKernelShutdown();
         $client = self::createClient();
-        $client->request('POST', "/friend-requests/{$request['id']}/accept", [], [], $this->devUser('user4@example.com'));
+        $client->request('POST', "/friend-requests/{$request['id']}/accept", [], [], $this->devUser('admin@example.com'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAcceptFriendRequestAsNonParticipantReturns404(): void
+    {
+        // user_1 is neither side of the user_3 -> user_5 request — treated as not-found, not forbidden,
+        // so a non-participant can't distinguish "exists" from "doesn't exist" via 403 vs 404.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user5@example.com'], $this->devUser('user3@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/accept", [], [], $this->devUser('user1@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
     public function testDeclineFriendRequestAsAddresseeSucceeds(): void
@@ -161,12 +180,46 @@ final class FriendshipControllerTest extends DatabaseTestCase
 
     public function testAcceptOnNonPendingRequestReturns409(): void
     {
-        // Reuses the already-accepted pair from testAcceptFriendRequestAsAddresseeSucceeds (user_1 <-> user_3).
+        // Fresh pair: user_2 -> user_5, accepted once, then a second accept attempt must fail.
         self::ensureKernelShutdown();
         $client = self::createClient();
-        $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('user3@example.com'));
-        $data = json_decode($client->getResponse()->getContent(), true);
-        self::assertCount(0, $data['incoming'], 'Request should already be accepted, not pending.');
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user5@example.com'], $this->devUser('user2@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/accept", [], [], $this->devUser('user5@example.com'));
+        self::assertResponseIsSuccessful();
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/accept", [], [], $this->devUser('user5@example.com'));
+
+        self::assertResponseStatusCodeSame(409);
+        $body = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('FRIEND_REQUEST_NOT_PENDING', $body['error']);
+    }
+
+    public function testDeclineOnNonPendingRequestReturns409(): void
+    {
+        // Fresh pair: user_4 -> user_1, declined once, then a second decline attempt must fail.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user1@example.com'], $this->devUser('user4@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/decline", [], [], $this->devUser('user1@example.com'));
+        self::assertResponseIsSuccessful();
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/decline", [], [], $this->devUser('user1@example.com'));
+
+        self::assertResponseStatusCodeSame(409);
+        $body = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('FRIEND_REQUEST_NOT_PENDING', $body['error']);
     }
 
     public function testCancelFriendRequestAsRequesterSucceeds(): void
@@ -185,8 +238,9 @@ final class FriendshipControllerTest extends DatabaseTestCase
         self::assertSame('cancelled', $data['status']);
     }
 
-    public function testCancelFriendRequestAsNonRequesterIsForbidden(): void
+    public function testCancelFriendRequestAsAddresseeIsForbidden(): void
     {
+        // The addressee is a participant, just not the one allowed to cancel — 403, not 404.
         self::ensureKernelShutdown();
         $client = self::createClient();
         $client->jsonRequest('POST', '/friend-requests', ['email' => 'user5@example.com'], $this->devUser('user4@example.com'));
@@ -194,9 +248,86 @@ final class FriendshipControllerTest extends DatabaseTestCase
 
         self::ensureKernelShutdown();
         $client = self::createClient();
-        $client->request('POST', "/friend-requests/{$request['id']}/cancel", [], [], $this->devUser('user2@example.com'));
+        $client->request('POST', "/friend-requests/{$request['id']}/cancel", [], [], $this->devUser('user5@example.com'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testCancelOnNonPendingRequestReturns409(): void
+    {
+        // Fresh pair: user_3 -> user_2, cancelled once, then a second cancel attempt must fail.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user2@example.com'], $this->devUser('user3@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/cancel", [], [], $this->devUser('user3@example.com'));
+        self::assertResponseIsSuccessful();
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/cancel", [], [], $this->devUser('user3@example.com'));
+
+        self::assertResponseStatusCodeSame(409);
+        $body = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('FRIEND_REQUEST_NOT_PENDING', $body['error']);
+    }
+
+    public function testCancelFriendRequestAsNonParticipantReturns404(): void
+    {
+        // user_4 is neither side of this fresh user_3 -> user_2 request (the prior attempt at this pair
+        // from testCancelOnNonPendingRequestReturns409 is now cancelled/history, so it's free again) —
+        // treated as not-found, not forbidden.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user2@example.com'], $this->devUser('user3@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/cancel", [], [], $this->devUser('user4@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testCancelledRequestDoesNotTriggerCooldownOnResend(): void
+    {
+        // Reuses the already-cancelled pair from testCancelFriendRequestAsRequesterSucceeds (admin -> user_5),
+        // re-sending immediately after cancellation. Cancelling must not be mistaken for a decline by the
+        // cooldown check.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user5@example.com'], $this->devUser('admin@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED, 'A cancelled request must not block an immediate resend via the decline cooldown.');
+        $data = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('pending', $data['status']);
+    }
+
+    public function testCooldownExpiresAfterConfiguredDaysViaMockClock(): void
+    {
+        // Fresh pair: user_3 -> admin, sent then declined, then the clock is advanced past the
+        // (test) 3-day cooldown window before re-sending.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'admin@example.com'], $this->devUser('user3@example.com'));
+        $request = json_decode($client->getResponse()->getContent(), true);
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$request['id']}/decline", [], [], $this->devUser('admin@example.com'));
+        self::assertResponseIsSuccessful();
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        self::getContainer()->set(ClockInterface::class, new MockClock('+4 days'));
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'admin@example.com'], $this->devUser('user3@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED, 'Cooldown must have expired 4 days after a 3-day-configured decline.');
+        $data = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('pending', $data['status']);
     }
 
     public function testListPendingRequestsShowsIncomingAndOutgoing(): void

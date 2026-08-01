@@ -1,7 +1,7 @@
 ---
 change_id: friendship-requests
 title: User sends, accepts, declines, and cancels friend requests (full-stack)
-status: implemented
+status: impl_reviewed
 created: 2026-07-22
 updated: 2026-08-01
 archived_at: null
