@@ -39,6 +39,8 @@ jobs:
           context: frontend
           file: frontend/Dockerfile
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api-planner.msolve.it
           tags: ghcr.io/maciejszklarczyk/planner-frontend:${{ github.event.release.tag_name || inputs.tag }}
 
   deploy:
