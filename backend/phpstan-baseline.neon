@@ -73,6 +73,12 @@ parameters:
 			path: src/Security/DevHeaderAuthenticator.php
 
 		-
+			message: '#^Class App\\Security\\FriendshipVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Security/FriendshipVoter.php
+
+		-
 			message: '#^Class App\\Security\\GroupVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'
 			identifier: missingType.generics
 			count: 1

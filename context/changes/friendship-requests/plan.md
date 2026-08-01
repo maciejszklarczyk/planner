@@ -535,15 +535,15 @@ No backfill needed — Friendship is a wholly new table with no pre-existing dat
 
 #### Automated
 
-- [x] 2.1 composer show symfony/clock confirms the package is resolvable
-- [x] 2.2 Service tests (self-request, duplicate, crossed-request auto-accept, already-friends, cooldown-active, cooldown-expired, cancel-does-not-trigger-cooldown, cancel-on-non-pending-rejected, successful send/accept/decline/cancel) pass
+- [x] 2.1 composer show symfony/clock confirms the package is resolvable — 3759a3d
+- [x] 2.2 Service tests (self-request, duplicate, crossed-request auto-accept, already-friends, cooldown-active, cooldown-expired, cancel-does-not-trigger-cooldown, cancel-on-non-pending-rejected, successful send/accept/decline/cancel) pass — 3759a3d
 
 ### Phase 3: Friendship HTTP Layer & Tests
 
 #### Automated
 
-- [ ] 3.1 Full test suite passes
-- [ ] 3.2 doctrine:schema:validate still reports no errors after the full migration
+- [x] 3.1 Full test suite passes
+- [x] 3.2 doctrine:schema:validate still reports no errors after the full migration
 
 #### Manual
 
