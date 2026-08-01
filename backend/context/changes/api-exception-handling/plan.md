@@ -237,7 +237,7 @@ Purely additive/refactoring — no database schema changes, no data migration. T
 
 #### Manual
 
-- [ ] 1.4 Hitting a known 404/403/422 case against Admin\GroupMembershipController via Bruno returns the new envelope shape with correct error code
+- [x] 1.4 Hitting a known 404/403/422 case against Admin\GroupMembershipController via Bruno returns the new envelope shape with correct error code
 
 ### Phase 2: Migrate Remaining Controllers
 
