@@ -248,4 +248,4 @@ Purely additive/refactoring — no database schema changes, no data migration. T
 
 #### Manual
 
-- [x] 2.3 Bruno collection requests against /auth/login (bad credentials), /invitation/verify (bad token), and /admin/user-invite (duplicate email) all return the new consistent envelope
+- [x] 2.3 Bruno collection requests against /auth/login (bad credentials), /invitation/verify (bad token), and /admin/user-invite (duplicate email) all return the new consistent envelope — 6362258
