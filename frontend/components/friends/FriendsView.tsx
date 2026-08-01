@@ -139,19 +139,15 @@ function FriendCard({ friend }: { friend: FriendRequestOtherUser }) {
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               {/* Not implemented — no messaging feature exists in this app. */}
-              <DropdownMenuItem
-                className="opacity-50 cursor-not-allowed"
-                title="Wkrótce dostępne"
-                onSelect={(e) => e.preventDefault()}
-              >
+              <DropdownMenuItem disabled title="Wkrótce dostępne">
                 <Mail />
                 Wyślij wiadomość
               </DropdownMenuItem>
               {/* Not implemented — unfriending is explicitly parked, see roadmap. */}
               <DropdownMenuItem
-                className="opacity-50 cursor-not-allowed text-destructive focus:text-destructive"
+                disabled
+                variant="destructive"
                 title="Wkrótce dostępne"
-                onSelect={(e) => e.preventDefault()}
               >
                 <UserX />
                 Usuń ze znajomych

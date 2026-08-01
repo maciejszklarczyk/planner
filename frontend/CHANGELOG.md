@@ -2,6 +2,7 @@
 
 ## 2026-08-01
 
+- [2b721ee] fix(friends): use native disabled prop on parked dropdown menu items
 - [e23a36f] fix(sidebar): guard NavUser initials against null user.name
 
 ## 2026-07-23
