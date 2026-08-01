@@ -28,6 +28,7 @@ class AppFixtures extends Fixture
             __DIR__.'/../../fixtures/groups.yaml',
             __DIR__.'/../../fixtures/user_has_groups.yaml',
             __DIR__.'/../../fixtures/events.yaml',
+            __DIR__.'/../../fixtures/friend_requests.yaml',
         ]);
     }
 

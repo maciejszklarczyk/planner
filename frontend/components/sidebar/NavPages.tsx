@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
 
 type NavItem = {
   title: string;
@@ -27,6 +28,8 @@ type NavItem = {
 
 export function NavPages({ ...props }) {
   const pathname = usePathname();
+  const { data: friendRequests } = useFriendRequests();
+  const pendingFriendRequestsCount = friendRequests?.incoming.length;
 
   const navPages: NavItem[] = [
     {
@@ -43,7 +46,7 @@ export function NavPages({ ...props }) {
       title: "Friends",
       url: "/friends",
       icon: IconFriends,
-      badge: 0,
+      badge: pendingFriendRequestsCount,
     },
     {
       title: "Settings",

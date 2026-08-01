@@ -42,6 +42,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @param int         $limit          Items per page
      * @param string|null $search         Search in email
      * @param int|null    $excludeGroupId Exclude users already in this group
+     * @param int|null    $excludeUserId  Exclude this specific user (e.g. the current caller)
      *
      * @return User[]
      */
@@ -50,6 +51,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         int $limit = 50,
         ?string $search = null,
         ?int $excludeGroupId = null,
+        ?int $excludeUserId = null,
     ): array {
         $qb = $this->createQueryBuilder('u')
             ->orderBy('u.id', 'ASC');
@@ -70,6 +72,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('groupId', $excludeGroupId);
         }
 
+        // Exclude a specific user (e.g. the caller, for a "find someone else" search)
+        if (null !== $excludeUserId) {
+            $qb->andWhere('u.id != :excludeUserId')
+                ->setParameter('excludeUserId', $excludeUserId);
+        }
+
         // Apply pagination
         $offset = ($page - 1) * $limit;
         $qb->setFirstResult($offset)
@@ -83,10 +91,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      *
      * @param string|null $search         Search in email
      * @param int|null    $excludeGroupId Exclude users already in this group
+     * @param int|null    $excludeUserId  Exclude this specific user (e.g. the current caller)
      */
     public function countWithFilters(
         ?string $search = null,
         ?int $excludeGroupId = null,
+        ?int $excludeUserId = null,
     ): int {
         $qb = $this->createQueryBuilder('u')
             ->select('COUNT(u.id)');
@@ -105,6 +115,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 WHERE uhg.group = :groupId
             )')
             ->setParameter('groupId', $excludeGroupId);
+        }
+
+        // Exclude a specific user (e.g. the caller, for a "find someone else" search)
+        if (null !== $excludeUserId) {
+            $qb->andWhere('u.id != :excludeUserId')
+                ->setParameter('excludeUserId', $excludeUserId);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
