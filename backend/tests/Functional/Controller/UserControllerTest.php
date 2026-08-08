@@ -87,4 +87,28 @@ final class UserControllerTest extends DatabaseTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
+
+    public function testSearchWithPercentWildcardDoesNotReturnEveryUser(): void
+    {
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+
+        $client->jsonRequest('GET', '/users?'.http_build_query(['search' => '%']), [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame([], $data['data'], 'A literal "%" search must not match every user.');
+    }
+
+    public function testSearchWithSqlMetacharactersReturnsSafeResult(): void
+    {
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+
+        $client->jsonRequest('GET', '/users?'.http_build_query(['search' => "' OR '1'='1"]), [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame([], $data['data']);
+    }
 }
