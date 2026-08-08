@@ -201,10 +201,10 @@ No schema or data migration. Pure application-code + test change; no deployment 
 
 #### Automated
 
-- [x] 2.1 Repository tests pass (UserRepositoryTest filter)
-- [x] 2.2 Controller tests pass (UserControllerTest filter)
-- [x] 2.3 Admin controller tests still pass (no regression from call-site change)
-- [x] 2.4 Full backend suite passes
+- [x] 2.1 Repository tests pass (UserRepositoryTest filter) — 9c6eb14
+- [x] 2.2 Controller tests pass (UserControllerTest filter) — 9c6eb14
+- [x] 2.3 Admin controller tests still pass (no regression from call-site change) — 9c6eb14
+- [x] 2.4 Full backend suite passes — 9c6eb14
 
 #### Manual
 
