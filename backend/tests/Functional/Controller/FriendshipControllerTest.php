@@ -222,6 +222,48 @@ final class FriendshipControllerTest extends DatabaseTestCase
         self::assertSame('FRIEND_REQUEST_NOT_PENDING', $body['error']);
     }
 
+    public function testDeclineFriendRequestAsRequesterIsForbidden(): void
+    {
+        // The requester is a participant, just not the one allowed to decline — 403, not 404.
+        // Reuses the still-pending user_2 -> user_4 row (testSendFriendRequestCreatesPendingRow) by fetching
+        // its id via listPending, rather than sending a fresh request: every undirected user pair in this
+        // fixture set already has an active (pending/accepted) row by this point in the class (state is
+        // cumulative across all methods — see the class docblock), so creating a brand-new pair here would
+        // either collide with an existing active relationship or leave a stray pending row that pollutes a
+        // later count-based assertion (e.g. testListPendingRequestsShowsIncomingAndOutgoing). A forbidden
+        // decline attempt never changes the row's status, so reusing it here is side-effect-free.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('user2@example.com'));
+        $pending = json_decode($client->getResponse()->getContent(), true);
+        $requestId = $pending['outgoing'][0]['id'];
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$requestId}/decline", [], [], $this->devUser('user2@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testDeclineFriendRequestAsNonParticipantReturns404(): void
+    {
+        // user_3 is neither side of this admin -> user_2 request — treated as not-found, not forbidden.
+        // Reuses the still-pending admin -> user_2 row (testAcceptFriendRequestAsRequesterIsForbidden) by
+        // fetching its id via listPending, for the same side-effect-free reuse reason as the test above —
+        // a failed (404) decline attempt never changes the row's status.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('admin@example.com'));
+        $pending = json_decode($client->getResponse()->getContent(), true);
+        $requestId = $pending['outgoing'][0]['id'];
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->request('POST', "/friend-requests/{$requestId}/decline", [], [], $this->devUser('user3@example.com'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
     public function testCancelFriendRequestAsRequesterSucceeds(): void
     {
         self::ensureKernelShutdown();
@@ -359,5 +401,42 @@ final class FriendshipControllerTest extends DatabaseTestCase
         $data = json_decode($client->getResponse()->getContent(), true);
         $emails = array_column($data['data'], 'email');
         self::assertContains('user4@example.com', $emails);
+    }
+
+    public function testListPendingRequestsNeverIncludesAnotherUsersUnrelatedRequest(): void
+    {
+        // user_4 has no active relationship with admin or user_1 (their only history with either — the
+        // admin -> user_4 decline and the user_4 -> user_1 decline — is inactive), so their pending list is a
+        // clean vantage point to prove the admin <-> user_1 accepted friendship and the fixture user_1 -> user_5
+        // pending request never leak in.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('user4@example.com'));
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $emails = array_merge(
+            array_column($data['incoming'], 'otherUser'),
+            array_column($data['outgoing'], 'otherUser'),
+        );
+        $emails = array_column($emails, 'email');
+        self::assertNotContains('admin@example.com', $emails);
+        self::assertNotContains('user1@example.com', $emails);
+    }
+
+    public function testListFriendsNeverIncludesAnotherUsersUnrelatedFriendship(): void
+    {
+        // Same vantage point as above: user_4 is friends with user_3 (testSendFriendRequestAutoAcceptsCrossedRequest),
+        // but has no relationship with admin or user_1, so their friends list must not surface the
+        // admin <-> user_1 accepted friendship.
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->jsonRequest('GET', '/friends', [], $this->devUser('user4@example.com'));
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $emails = array_column($data['data'], 'email');
+        self::assertNotContains('admin@example.com', $emails);
+        self::assertNotContains('user1@example.com', $emails);
     }
 }
