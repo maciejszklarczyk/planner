@@ -236,7 +236,12 @@ final class FriendshipControllerTest extends DatabaseTestCase
         $client = self::createClient();
         $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('user2@example.com'));
         $pending = json_decode($client->getResponse()->getContent(), true);
-        $requestId = $pending['outgoing'][0]['id'];
+        $outgoingToUser4 = array_values(array_filter(
+            $pending['outgoing'],
+            fn (array $row): bool => 'user4@example.com' === $row['otherUser']['email'],
+        ));
+        self::assertCount(1, $outgoingToUser4, 'Expected exactly one pending outgoing request from user_2 to user_4.');
+        $requestId = $outgoingToUser4[0]['id'];
 
         self::ensureKernelShutdown();
         $client = self::createClient();
@@ -255,7 +260,12 @@ final class FriendshipControllerTest extends DatabaseTestCase
         $client = self::createClient();
         $client->jsonRequest('GET', '/friend-requests', [], $this->devUser('admin@example.com'));
         $pending = json_decode($client->getResponse()->getContent(), true);
-        $requestId = $pending['outgoing'][0]['id'];
+        $outgoingToUser2 = array_values(array_filter(
+            $pending['outgoing'],
+            fn (array $row): bool => 'user2@example.com' === $row['otherUser']['email'],
+        ));
+        self::assertCount(1, $outgoingToUser2, 'Expected exactly one pending outgoing request from admin to user_2.');
+        $requestId = $outgoingToUser2[0]['id'];
 
         self::ensureKernelShutdown();
         $client = self::createClient();

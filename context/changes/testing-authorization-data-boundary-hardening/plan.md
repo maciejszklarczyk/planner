@@ -59,6 +59,8 @@ Mirror `accept`/`cancel`'s existing wrong-participant-403 / non-participant-404 
 
 **Contract**: Reuse an existing fixture pair not involving the querying user (e.g. assert from `user_2`'s perspective that the `admin`↔`user_1` accepted friendship and `user_1`→`user_5` pending request are absent from `user_2`'s `incoming`/`outgoing`/`friends` arrays). Assert both presence of the caller's own data (already covered) is unaffected and absence of the unrelated pair's `otherUser.email` in the response.
 
+**Implementation Note (post-hoc, added during impl review)**: `DatabaseTestCase` does not roll back between test methods within a class — fixtures load once and state accumulates across the whole class in declaration order (see the class docblock). By the time these new tests run, every undirected user pair among the six fixture users already has an active (pending/accepted) relationship from an earlier test or fixture, so a literal fresh-`POST` for the two new decline tests would have collided with an existing relationship or left a stray pending row that breaks a later count-based assertion (this was hit once during implementation and fixed). The decline tests were implemented instead by fetching an already-pending row via `GET /friend-requests` and attempting the wrong-actor decline against it — side-effect-free since a failed decline never mutates status. The isolation tests query as `user_4` rather than `user_2`, since `user_4` is the only fixture user with zero active relationship to either `admin` or `user_1` at that point in the class, making it an unambiguous vantage point for the same absence assertion the plan describes.
+
 ### Success Criteria:
 
 #### Automated Verification:
