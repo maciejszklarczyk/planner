@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-10
+
+- [a15efca] build: bump guzzlehttp/guzzle to 7.15.3, fixing composer-audit CI failure
+
 ## 2026-08-09
 
 - [9c93f3b] test(friendship-controller): filter pending requests by email instead of positional index, document Phase 1 fixture-reuse adaptation
