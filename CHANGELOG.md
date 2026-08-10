@@ -3,6 +3,7 @@
 ## 2026-08-10
 
 - [a15efca] build: bump guzzlehttp/guzzle to 7.15.3, fixing composer-audit CI failure
+- [a093ec8] style(user-repository): fix phpdoc_align violation from the allowEmptySearchResults param
 
 ## 2026-08-09
 

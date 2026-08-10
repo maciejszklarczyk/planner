@@ -41,8 +41,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @param int         $page                    Page number (1-indexed)
      * @param int         $limit                   Items per page
      * @param string|null $search                  Search in email
-     * @param int|null    $excludeGroupId           Exclude users already in this group
-     * @param int|null    $excludeUserId            Exclude this specific user (e.g. the current caller)
+     * @param int|null    $excludeGroupId          Exclude users already in this group
+     * @param int|null    $excludeUserId           Exclude this specific user (e.g. the current caller)
      * @param bool        $allowEmptySearchResults Whether an explicit `search: ''` returns everyone (true) or nothing (false, default)
      *
      * @return User[]
@@ -98,8 +98,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * Count users with filters.
      *
      * @param string|null $search                  Search in email
-     * @param int|null    $excludeGroupId           Exclude users already in this group
-     * @param int|null    $excludeUserId            Exclude this specific user (e.g. the current caller)
+     * @param int|null    $excludeGroupId          Exclude users already in this group
+     * @param int|null    $excludeUserId           Exclude this specific user (e.g. the current caller)
      * @param bool        $allowEmptySearchResults Whether an explicit `search: ''` counts everyone (true) or nothing (false, default)
      */
     public function countWithFilters(
