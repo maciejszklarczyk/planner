@@ -38,10 +38,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Find users with pagination and filters.
      *
-     * @param int         $page           Page number (1-indexed)
-     * @param int         $limit          Items per page
-     * @param string|null $search         Search in email
-     * @param int|null    $excludeGroupId Exclude users already in this group
+     * @param int         $page                    Page number (1-indexed)
+     * @param int         $limit                   Items per page
+     * @param string|null $search                  Search in email
+     * @param int|null    $excludeGroupId          Exclude users already in this group
+     * @param int|null    $excludeUserId           Exclude this specific user (e.g. the current caller)
+     * @param bool        $allowEmptySearchResults Whether an explicit `search: ''` returns everyone (true) or nothing (false, default)
      *
      * @return User[]
      */
@@ -50,14 +52,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         int $limit = 50,
         ?string $search = null,
         ?int $excludeGroupId = null,
+        ?int $excludeUserId = null,
+        bool $allowEmptySearchResults = false,
     ): array {
+        if ('' === $search && !$allowEmptySearchResults) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('u')
             ->orderBy('u.id', 'ASC');
 
         // Apply search filter
         if (null !== $search && '' !== $search) {
-            $qb->andWhere('u.email LIKE :search')
-                ->setParameter('search', '%'.$search.'%');
+            $platform = $this->getEntityManager()->getConnection()->getDatabasePlatform();
+            $escapedSearch = $platform->escapeStringForLike($search, '\\');
+            $qb->andWhere("u.email LIKE :search ESCAPE '\\'")
+                ->setParameter('search', '%'.$escapedSearch.'%');
         }
 
         // Exclude users already in group
@@ -68,6 +78,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 WHERE uhg.group = :groupId
             )')
             ->setParameter('groupId', $excludeGroupId);
+        }
+
+        // Exclude a specific user (e.g. the caller, for a "find someone else" search)
+        if (null !== $excludeUserId) {
+            $qb->andWhere('u.id != :excludeUserId')
+                ->setParameter('excludeUserId', $excludeUserId);
         }
 
         // Apply pagination
@@ -81,20 +97,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Count users with filters.
      *
-     * @param string|null $search         Search in email
-     * @param int|null    $excludeGroupId Exclude users already in this group
+     * @param string|null $search                  Search in email
+     * @param int|null    $excludeGroupId          Exclude users already in this group
+     * @param int|null    $excludeUserId           Exclude this specific user (e.g. the current caller)
+     * @param bool        $allowEmptySearchResults Whether an explicit `search: ''` counts everyone (true) or nothing (false, default)
      */
     public function countWithFilters(
         ?string $search = null,
         ?int $excludeGroupId = null,
+        ?int $excludeUserId = null,
+        bool $allowEmptySearchResults = false,
     ): int {
+        if ('' === $search && !$allowEmptySearchResults) {
+            return 0;
+        }
+
         $qb = $this->createQueryBuilder('u')
             ->select('COUNT(u.id)');
 
         // Apply search filter
         if (null !== $search && '' !== $search) {
-            $qb->andWhere('u.email LIKE :search')
-                ->setParameter('search', '%'.$search.'%');
+            $platform = $this->getEntityManager()->getConnection()->getDatabasePlatform();
+            $escapedSearch = $platform->escapeStringForLike($search, '\\');
+            $qb->andWhere("u.email LIKE :search ESCAPE '\\'")
+                ->setParameter('search', '%'.$escapedSearch.'%');
         }
 
         // Exclude users already in group
@@ -105,6 +131,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 WHERE uhg.group = :groupId
             )')
             ->setParameter('groupId', $excludeGroupId);
+        }
+
+        // Exclude a specific user (e.g. the caller, for a "find someone else" search)
+        if (null !== $excludeUserId) {
+            $qb->andWhere('u.id != :excludeUserId')
+                ->setParameter('excludeUserId', $excludeUserId);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();

@@ -19,6 +19,12 @@ parameters:
 			path: src/Entity/Event.php
 
 		-
+			message: '#^Property App\\Entity\\FriendRequest\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/FriendRequest.php
+
+		-
 			message: '#^Property App\\Entity\\Group\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
@@ -65,6 +71,12 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: src/Security/DevHeaderAuthenticator.php
+
+		-
+			message: '#^Class App\\Security\\FriendshipVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Security/FriendshipVoter.php
 
 		-
 			message: '#^Class App\\Security\\GroupVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'

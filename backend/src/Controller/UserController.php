@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\Response\UserSearchResultDto;
 use App\Dto\User\EditUserDto;
 use App\Entity\User;
 use App\Exception\AuthenticationRequiredException;
 use App\Exception\InsufficientPermissionException;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,8 +23,35 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[OA\Tag(name: 'User')]
 class UserController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $userRepository,
+    ) {
+    }
+
+    /**
+     * Search users by partial email match. Open to any authenticated user (e.g. to find
+     * someone to send a friend request to) — unlike Admin\UserController::list(), this
+     * returns a trimmed shape with no roles/status, and blank search returns nothing rather
+     * than the full user list.
+     */
+    #[Route('/users', name: 'user_search', methods: ['GET'])]
+    public function search(Request $request, #[CurrentUser] User $currentUser): JsonResponse
     {
+        $search = $request->query->get('search');
+        $limit = max(1, min(50, (int) $request->query->get('limit', 20)));
+
+        if (null === $search || '' === $search) {
+            return $this->json(['data' => []]);
+        }
+
+        $users = $this->userRepository->findWithPagination(
+            limit: $limit,
+            search: $search,
+            excludeUserId: $currentUser->getId(),
+        );
+
+        return $this->json(['data' => UserSearchResultDto::fromEntities($users)]);
     }
 
     #[Route('/user', name: 'edit_user', methods: ['PUT'])]

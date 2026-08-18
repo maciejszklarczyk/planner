@@ -42,7 +42,7 @@ cały model relacji działa.
 | ID   | Change ID                  | Outcome (user can …)                                              | Prerequisites | PRD refs                    | Status  |
 | ---- | --------------------------- | ------------------------------------------------------------------ | -------------- | ---------------------------- | ------- |
 | F-01 | api-exception-handling       | (enabler, not user-facing) Consistent error envelope across the whole API | —      | —                             | done |
-| S-01 | friendship-requests          | User wysyła/akceptuje/odrzuca zaproszenie do znajomych, widzi listę | F-01           | US-02, FR-005, FR-006, FR-007 | planned |
+| S-01 | friendship-requests          | User wysyła/akceptuje/odrzuca zaproszenie do znajomych, widzi listę | F-01           | US-02, FR-005, FR-006, FR-007 | done |
 | S-02 | event-owner-and-invites      | User tworzy event, zaprasza znajomego, ten widzi się jako uczestnik | S-01           | US-01, FR-001, FR-002, FR-003, FR-004 | blocked |
 
 ## Baseline
@@ -117,7 +117,7 @@ promoted to a Foundation and split into its own change.
   sekwencjonowana jako pierwsza, bo S-02 (FR-002) wymaga wcześniej
   istniejącej akceptowanej znajomości; bez niej nie da się zweryfikować
   bramki friendship→invite w S-02.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: User tworzy event i zaprasza znajomego
 
@@ -178,3 +178,4 @@ Resolved: 3 dni, konfigurowalne przez env, nie hardcoded. Odblokowuje S-01.
 ## Done
 
 - **F-01: (enabler, not user-facing) Consistent error envelope across the whole API** — Archived 2026-08-01 → `backend/context/archive/2026-07-22-api-exception-handling/`. Lesson: —.
+- **S-01: User wysyła zaproszenie do innego usera po emailu; zaproszony akceptuje/odrzuca; po akceptacji obaj widzą się nawzajem na liście znajomych; odrzucenie startuje cooldown przed ponownym wysłaniem.** — Archived 2026-08-01 → `context/archive/2026-07-22-friendship-requests/`. Lesson: —.

@@ -54,9 +54,44 @@ final class UserRepositoryTest extends DatabaseTestCase
     public function testFindWithPaginationEmptySearchReturnsAll(): void
     {
         $all = $this->repository->findWithPagination();
-        $empty = $this->repository->findWithPagination(search: '');
+        $empty = $this->repository->findWithPagination(search: '', allowEmptySearchResults: true);
 
         self::assertCount(count($all), $empty);
+    }
+
+    public function testFindWithPaginationEmptySearchWithoutFlagReturnsNoResults(): void
+    {
+        $empty = $this->repository->findWithPagination(search: '');
+
+        self::assertCount(0, $empty);
+    }
+
+    public function testFindWithPaginationSearchTreatsPercentAsLiteralCharacter(): void
+    {
+        $users = $this->repository->findWithPagination(search: '%');
+
+        self::assertCount(0, $users);
+    }
+
+    public function testFindWithPaginationSearchTreatsUnderscoreAsLiteralCharacter(): void
+    {
+        $users = $this->repository->findWithPagination(search: '_');
+
+        self::assertCount(0, $users);
+    }
+
+    public function testFindWithPaginationSearchWithSqlMetacharactersReturnsNoMatchesWithoutError(): void
+    {
+        $users = $this->repository->findWithPagination(search: "'; DROP TABLE user; --");
+
+        self::assertCount(0, $users);
+    }
+
+    public function testFindWithPaginationVeryLongSearchReturnsNoMatchesWithoutError(): void
+    {
+        $users = $this->repository->findWithPagination(search: str_repeat('a', 300));
+
+        self::assertCount(0, $users);
     }
 
     public function testFindWithPaginationExcludesGroupMembers(): void
@@ -109,9 +144,16 @@ final class UserRepositoryTest extends DatabaseTestCase
     public function testCountWithFiltersEmptySearchMatchesAll(): void
     {
         $total = $this->repository->countWithFilters();
-        $empty = $this->repository->countWithFilters(search: '');
+        $empty = $this->repository->countWithFilters(search: '', allowEmptySearchResults: true);
 
         self::assertSame($total, $empty);
+    }
+
+    public function testCountWithFiltersEmptySearchWithoutFlagReturnsZero(): void
+    {
+        $empty = $this->repository->countWithFilters(search: '');
+
+        self::assertSame(0, $empty);
     }
 
     public function testCountWithFiltersExcludesGroupMembers(): void

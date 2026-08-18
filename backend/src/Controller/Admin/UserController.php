@@ -53,12 +53,14 @@ class UserController extends AbstractController
             page: $page,
             limit: $limit,
             search: $search,
-            excludeGroupId: $excludeGroupId
+            excludeGroupId: $excludeGroupId,
+            allowEmptySearchResults: true,
         );
 
         $total = $this->userRepository->countWithFilters(
             search: $search,
-            excludeGroupId: $excludeGroupId
+            excludeGroupId: $excludeGroupId,
+            allowEmptySearchResults: true,
         );
 
         return $this->json([
