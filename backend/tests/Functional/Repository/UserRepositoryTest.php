@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
+use App\Entity\Enum\UserStatusEnum;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -92,6 +93,29 @@ final class UserRepositoryTest extends DatabaseTestCase
         $users = $this->repository->findWithPagination(search: str_repeat('a', 300));
 
         self::assertCount(0, $users);
+    }
+
+    public function testFindWithPaginationExcludesGivenStatuses(): void
+    {
+        $users = $this->repository->findWithPagination(
+            search: '@example.com',
+            excludeStatuses: [UserStatusEnum::BLOCKED, UserStatusEnum::DELETED],
+        );
+        $emails = array_map(fn (User $u) => $u->getEmail(), $users);
+
+        self::assertNotContains('user3@example.com', $emails, 'Blocked user must be excluded.');
+        self::assertNotContains('user4@example.com', $emails, 'User with status "deleted" must be excluded.');
+        self::assertContains('user1@example.com', $emails);
+        self::assertContains('user2@example.com', $emails, 'Statuses not listed must not be excluded.');
+    }
+
+    public function testFindWithPaginationWithoutExcludeStatusesReturnsAllStatuses(): void
+    {
+        $users = $this->repository->findWithPagination(search: '@example.com');
+        $emails = array_map(fn (User $u) => $u->getEmail(), $users);
+
+        self::assertContains('user3@example.com', $emails);
+        self::assertContains('user4@example.com', $emails);
     }
 
     public function testFindWithPaginationExcludesGroupMembers(): void

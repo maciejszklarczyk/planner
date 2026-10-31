@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Dto\Response\UserSearchResultDto;
 use App\Dto\User\EditUserDto;
+use App\Entity\Enum\UserStatusEnum;
 use App\Entity\User;
 use App\Exception\AuthenticationRequiredException;
 use App\Exception\InsufficientPermissionException;
@@ -33,7 +34,7 @@ class UserController extends AbstractController
      * Search users by partial email match. Open to any authenticated user (e.g. to find
      * someone to send a friend request to) — unlike Admin\UserController::list(), this
      * returns a trimmed shape with no roles/status, and blank search returns nothing rather
-     * than the full user list.
+     * than the full user list. Inactive, blocked and deleted-status users are never returned.
      */
     #[Route('/users', name: 'user_search', methods: ['GET'])]
     public function search(Request $request, #[CurrentUser] User $currentUser): JsonResponse
@@ -49,6 +50,7 @@ class UserController extends AbstractController
             limit: $limit,
             search: $search,
             excludeUserId: $currentUser->getId(),
+            excludeStatuses: [UserStatusEnum::INACTIVE, UserStatusEnum::BLOCKED, UserStatusEnum::DELETED],
         );
 
         return $this->json(['data' => UserSearchResultDto::fromEntities($users)]);

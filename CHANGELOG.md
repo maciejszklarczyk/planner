@@ -2,6 +2,7 @@
 
 ## 2026-10-31
 
+- [6eb9266] fix(user-search): hide inactive, blocked and deleted users
 - [600c2c6] chore(testing-authorization-data-boundary-hardening): verify manual checks, mark rollout phase 1 complete
 
 ## 2026-08-10
