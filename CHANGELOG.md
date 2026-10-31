@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-31
+
+- [600c2c6] chore(testing-authorization-data-boundary-hardening): verify manual checks, mark rollout phase 1 complete
+
 ## 2026-08-10
 
 - [a15efca] build: bump guzzlehttp/guzzle to 7.15.3, fixing composer-audit CI failure
