@@ -77,6 +77,8 @@ Project guidelines. Add to it in bullet points.
   - `group_4`: user_4=owner, user_5=member
   - `group_5`: user_5=owner
 - Use data providers where possible to keep tests smaller.
+- The test DB is SQLite built by `doctrine:schema:create` from the ORM mapping (not from migrations). A DB invariant added via raw SQL in a Postgres migration (index, CHECK) is missing in tests unless mirrored in `tests/DatabaseTestCase.php` — the friend-request active-pair unique index is mirrored there.
+- Friend-request addressees in tests must be `active` or `new` (`inactive`/`blocked`/`deleted` look like unknown emails). Controller tests share state across methods — use an unused pair from `friend1`…`friend8@example.com`.
 
 ## Other notes
 

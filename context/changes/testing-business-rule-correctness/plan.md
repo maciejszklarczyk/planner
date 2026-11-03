@@ -487,9 +487,9 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [x] 4.1 Race and overlap tests pass
-- [x] 4.2 Full backend suite passes
-- [x] 4.3 Static analysis and style pass on changed files
+- [x] 4.1 Race and overlap tests pass — 2a07009
+- [x] 4.2 Full backend suite passes — 2a07009
+- [x] 4.3 Static analysis and style pass on changed files — 2a07009
 
 #### Manual
 
@@ -499,7 +499,7 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [ ] 5.1 test-plan.md §6.1 and §6.5 no longer contain "TBD"
+- [x] 5.1 test-plan.md §6.1 and §6.5 no longer contain "TBD"
 
 #### Manual
 

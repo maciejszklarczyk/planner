@@ -7,9 +7,9 @@ repository: planner
 topic: "Ground rollout Phase 2 of context/foundation/test-plan.md — Business-rule correctness (risk #4)"
 tags: [research, codebase, friendship, friend-request, cooldown, business-rules, testing]
 status: complete
-last_updated: 2026-11-01
+last_updated: 2026-11-03
 last_updated_by: Claude (Opus 5.5)
-last_updated_note: "Recorded user decisions: addressee-status rule in scope; §2 guidance for #4 backported"
+last_updated_note: "Added follow-up research for the test-DB engine (SQLite, not Postgres)"
 ---
 
 # Research: Ground rollout Phase 2 — Business-rule correctness (risk #4)
@@ -238,3 +238,23 @@ C1, C2, C4 and C8 carry the most signal; C3 is the cheapest boundary guard.
 4. **Test-plan §6 not filled after Phase 1.** §6.1 and §6.5 still say "TBD —
    see Phase 1" although Phase 1 is complete. Phase 2's final sub-phase should
    fill §6.1 for both phases.
+
+## Follow-up Research 2026-11-01
+
+**Correction — test database engine.** The Summary and Architecture Insights
+above say the service tests run on "real Postgres". They do not: tests and CI
+run on **SQLite**. `backend/tests/DatabaseTestCase.php` builds the schema with
+`doctrine:schema:create` from the ORM mapping, and the CI workflow has no
+Postgres service. Consequences found during planning:
+
+- `CHECK (requester_id <> addressee_id)` and `uniq_friend_request_active_pair`
+  (`backend/migrations/Version20260801160339.php:28-29`) were absent from the
+  test DB, so the race catch at `FriendshipService.php:91-97` had never run
+  under test.
+- Postgres-only mechanisms (advisory locks, `SELECT … FOR UPDATE`) cannot be
+  verified locally or in CI.
+
+The plan therefore mirrors the unique index in the SQLite test schema (with
+`min()/max()` in place of `LEAST/GREATEST`) and fixes the race with a
+retry-on-conflict instead of a lock. The overall recommendation (DB-backed,
+service-level tests with `MockClock`) is unchanged.

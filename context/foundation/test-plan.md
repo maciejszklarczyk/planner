@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-08-08
+> Last updated: 2026-11-03
 
 ## 1. Strategy
 
@@ -67,7 +67,7 @@ mandatory abuse lens.
 | #1 | A non-participant (not requester/addressee) gets 403 on accept/decline/cancel; search/list never returns another user's restricted fields | "Voter test passing = authorization correct" — must be proven against the actual controller wiring, not the voter class in isolation | Voter attribute/subject wiring, controller `#[IsGranted]` placement, response DTO field trimming | integration (functional, controller-level) | Testing the voter class alone without a controller-level 403 assertion |
 | #2 | After each mutation, a subsequent read (fresh query, not cache) matches the mutation's effect | "Green toast = state updated" — must assert against real query invalidation/refetch, not a mocked cache | React Query key structure; which keys each mutation invalidates | integration (hook test with real `QueryClientProvider`, mocked `api`) | Asserting only that `api.post` was called, not that dependent queries actually refetch/update |
 | #3 | Every mapped error code surfaces its specific message; an unmapped code visibly falls back instead of hiding the failure | "The mutation call succeeded" ≠ "the business action succeeded" — must assert the effect, sourced from the PRD/API contract, not from the hook's own logic | The seven Friendship error codes (from PRD/plan, not implementation); envelope shape `{error, message}` | unit (pure error-mapping helper) + integration (hook error path) | Oracle problem: asserting the toast text matches whatever the hook currently renders, instead of the PRD's intended message per code |
-| #4 | Self-request, same-direction duplicate, crossed-request auto-accept, and cooldown-active/expired each land in the correct final state, in combination | "DB unique index prevents bad states" — the index only catches concurrent violations, not wrong-but-valid-looking application logic | Exact check ordering from PRD/plan (self → active-row → cooldown → create); cancel-vs-declined distinction | unit/integration (service-level, one test per ordering branch plus one combined) | Copying assertions from the service implementation itself rather than from the PRD's stated business rules |
+| #4 | Self-request, same-direction duplicate, crossed-request auto-accept, and cooldown-active/expired each land in the correct final state, in combination (two rules on the same pair), and a rejected send leaves the pair's persisted state unchanged | "DB unique index prevents bad states" — the index only catches a second active row per pair, not cooldown, direction, or auto-accept-vs-reject logic. Also: "each rule passes in isolation ⇒ the chain is correct" — ordering regressions only show up when rules overlap on one pair | Exact check ordering (self → active-row → cooldown → create) and declined/cancelled-as-history semantics — the oracle is the archived friendship-requests plan's Critical Implementation Details plus PRD FR-006 (the PRD alone states only the cooldown rule); cancel-vs-declined distinction; injected cooldown length | integration (service-level, DB-backed, injected mock clock) — not pure unit with mocked repositories, because part of the rule logic lives in repository queries (direction filter, latest-declined ordering) | Copying assertions from the service implementation itself rather than from the stated business rules; mocking repositories so query-level rule logic is never exercised |
 | #5 | Clicking Accept/Decline/Cancel/Send in a rendered `FriendsView` produces the right API call and UI update | "Hook tests already cover this" — hook tests mock `api`, they don't exercise the component's event wiring, loading states, or the send-dialog autocomplete flow | Component's button→hook wiring; dialog open/close/select flow; disabled-state behavior during `isPending` | integration (RTL component render + interaction) | Snapshot-testing the rendered tree instead of asserting behavior on interaction |
 | #6 | Adversarial `search` strings (`%`, `_`, SQL metacharacters, very long strings, empty) return safe, bounded, correctly-scoped results | "Doctrine ORM = automatically safe" is only true for SQL injection (confirmed: `setParameter` is used throughout). The real risk is LIKE-wildcard scope-widening — `%`/`_` are never escaped before being wrapped in `%...%`, so `search=%` returns every user. Must prove either the wildcard is escaped, or the exposure is bounded/accepted and regression-tested as-is. Also: blank-search safety is enforced only in the controller (`UserController.php`), not in `UserRepository::findWithPagination` itself — a future non-admin caller of the repository method could reintroduce full-table exposure | `UserRepository::findWithPagination`/`countWithFilters` LIKE-binding code; `UserController::search` blank-guard; `excludeUserId` interaction | unit/integration (repository or controller test with adversarial inputs) | Testing only the happy-path partial-email match, skipping empty/oversized/wildcard/special-character inputs |
 
@@ -79,8 +79,8 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Authorization & data-boundary hardening | Prove no user can act on or see another user's friend data | #1, #6 | integration (functional controller tests) | complete | context/changes/testing-authorization-data-boundary-hardening/ |
-| 2 | Business-rule correctness | Prove the request lifecycle (self/duplicate/crossed/cooldown) holds in combination, not just isolation | #4 | unit + integration (service-level) | not started | — |
+| 1 | Authorization & data-boundary hardening | Prove no user can act on or see another user's friend data | #1, #6 | integration (functional controller tests) | complete | context/archive/2026-08-08-testing-authorization-data-boundary-hardening/ |
+| 2 | Business-rule correctness | Prove the request lifecycle (self/duplicate/crossed/cooldown) holds in combination, not just isolation | #4 | unit + integration (service-level) | planned | context/changes/testing-business-rule-correctness/ |
 | 3 | Frontend state-integrity | Prove UI reflects real DB state after every mutation, and errors surface specifically | #2, #3 | integration (hook tests w/ real QueryClientProvider) | not started | — |
 | 4 | Component-level coverage for FriendsView | Prove accept/decline/cancel/send-dialog interactions work end-to-end in the rendered component | #5 | integration (RTL render+interact) | not started | — |
 
@@ -99,7 +99,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | Layer               | Tool                        | Version | Notes                                          |
 |----------------------|-----------------------------|---------|-------------------------------------------------|
-| backend unit + integration | PHPUnit                | ^12.5.17 | `backend/phpunit.dist.xml`; 23 existing test files across Controller/Repository/Service/Security/Unit — meaningful base |
+| backend unit + integration | PHPUnit                | ^12.5.17 | `backend/phpunit.dist.xml`; 23 existing test files across Controller/Repository/Service/Security/Unit — meaningful base. Tests (local + CI) run on **SQLite**: `DatabaseTestCase` builds the schema from the ORM mapping, so DB invariants that Postgres migrations add via raw SQL are absent unless mirrored there (the active friend-request pair index is; the self-request CHECK is not) |
 | frontend unit + integration | Vitest + React Testing Library | vitest ^4.1.10, RTL ^16.3.2 | `frontend/vitest.config.ts`; only 5 test files today, all hook-level — sparse, zero component `render()` tests |
 | e2e                  | none yet                    | —       | see Phase 4 note below — Playwright MCP available for manual/exploratory use, not wired as a suite |
 | accessibility        | none yet                    | —       | not requested by PRD/interview; no rollout phase currently targets it |
@@ -131,9 +131,30 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.1 Adding a backend unit/integration test
 
-- TBD — see §3 Phase 1 for authorization/data-boundary pattern, and Phase 2
-  for business-rule-ordering pattern.
-- **Reference test today**: `backend/tests/Functional/Controller/FriendshipControllerTest.php`, `backend/tests/Functional/Service/FriendshipServiceTest.php`.
+- **Default layer**: integration, DB-backed. Avoid pure unit tests with mocked
+  repositories when the rule logic lives partly in queries — they mirror the
+  implementation.
+- **Authorization / data boundary** (rollout Phase 1): functional controller
+  test with `X-Dev-User`; assert 403 for a participant acting in the wrong role
+  and 404 for a non-participant (no existence leak); assert list endpoints never
+  return another user's rows. Reference: `backend/tests/Functional/Controller/FriendshipControllerTest.php`.
+- **Business-rule chain** (rollout Phase 2): service-level test using
+  `FriendshipServiceTestTrait` (clean `friend_request` table, `service(now, cooldownDays)`
+  with `MockClock`, `persistedRows()`). Put two rules on the same pair; take the
+  expected outcome from the business rules (PRD / archived plan), not from the
+  service; after every rejected call assert the persisted rows are unchanged;
+  use fixed whole-second times (the DB drops microseconds). Reference:
+  `backend/tests/Functional/Service/FriendshipSendRuleChainTest.php`.
+- **Concurrency**: simulate the race window with a repository double whose
+  lookup misses the competing row once, and let the real DB unique index reject
+  the insert. Check the index exists in the SQLite test schema first.
+- **Fixtures and shared state**: the test DB is created once per run and every
+  test commits. Restore anything you mutate outside the per-test reset (e.g. a
+  user's status). Controller tests do not reset `friend_request` — use an unused
+  user pair (`friend1`…`friend8@example.com` are reserved for this). Friend-request
+  addressees must be `active` or `new`.
+- **Prove the test protects something**: temporarily break the rule (reorder a
+  check, flip an `ORDER BY`), confirm the test goes red, restore.
 - **Run locally**: `docker compose run --rm php env $(cat .env.test | grep -v '^#' | xargs) bin/phpunit`.
 
 ### 6.2 Adding a frontend hook/integration test
@@ -157,11 +178,29 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.5 Adding a test for adversarial/untrusted input
 
-- TBD — see §3 Phase 1 (covers risk #6, the `GET /users?search=` surface).
+- **Test type**: repository test plus a functional controller test for the
+  same input (rollout Phase 1).
+- **Inputs to cover**: LIKE wildcards (`%`, `_`), SQL metacharacters, a very
+  long string (300+ chars), empty/blank. Assert a bounded, correctly-scoped
+  result — not just "no exception".
+- **Existence leaks**: when an endpoint must not reveal whether an account
+  exists or its status, compare the response with the one for an unknown value
+  (same code, same message modulo the input).
+- **Reference tests**: `backend/tests/Functional/Repository/UserRepositoryTest.php`,
+  `backend/tests/Functional/Controller/UserControllerTest.php`,
+  `FriendshipControllerTest::testSendFriendRequestToBlockedUserReturnsSameNotFoundAsUnknownEmail`.
 
 ### 6.6 Per-rollout-phase notes
 
 (Appended by each rollout phase's final sub-phase after it ships.)
+
+- **Phase 2 — Business-rule correctness** (2026-11-03,
+  `context/changes/testing-business-rule-correctness/`): overlap cases C1–C9
+  and three race cases for the friend-request send chain. Side effects shipped
+  with it: sends to `inactive`/`blocked`/`deleted` users are rejected as
+  `USER_NOT_FOUND`; racing crossed sends now end as friends (rule chain retried
+  once after a unique-index conflict); the SQLite test schema mirrors
+  `uniq_friend_request_active_pair`.
 
 ## 7. What We Deliberately Don't Test
 
