@@ -39,3 +39,12 @@ App\Entity\User:
         password: 'password'
         roles: ['ROLE_USER']
         name: '<firstName()> <lastName()>'
+
+    # Active users reserved for friendship tests (every send needs a reachable addressee).
+    # Emails must not contain "user1": UserControllerTest expects `search=user1` to match one user.
+    friend_{1..8}:
+        email: 'friend<current()>\@example.com'
+        password: 'password'
+        roles: ['ROLE_USER']
+        status: active
+        name: '<firstName()> <lastName()>'

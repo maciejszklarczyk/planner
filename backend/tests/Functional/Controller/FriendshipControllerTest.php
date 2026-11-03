@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Fixture data (deterministic) relevant here:
  * - admin <-> user_1: accepted friendship
  * - user_1 -> user_5: pending
- * - user_5 -> user_2: declined recently (cooldown active)
+ * - user_5 -> friend_2: declined recently (cooldown active)
  * - admin -> user_3: declined long ago (cooldown expired)
  *
  * Every test below uses a pair not already consumed by fixtures or an earlier test in this
@@ -108,7 +108,7 @@ final class FriendshipControllerTest extends DatabaseTestCase
         self::ensureKernelShutdown();
         $client = self::createClient();
 
-        $client->jsonRequest('POST', '/friend-requests', ['email' => 'user2@example.com'], $this->devUser('user5@example.com'));
+        $client->jsonRequest('POST', '/friend-requests', ['email' => 'friend2@example.com'], $this->devUser('user5@example.com'));
 
         self::assertResponseStatusCodeSame(429);
         $data = json_decode($client->getResponse()->getContent(), true);
