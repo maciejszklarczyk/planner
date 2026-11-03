@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Service;
 
 use App\Entity\Enum\FriendshipStatusEnum;
 use App\Entity\Enum\UserStatusEnum;
-use App\Entity\FriendRequest;
 use App\Entity\User;
 use App\Exception\AlreadyFriendsException;
 use App\Exception\CannotFriendSelfException;
@@ -14,53 +13,19 @@ use App\Exception\DuplicateFriendRequestException;
 use App\Exception\FriendRequestCooldownActiveException;
 use App\Exception\FriendRequestNotPendingException;
 use App\Exception\UserNotFoundByEmailException;
-use App\Repository\FriendRequestRepository;
-use App\Repository\UserRepository;
 use App\Service\FriendshipService;
 use App\Tests\DatabaseTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Component\Clock\MockClock;
 
 #[CoversClass(FriendshipService::class)]
 final class FriendshipServiceTest extends DatabaseTestCase
 {
-    private EntityManagerInterface $em;
-    private FriendRequestRepository $friendRequestRepository;
-    private UserRepository $userRepository;
+    use FriendshipServiceTestTrait;
 
     protected function setUp(): void
     {
-        self::ensureKernelShutdown();
-        self::bootKernel();
-
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->friendRequestRepository = self::getContainer()->get(FriendRequestRepository::class);
-        $this->userRepository = self::getContainer()->get(UserRepository::class);
-
-        // Start each test from a clean slate of FriendRequest rows (fixtures seed some for other suites).
-        $this->em->createQuery('DELETE FROM App\Entity\FriendRequest')->execute();
-        $this->em->clear();
-    }
-
-    private function service(?\DateTimeImmutable $now = null, int $cooldownDays = 3): FriendshipService
-    {
-        return new FriendshipService(
-            em: $this->em,
-            friendRequestRepository: $this->friendRequestRepository,
-            userRepository: $this->userRepository,
-            clock: new MockClock($now ?? new \DateTimeImmutable()),
-            cooldownDays: $cooldownDays,
-        );
-    }
-
-    private function user(string $email): User
-    {
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-        self::assertNotNull($user, "Fixture user {$email} not found.");
-
-        return $user;
+        $this->setUpFriendshipHarness();
     }
 
     public function testSendRequestRejectsSelfRequest(): void

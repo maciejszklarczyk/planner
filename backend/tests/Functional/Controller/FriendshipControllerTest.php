@@ -24,6 +24,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[UsesClass(FriendshipController::class)]
 final class FriendshipControllerTest extends DatabaseTestCase
 {
+    private string $lastResponseContent = '';
+
     /**
      * @return array<string, string>
      */
@@ -471,5 +473,68 @@ final class FriendshipControllerTest extends DatabaseTestCase
             str_replace('nobody@example.com', '<email>', $unknown['message']),
             str_replace('user3@example.com', '<email>', $blocked['message']),
         );
+    }
+
+    public function testPendingReverseRequestWinsOverSendersActiveCooldown(): void
+    {
+        // C1 (research.md): friend_5 is in cooldown towards friend_6, but friend_6 has since sent
+        // friend_5 a request — friend_5 sending must accept it, not answer 429.
+        $sent = $this->sendAs('friend5@example.com', 'friend6@example.com');
+        $this->postAs('friend6@example.com', "/friend-requests/{$sent['id']}/decline");
+        $reverse = $this->sendAs('friend6@example.com', 'friend5@example.com');
+        self::assertSame('pending', $reverse['status']);
+
+        $result = $this->sendAs('friend5@example.com', 'friend6@example.com');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        self::assertSame('accepted', $result['status']);
+        self::assertSame($reverse['id'], $result['id']);
+    }
+
+    public function testMostRecentDeclineDecidesTheCooldown(): void
+    {
+        // C4 (research.md): an old, expired decline must not hide a recent one.
+        $first = $this->sendAs('friend7@example.com', 'friend8@example.com');
+        $this->postAs('friend8@example.com', "/friend-requests/{$first['id']}/decline");
+
+        $second = $this->sendAs('friend7@example.com', 'friend8@example.com', '+4 days');
+        self::assertSame('pending', $second['status'], 'The first decline has expired after 4 days.');
+        $this->postAs('friend8@example.com', "/friend-requests/{$second['id']}/decline", '+4 days');
+
+        $this->sendAs('friend7@example.com', 'friend8@example.com', '+5 days');
+
+        self::assertResponseStatusCodeSame(429);
+        $data = json_decode($this->lastResponseContent, true);
+        self::assertSame('FRIEND_REQUEST_COOLDOWN_ACTIVE', $data['error']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sendAs(string $sender, string $addressee, ?string $clockOffset = null): array
+    {
+        $this->requestAs($sender, 'POST', '/friend-requests', ['email' => $addressee], $clockOffset);
+
+        return json_decode($this->lastResponseContent, true);
+    }
+
+    private function postAs(string $user, string $uri, ?string $clockOffset = null): void
+    {
+        $this->requestAs($user, 'POST', $uri, [], $clockOffset);
+        self::assertResponseIsSuccessful();
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function requestAs(string $user, string $method, string $uri, array $payload, ?string $clockOffset): void
+    {
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        if (null !== $clockOffset) {
+            self::getContainer()->set(ClockInterface::class, new MockClock($clockOffset));
+        }
+        $client->jsonRequest($method, $uri, $payload, $this->devUser($user));
+        $this->lastResponseContent = (string) $client->getResponse()->getContent();
     }
 }
