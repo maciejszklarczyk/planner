@@ -50,7 +50,7 @@ class UserController extends AbstractController
             limit: $limit,
             search: $search,
             excludeUserId: $currentUser->getId(),
-            excludeStatuses: [UserStatusEnum::INACTIVE, UserStatusEnum::BLOCKED, UserStatusEnum::DELETED],
+            excludeStatuses: UserStatusEnum::hiddenFromOtherUsers(),
         );
 
         return $this->json(['data' => UserSearchResultDto::fromEntities($users)]);

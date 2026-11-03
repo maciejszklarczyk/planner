@@ -33,7 +33,7 @@ class FriendshipService
     }
 
     /**
-     * @throws UserNotFoundByEmailException         if no user has that email
+     * @throws UserNotFoundByEmailException         if no user has that email, or that user is hidden from other users
      * @throws CannotFriendSelfException            if requesting oneself
      * @throws AlreadyFriendsException              if the pair is already friends
      * @throws DuplicateFriendRequestException      if a pending request already exists in the same direction
@@ -43,7 +43,7 @@ class FriendshipService
     {
         $addressee = $this->userRepository->findOneBy(['email' => $addresseeEmail]);
         if (!$addressee) {
-            throw new UserNotFoundByEmailException("No user found with email {$addresseeEmail}");
+            throw $this->userNotFound($addresseeEmail);
         }
 
         $requesterId = $requester->getId() ?? throw new \LogicException('Requester must have an ID.');
@@ -51,6 +51,12 @@ class FriendshipService
 
         if ($requesterId === $addresseeId) {
             throw new CannotFriendSelfException('Cannot send a friend request to yourself.');
+        }
+
+        // Must run before the active-row check: a pending request *from* a now-hidden user
+        // must not be auto-accepted. Same error as an unknown email, so status isn't revealed.
+        if ($addressee->getStatus()?->isHiddenFromOtherUsers()) {
+            throw $this->userNotFound($addresseeEmail);
         }
 
         $active = $this->friendRequestRepository->findActiveBetween($requesterId, $addresseeId);
@@ -149,6 +155,11 @@ class FriendshipService
         $this->em->flush();
 
         return $request;
+    }
+
+    private function userNotFound(string $email): UserNotFoundByEmailException
+    {
+        return new UserNotFoundByEmailException("No user found with email {$email}");
     }
 
     /**

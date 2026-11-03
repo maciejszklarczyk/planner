@@ -456,16 +456,16 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [x] 1.1 Full backend suite passes
-- [x] 1.2 The index exists in the test DB
+- [x] 1.1 Full backend suite passes — 0da7068
+- [x] 1.2 The index exists in the test DB — 0da7068
 
 ### Phase 2: Reject Requests to Unreachable Users
 
 #### Automated
 
-- [ ] 2.1 Friendship tests pass
-- [ ] 2.2 User search tests still pass
-- [ ] 2.3 Full backend suite passes
+- [x] 2.1 Friendship tests pass
+- [x] 2.2 User search tests still pass
+- [x] 2.3 Full backend suite passes
 
 #### Manual
 
