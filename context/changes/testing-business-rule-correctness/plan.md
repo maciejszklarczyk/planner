@@ -499,7 +499,7 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [x] 5.1 test-plan.md §6.1 and §6.5 no longer contain "TBD"
+- [x] 5.1 test-plan.md §6.1 and §6.5 no longer contain "TBD" — eba3661
 
 #### Manual
 
