@@ -22,7 +22,8 @@ class FriendRequestDto
         $requester = $request->getRequester() ?? throw new \LogicException('FriendRequest must have a requester.');
         $addressee = $request->getAddressee() ?? throw new \LogicException('FriendRequest must have an addressee.');
 
-        $otherUser = $viewingAs === $requester ? $addressee : $requester;
+        // Compare by id: after an EntityManager reset the same user can be a different object.
+        $otherUser = $viewingAs->getId() === $requester->getId() ? $addressee : $requester;
 
         return new self(
             id: $request->getId() ?? throw new \LogicException('FriendRequest must have an ID.'),

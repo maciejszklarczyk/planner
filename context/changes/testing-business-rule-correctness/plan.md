@@ -475,9 +475,9 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [x] 3.1 Overlap tests pass
-- [x] 3.2 Existing friendship tests pass after the harness extraction
-- [x] 3.3 Full backend suite passes
+- [x] 3.1 Overlap tests pass — 5971a07
+- [x] 3.2 Existing friendship tests pass after the harness extraction — 5971a07
+- [x] 3.3 Full backend suite passes — 5971a07
 
 #### Manual
 
@@ -487,9 +487,9 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Automated
 
-- [ ] 4.1 Race and overlap tests pass
-- [ ] 4.2 Full backend suite passes
-- [ ] 4.3 Static analysis and style pass on changed files
+- [x] 4.1 Race and overlap tests pass
+- [x] 4.2 Full backend suite passes
+- [x] 4.3 Static analysis and style pass on changed files
 
 #### Manual
 

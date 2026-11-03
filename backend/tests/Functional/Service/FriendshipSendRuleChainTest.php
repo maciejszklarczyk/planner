@@ -11,8 +11,10 @@ use App\Exception\CannotFriendSelfException;
 use App\Exception\DuplicateFriendRequestException;
 use App\Exception\FriendRequestCooldownActiveException;
 use App\Exception\UserNotFoundByEmailException;
+use App\Repository\FriendRequestRepository;
 use App\Service\FriendshipService;
 use App\Tests\DatabaseTestCase;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -37,6 +39,7 @@ final class FriendshipSendRuleChainTest extends DatabaseTestCase
     private const COOLDOWN_DAYS = 3;
 
     private \DateTimeImmutable $t0;
+    private int $raceWindowLookups = 0;
 
     protected function setUp(): void
     {
@@ -224,6 +227,90 @@ final class FriendshipSendRuleChainTest extends DatabaseTestCase
             self::assertSame([], $pending['incoming'], "{$email} must have no incoming pending request.");
             self::assertSame([], $pending['outgoing'], "{$email} must have no outgoing pending request.");
         }
+    }
+
+    /**
+     * Guards: the concurrent-send retry. Without it, the loser of a crossed race gets
+     * DUPLICATE_FRIEND_REQUEST and the pair never becomes friends.
+     */
+    public function testRaceCrossedSendsEndAsFriends(): void
+    {
+        $reverse = $this->service($this->t0)->sendRequest($this->user(self::B), self::A);
+        $race = $this->raceWindowRepository();
+
+        $result = $this->service($this->t0, self::COOLDOWN_DAYS, $race)->sendRequest($this->user(self::A), self::B);
+
+        $this->assertRaceWindowWasHit();
+        self::assertSame($reverse->getId(), $result->getId());
+        self::assertSame(FriendshipStatusEnum::ACCEPTED, $result->getStatus());
+        self::assertSame([['from' => self::B, 'to' => self::A, 'status' => 'accepted']], $this->rowsWithoutIds());
+    }
+
+    public function testRaceSameDirectionSendsEndAsDuplicate(): void
+    {
+        $this->service($this->t0)->sendRequest($this->user(self::A), self::B);
+        $race = $this->raceWindowRepository();
+
+        try {
+            $this->service($this->t0, self::COOLDOWN_DAYS, $race)->sendRequest($this->user(self::A), self::B);
+            self::fail('Expected DuplicateFriendRequestException.');
+        } catch (DuplicateFriendRequestException) {
+        }
+
+        $this->assertRaceWindowWasHit();
+        self::assertSame([['from' => self::A, 'to' => self::B, 'status' => 'pending']], $this->rowsWithoutIds());
+    }
+
+    public function testRaceAgainstAnAcceptEndsAsAlreadyFriends(): void
+    {
+        $setup = $this->service($this->t0);
+        $setup->acceptRequest($setup->sendRequest($this->user(self::B), self::A));
+        $race = $this->raceWindowRepository();
+
+        try {
+            $this->service($this->t0, self::COOLDOWN_DAYS, $race)->sendRequest($this->user(self::A), self::B);
+            self::fail('Expected AlreadyFriendsException.');
+        } catch (AlreadyFriendsException) {
+        }
+
+        $this->assertRaceWindowWasHit();
+        self::assertSame([['from' => self::B, 'to' => self::A, 'status' => 'accepted']], $this->rowsWithoutIds());
+    }
+
+    /**
+     * A repository that misses the competing row on its first active-row lookup — the state a
+     * concurrent request sees when it checks just before the other one commits. Only the first
+     * pass uses it; the retry reads through a fresh EntityManager.
+     */
+    private function raceWindowRepository(): FriendRequestRepository
+    {
+        $onLookup = function (): void {
+            ++$this->raceWindowLookups;
+        };
+
+        return new class(self::getContainer()->get('doctrine'), $onLookup) extends FriendRequestRepository {
+            public function __construct(ManagerRegistry $registry, private \Closure $onLookup)
+            {
+                parent::__construct($registry);
+            }
+
+            public function findActiveBetween(int $userAId, int $userBId): ?FriendRequest
+            {
+                ($this->onLookup)();
+
+                return null;
+            }
+        };
+    }
+
+    /**
+     * The double was consulted exactly once, so the insert reached the DB and hit the
+     * uniq_friend_request_active_pair index (DatabaseTestCase). Without that index the double would
+     * have produced a second active row and the row assertions after this call fail.
+     */
+    private function assertRaceWindowWasHit(): void
+    {
+        self::assertSame(1, $this->raceWindowLookups, 'The race double must be used for the first pass only.');
     }
 
     private function at(string $offsetFromT0): FriendshipService

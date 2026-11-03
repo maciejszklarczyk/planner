@@ -47,6 +47,7 @@ trait FriendshipServiceTestTrait
             userRepository: $this->userRepository,
             clock: new MockClock($now ?? new \DateTimeImmutable()),
             cooldownDays: $cooldownDays,
+            registry: self::getContainer()->get('doctrine'),
         );
     }
 
