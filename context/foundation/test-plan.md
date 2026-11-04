@@ -80,7 +80,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Authorization & data-boundary hardening | Prove no user can act on or see another user's friend data | #1, #6 | integration (functional controller tests) | complete | context/archive/2026-08-08-testing-authorization-data-boundary-hardening/ |
-| 2 | Business-rule correctness | Prove the request lifecycle (self/duplicate/crossed/cooldown) holds in combination, not just isolation | #4 | unit + integration (service-level) | planned | context/changes/testing-business-rule-correctness/ |
+| 2 | Business-rule correctness | Prove the request lifecycle (self/duplicate/crossed/cooldown) holds in combination, not just isolation | #4 | unit + integration (service-level) | complete | context/archive/2026-11-01-testing-business-rule-correctness/ |
 | 3 | Frontend state-integrity | Prove UI reflects real DB state after every mutation, and errors surface specifically | #2, #3 | integration (hook tests w/ real QueryClientProvider) | not started | — |
 | 4 | Component-level coverage for FriendsView | Prove accept/decline/cancel/send-dialog interactions work end-to-end in the rendered component | #5 | integration (RTL render+interact) | not started | — |
 
