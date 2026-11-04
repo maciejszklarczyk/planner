@@ -507,4 +507,4 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Manual
 
-- [ ] 5.2 Cookbook entries read correctly
+- [x] 5.2 Cookbook entries read correctly — confirmed by user 2026-11-04
