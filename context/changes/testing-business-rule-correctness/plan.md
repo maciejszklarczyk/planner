@@ -448,6 +448,10 @@ No production schema change. The SQLite index exists only in the test schema.
 - Rule chain: `backend/src/Service/FriendshipService.php:42-100`
 - Production invariants: `backend/migrations/Version20260801160339.php:28-29`
 
+## Addendum (impl-review 2026-11-04)
+
+- `backend/src/Dto/Response/FriendRequestDto.php` — changed in Phase 4 although not listed: compares users by id instead of `===`, because after the retry's EntityManager reset the viewer and the request's requester can be different objects for the same user. Covered by `backend/tests/Unit/Dto/FriendRequestDtoTest.php` (review finding F1).
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.

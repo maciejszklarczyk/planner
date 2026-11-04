@@ -1,9 +1,9 @@
 ---
 change_id: testing-business-rule-correctness
 title: Testing business rule correctness
-status: implemented
+status: impl_reviewed
 created: 2026-11-01
-updated: 2026-11-03
+updated: 2026-11-04
 archived_at: null
 ---
 

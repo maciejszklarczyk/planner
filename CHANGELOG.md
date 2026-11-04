@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-04
+
+- [bb700ef] fix(testing-business-rule-correctness): apply impl-review fixes
+
 ## 2026-10-31
 
 - [6eb9266] fix(user-search): hide inactive, blocked and deleted users

@@ -53,17 +53,20 @@ class FriendshipService
             // fresh one — they now see the competing row (e.g. a crossed request to auto-accept).
             $this->registry->resetManager();
             $em = $this->registry->getManagerForClass(FriendRequest::class);
-            \assert($em instanceof EntityManagerInterface);
+            if (!$em instanceof EntityManagerInterface) {
+                throw new \LogicException('No Doctrine ORM manager for FriendRequest.');
+            }
             $friendRequestRepository = $em->getRepository(FriendRequest::class);
             $userRepository = $em->getRepository(User::class);
-            \assert($friendRequestRepository instanceof FriendRequestRepository);
-            \assert($userRepository instanceof UserRepository);
+            if (!$friendRequestRepository instanceof FriendRequestRepository || !$userRepository instanceof UserRepository) {
+                throw new \LogicException('Unexpected repository classes after EntityManager reset.');
+            }
             $freshRequester = $em->find(User::class, $requesterId) ?? throw new \LogicException('Requester disappeared during retry.');
 
             try {
                 return $this->applySendRules($em, $friendRequestRepository, $userRepository, $freshRequester, $addresseeEmail);
             } catch (UniqueConstraintViolationException) {
-                throw new DuplicateFriendRequestException("A pending friend request already exists between {$requesterId} and {$addresseeEmail}.");
+                throw new DuplicateFriendRequestException("A pending friend request to {$addresseeEmail} already exists.");
             }
         }
     }
