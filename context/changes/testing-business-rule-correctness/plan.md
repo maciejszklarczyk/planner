@@ -473,7 +473,7 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Manual
 
-- [ ] 2.4 POST to a blocked user returns 404 with the same message as an unknown email
+- [x] 2.4 POST to a blocked user returns 404 with the same message as an unknown email — verified via Playwright 2026-11-04 (UI search shows only user5; POST user3 vs nobody: both 404 USER_NOT_FOUND, same keys and message shape)
 
 ### Phase 3: Rule-Chain Overlap Tests
 
@@ -485,7 +485,7 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Manual
 
-- [ ] 3.4 Deliberate-break check (C1 and C4 fail when broken)
+- [x] 3.4 Deliberate-break check (C1 and C4 fail when broken) — verified during implementation 2026-11-03 (cooldown-before-active-row: C1 service + HTTP red; ORDER BY ASC: C4 service + HTTP red; restored)
 
 ### Phase 4: Retry the Rule Chain After a Concurrent-Send Conflict
 
@@ -497,7 +497,7 @@ No production schema change. The SQLite index exists only in the test schema.
 
 #### Manual
 
-- [ ] 4.4 Deliberate-break check (crossed race test fails without retry)
+- [x] 4.4 Deliberate-break check (crossed race test fails without retry) — verified during implementation 2026-11-03 (no retry: crossed + already-friends race tests red; no SQLite index: all 3 race tests red; restored)
 
 ### Phase 5: Documentation and Cookbook
 

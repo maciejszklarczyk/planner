@@ -2,6 +2,7 @@
 
 ## 2026-11-04
 
+- [8242f46] chore(testing-business-rule-correctness): record manual verification
 - [bb700ef] fix(testing-business-rule-correctness): apply impl-review fixes
 
 ## 2026-10-31
