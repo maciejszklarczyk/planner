@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-07
+
+- [74f5e6a] build: bump symfony to 7.4.23 and league/flysystem to 3.36 for security advisories
+
 ## 2026-11-04
 
 - [e13af82] docs(test-plan): mark rollout phase 2 complete
