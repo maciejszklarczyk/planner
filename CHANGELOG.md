@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-11-07
+
+- [74f5e6a] build: bump symfony to 7.4.23 and league/flysystem to 3.36 for security advisories
+
+## 2026-11-04
+
+- [e13af82] docs(test-plan): mark rollout phase 2 complete
+- [38ba660] chore(testing-business-rule-correctness): confirm cookbook review (5.2)
+- [8242f46] chore(testing-business-rule-correctness): record manual verification
+- [bb700ef] fix(testing-business-rule-correctness): apply impl-review fixes
+
+## 2026-10-31
+
+- [6eb9266] fix(user-search): hide inactive, blocked and deleted users
+- [600c2c6] chore(testing-authorization-data-boundary-hardening): verify manual checks, mark rollout phase 1 complete
+
 ## 2026-08-10
 
 - [a15efca] build: bump guzzlehttp/guzzle to 7.15.3, fixing composer-audit CI failure

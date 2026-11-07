@@ -36,7 +36,23 @@ final class UserControllerTest extends DatabaseTestCase
         $data = json_decode($client->getResponse()->getContent(), true);
         $emails = array_column($data['data'], 'email');
         self::assertNotContains('user1@example.com', $emails, 'Caller must be excluded from their own search results.');
-        self::assertContains('user2@example.com', $emails);
+        self::assertContains('user5@example.com', $emails);
+    }
+
+    public function testSearchExcludesInactiveBlockedAndDeletedUsers(): void
+    {
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+
+        $client->jsonRequest('GET', '/users?search=user', [], ['HTTP_X_DEV_USER' => 'user1@example.com']);
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $emails = array_column($data['data'], 'email');
+        self::assertNotContains('user2@example.com', $emails, 'Inactive user must not be searchable.');
+        self::assertNotContains('user3@example.com', $emails, 'Blocked user must not be searchable.');
+        self::assertNotContains('user4@example.com', $emails, 'User with status "deleted" must not be searchable.');
+        self::assertContains('user5@example.com', $emails, 'User with status "new" is still searchable.');
     }
 
     public function testSearchResultOmitsRolesAndStatus(): void

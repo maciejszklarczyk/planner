@@ -210,5 +210,5 @@ No schema or data migration. Pure application-code + test change; no deployment 
 
 #### Manual
 
-- [ ] 2.5 GET /users?search=% does not return every user
-- [ ] 2.6 GET /admin/users with no search param still returns full list as admin
+- [x] 2.5 GET /users?search=% does not return every user — verified manually 2026-10-31 (`%` and `_` → empty, `user` → 4 matches)
+- [x] 2.6 GET /admin/users with no search param still returns full list as admin — verified manually 2026-10-31 (8/8 users, non-admin → 403)

@@ -15,10 +15,10 @@ App\Entity\FriendRequest:
         createdAt: '<(new DateTimeImmutable("now - 1 day"))>'
         respondedAt: null
 
-    # user_5 -> user_2: declined recently, cooldown (3 days) still active
-    friend_request_u5_u2_declined_recent:
+    # user_5 -> friend_2: declined recently, cooldown (3 days) still active
+    friend_request_u5_f2_declined_recent:
         requester: '@user_5'
-        addressee: '@user_2'
+        addressee: '@friend_2'
         status: declined
         createdAt: '<(new DateTimeImmutable("now - 2 days"))>'
         respondedAt: '<(new DateTimeImmutable("now - 1 day"))>'

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Enum\UserStatusEnum;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -38,12 +39,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Find users with pagination and filters.
      *
-     * @param int         $page                    Page number (1-indexed)
-     * @param int         $limit                   Items per page
-     * @param string|null $search                  Search in email
-     * @param int|null    $excludeGroupId          Exclude users already in this group
-     * @param int|null    $excludeUserId           Exclude this specific user (e.g. the current caller)
-     * @param bool        $allowEmptySearchResults Whether an explicit `search: ''` returns everyone (true) or nothing (false, default)
+     * @param int                  $page                    Page number (1-indexed)
+     * @param int                  $limit                   Items per page
+     * @param string|null          $search                  Search in email
+     * @param int|null             $excludeGroupId          Exclude users already in this group
+     * @param int|null             $excludeUserId           Exclude this specific user (e.g. the current caller)
+     * @param bool                 $allowEmptySearchResults Whether an explicit `search: ''` returns everyone (true) or nothing (false, default)
+     * @param list<UserStatusEnum> $excludeStatuses         Exclude users with any of these statuses
      *
      * @return User[]
      */
@@ -54,6 +56,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ?int $excludeGroupId = null,
         ?int $excludeUserId = null,
         bool $allowEmptySearchResults = false,
+        array $excludeStatuses = [],
     ): array {
         if ('' === $search && !$allowEmptySearchResults) {
             return [];
@@ -84,6 +87,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         if (null !== $excludeUserId) {
             $qb->andWhere('u.id != :excludeUserId')
                 ->setParameter('excludeUserId', $excludeUserId);
+        }
+
+        if ([] !== $excludeStatuses) {
+            $qb->andWhere('u.status NOT IN (:excludeStatuses)')
+                ->setParameter('excludeStatuses', array_map(fn (UserStatusEnum $s) => $s->value, $excludeStatuses));
         }
 
         // Apply pagination

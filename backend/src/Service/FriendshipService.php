@@ -17,6 +17,7 @@ use App\Repository\FriendRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -29,11 +30,12 @@ class FriendshipService
         private ClockInterface $clock,
         #[Autowire(env: 'int:FRIEND_REQUEST_COOLDOWN_DAYS')]
         private int $cooldownDays,
+        private ManagerRegistry $registry,
     ) {
     }
 
     /**
-     * @throws UserNotFoundByEmailException         if no user has that email
+     * @throws UserNotFoundByEmailException         if no user has that email, or that user is hidden from other users
      * @throws CannotFriendSelfException            if requesting oneself
      * @throws AlreadyFriendsException              if the pair is already friends
      * @throws DuplicateFriendRequestException      if a pending request already exists in the same direction
@@ -41,9 +43,49 @@ class FriendshipService
      */
     public function sendRequest(User $requester, string $addresseeEmail): FriendRequest
     {
-        $addressee = $this->userRepository->findOneBy(['email' => $addresseeEmail]);
+        $requesterId = $requester->getId() ?? throw new \LogicException('Requester must have an ID.');
+
+        try {
+            return $this->applySendRules($this->em, $this->friendRequestRepository, $this->userRepository, $requester, $addresseeEmail);
+        } catch (UniqueConstraintViolationException) {
+            // A concurrent send for the same pair got past our active-row check first; the DB index
+            // rejected our insert. Doctrine has closed the EntityManager, so re-run the rules once on a
+            // fresh one — they now see the competing row (e.g. a crossed request to auto-accept).
+            $this->registry->resetManager();
+            $em = $this->registry->getManagerForClass(FriendRequest::class);
+            if (!$em instanceof EntityManagerInterface) {
+                throw new \LogicException('No Doctrine ORM manager for FriendRequest.');
+            }
+            $friendRequestRepository = $em->getRepository(FriendRequest::class);
+            $userRepository = $em->getRepository(User::class);
+            if (!$friendRequestRepository instanceof FriendRequestRepository || !$userRepository instanceof UserRepository) {
+                throw new \LogicException('Unexpected repository classes after EntityManager reset.');
+            }
+            $freshRequester = $em->find(User::class, $requesterId) ?? throw new \LogicException('Requester disappeared during retry.');
+
+            try {
+                return $this->applySendRules($em, $friendRequestRepository, $userRepository, $freshRequester, $addresseeEmail);
+            } catch (UniqueConstraintViolationException) {
+                throw new DuplicateFriendRequestException("A pending friend request to {$addresseeEmail} already exists.");
+            }
+        }
+    }
+
+    /**
+     * The send rule chain: resolve addressee -> self -> hidden status -> active row -> cooldown -> create.
+     *
+     * @throws UniqueConstraintViolationException if a concurrent send created an active row for the pair
+     */
+    private function applySendRules(
+        EntityManagerInterface $em,
+        FriendRequestRepository $friendRequestRepository,
+        UserRepository $userRepository,
+        User $requester,
+        string $addresseeEmail,
+    ): FriendRequest {
+        $addressee = $userRepository->findOneBy(['email' => $addresseeEmail]);
         if (!$addressee) {
-            throw new UserNotFoundByEmailException("No user found with email {$addresseeEmail}");
+            throw $this->userNotFound($addresseeEmail);
         }
 
         $requesterId = $requester->getId() ?? throw new \LogicException('Requester must have an ID.');
@@ -53,7 +95,13 @@ class FriendshipService
             throw new CannotFriendSelfException('Cannot send a friend request to yourself.');
         }
 
-        $active = $this->friendRequestRepository->findActiveBetween($requesterId, $addresseeId);
+        // Must run before the active-row check: a pending request *from* a now-hidden user
+        // must not be auto-accepted. Same error as an unknown email, so status isn't revealed.
+        if ($addressee->getStatus()?->isHiddenFromOtherUsers()) {
+            throw $this->userNotFound($addresseeEmail);
+        }
+
+        $active = $friendRequestRepository->findActiveBetween($requesterId, $addresseeId);
         if ($active) {
             if (FriendshipStatusEnum::ACCEPTED === $active->getStatus()) {
                 throw new AlreadyFriendsException("Users {$requesterId} and {$addresseeId} are already friends.");
@@ -64,7 +112,7 @@ class FriendshipService
             if ($active->getRequester()?->getId() === $addresseeId) {
                 $active->setStatus(FriendshipStatusEnum::ACCEPTED);
                 $active->setRespondedAt($this->clock->now());
-                $this->em->flush();
+                $em->flush();
 
                 return $active;
             }
@@ -72,7 +120,7 @@ class FriendshipService
             throw new DuplicateFriendRequestException("A pending friend request already exists between {$requesterId} and {$addresseeId}.");
         }
 
-        $latestDeclined = $this->friendRequestRepository->findLatestDeclinedBySender($requesterId, $addresseeId);
+        $latestDeclined = $friendRequestRepository->findLatestDeclinedBySender($requesterId, $addresseeId);
         if ($latestDeclined) {
             $respondedAt = $latestDeclined->getRespondedAt() ?? throw new \LogicException('Declined FriendRequest must have a respondedAt.');
             $cooldownEnd = $respondedAt->modify("+{$this->cooldownDays} days");
@@ -86,15 +134,8 @@ class FriendshipService
         $friendRequest->setAddressee($addressee);
         $friendRequest->setStatus(FriendshipStatusEnum::PENDING);
 
-        $this->em->persist($friendRequest);
-
-        try {
-            $this->em->flush();
-        } catch (UniqueConstraintViolationException) {
-            // A concurrent request won the race against our findActiveBetween() check above;
-            // the DB-level partial unique index is the real guard here.
-            throw new DuplicateFriendRequestException("A pending friend request already exists between {$requesterId} and {$addresseeId}.");
-        }
+        $em->persist($friendRequest);
+        $em->flush();
 
         return $friendRequest;
     }
@@ -149,6 +190,11 @@ class FriendshipService
         $this->em->flush();
 
         return $request;
+    }
+
+    private function userNotFound(string $email): UserNotFoundByEmailException
+    {
+        return new UserNotFoundByEmailException("No user found with email {$email}");
     }
 
     /**
